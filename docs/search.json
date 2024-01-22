@@ -1,47 +1,5 @@
 [
   {
-    "objectID": "content/01-introduction.html",
-    "href": "content/01-introduction.html",
-    "title": "Linear Regression: A Refresher",
-    "section": "",
-    "text": "library(tidyverse)\nlibrary(poliscidata)\nlibrary(janitor)\nlibrary(scales)\nlibrary(wbstats)\nlibrary(broom)\nlibrary(ggdist)\nYou have a brilliant idea describing the relationship between an outcome of interest and a variable that you think is driving interesting changes to that outcome. You have a very clever theory describing the relationship between these two phenomena. Now you want to provide empirical support of that theory.\nThis quick refresher will outline the steps required to fit a linear regression model against two continuous variables: a dependent variable (or outcome of interest) and an independent variable (or the thing you think is driving changes to that outcome of interest). For a more in-depth set of notes on each of these steps, please refer to the GVPT622: Quantitative Methods for Political Science notes."
-  },
-  {
-    "objectID": "content/01-introduction.html#readings",
-    "href": "content/01-introduction.html#readings",
-    "title": "Course Introduction",
-    "section": "",
-    "text": "Quarto introductory tutorial\n Pollock & Edwards R Companion, Chapter 1"
-  },
-  {
-    "objectID": "content/01-introduction.html#class-slides",
-    "href": "content/01-introduction.html#class-slides",
-    "title": "Course Introduction",
-    "section": "Class slides",
-    "text": "Class slides"
-  },
-  {
-    "objectID": "content/01-introduction.html#section",
-    "href": "content/01-introduction.html#section",
-    "title": "Course Introduction",
-    "section": "Section",
-    "text": "Section\n\nIntroduction to Quarto and markdown\nQuarto provides you with a tool that allows you to create fully reproducible research outputs. It allows you to combine your code, results, and prose into one document that can output in many different format. All of the materials I produced for this class and Maths Camp were created using Quarto.\nYou can use Quarto from RStudio.1 Here is a screen shot of a Quarto document (extension .qmd) and its HTML output. You can render a Quarto document to many different types of formats, including PDF and MS Word.\n\n\n\nSource: Quarto\n\n\n\n\nA new Quarto document\nOpen up a new Quarto document in RStudio:\n\nFill in the relevant fields:\n\nIt will have a .qmd extension. This is the Quarto document extension.\nThe new document will have some introductory text and other things in it. Importantly, it will have a YAML section. This section (written in YAML) includes all of the metadata for your document. It includes the title, author, format in which it will rendered, and the default editor.\n\nThere are two ways to work with and view Quarto documents. The default editor is visual, which follows a more “what-you-see-is-what-you-get” style. Alternatively, you can edit in source, which looks more like a raw script. To switch between the two, you can use the Source and Visual icons in the top left hand side of the screen.\n\n\n\n\n\n\nNote\n\n\n\nI find myself switching between these two formats all the time. The visual editor is much easier to work in when writing, but it can be a bit buggy when it comes to formatting my work and writing code. I work in source when I am doing those two things.\n\n\n\n\nRendering your document\nTo render your document into your chosen format (in this case: HTML), you need to hit the Render icon in the document’s top bar. This will produce a HTML version of your Quarto document in the same folder in which you saved your Quarto document.\nYou can preview your document in RStudio by changing your settings to Preview in Viewer Pane.\n\nNow, whenever you render your document a preview of it will show up in the Viewer pane (which is in the same place as your Files, Plots, and Help panes).\n\n\n\n\n\n\n\nNote\n\n\n\nIf you toggle on the Render on Save option, your Quarto document will render and update your viewer every time you hit save. This can be helpful when you are formatting your document.\n\n\n\n\nWriting prose in Quarto\nYou can write prose as you would in any other text editor in Quarto. When you are in the Visual editor model, Quarto provides you with the shortcut keys for many of the formats you use in other text editors, including MS Word and Google Docs. You can also use your usual keyboard shortcuts.\nIn the Source editor mode, you will need to use markdown. Markdown is a lightweight markup language that allows you to format plain text. It gives you a lot of control over the format of your text documents (similar to Latex).\nHere is the link for a great Markdown tutorial. It takes about 10 minutes to complete, so we will play around in there now.\n\n\nRunning code in Quarto\nYou can also run code from within your Quarto document. You can do this through a code chunk or in-line code. I will step through both options now.\n\nCode chunks\nA code chunk starts with ```{r} and ends with ```. You can then write whole “chunks” of code that will output in your rendered document.\n```{r}\n#| echo: true\n\nlibrary(tidyverse)\n```\nYou can specify your chunk options using #| at the start of the line. For example, above I specified that I wanted the code in the code chunk to be shown when I render my document. You can hide the code by changing the chunk option echo to false. There are many different chunk options that you can control. A full list can be found here.\nYou can set the chunk options in the individual chunks, as show above. Alternatively, you can set them universally in the YAML section at the top of your Quarto document using the execute command. For example:\n```{yaml}\nexecute:\n  echo: true\n  message: false\n  warning: false\n```\nThis will apply to all code chunks unless you overwrite it by including chunk-specific options in a code chunk.\nCode chunks are useful for running large amounts of code. Commonly, I use them to include a plot, a regression table, or to read in my data or model results. For example, you can write the code to create a ggplot directly in your document.\n\n\n\nSource: Quarto\n\n\n\n\nIn-line code\nAlternatively, you often want to reference numbers or results in your prose. For example, I may be writing up the data section of a paper and want to specify that my data set includes 100 observations. If I were to write this in normally and then go away and collect more data, I would need to come back and update this number manually. I may do this several times (very tedious) or I may miss a time (we are all human). In-line coding allows you to include R code in your prose.\nYou include R code directly in your prose using the expression: `r `. For example:\n\nWill render as: There are 234 observations in our data. No need to go and update this reference if that number changes!\n\n\n\n\n\n\nNote\n\n\n\nscales is a great package for formatting numbers.\nFor example, R will output raw numbers such as 1000000000 and 8932348920. scales allows you to format these numbers so they are easier to read: scales::comma(1000000000) gives you 1,000,000,000 and scales::dollar(8932348920) gives you $8,932,348,920."
-  },
-  {
-    "objectID": "content/01-introduction.html#footnotes",
-    "href": "content/01-introduction.html#footnotes",
-    "title": "Course Introduction",
-    "section": "Footnotes",
-    "text": "Footnotes\n\n\nYou can also use it from VS Code, Jupyter, Neovim, and Editor.↩︎"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "\n            Advanced Quantitative Methods for Political Science\n        ",
-    "section": "",
-    "text": "Advanced Quantitative Methods for Political Science\n        \n        \n            An introduction to multivariate analysis.\n        \n        \n            Spring 2024Department of Government and PoliticsUniversity of Maryland, College Park\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nProfessor\n\n   Dr Michael Hanmer\n   mhanmer@umd.edu\n\n\n\nTeaching Assistant\n\n   Harriet Goers\n   Chincoteague Building\n   hgoers@umd.edu\n   hgoers\n\n\n\n\n\nCourse details\n\n   January 24 - May 9\n   Thursday, 9:30 - 12:15 PM\n   Tydings Building, Room 1111\n\n\n\nLab details\n\n   TBD\n   TBD\n\n\n\nOffice hours\n\n   TBD\n   Zoom\n\n\n\n\nContacting me\nE-mail is the best ways to get in contact with me. I will try to respond to all course-related e-mails within 24 hours."
-  },
-  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -49,11 +7,18 @@
     "text": "About this site\n\n1 + 1\n\n[1] 2"
   },
   {
-    "objectID": "content/01-introduction.html#step-1-know-your-data",
-    "href": "content/01-introduction.html#step-1-know-your-data",
-    "title": "Course Introduction",
-    "section": "Step 1: Know your data",
-    "text": "Step 1: Know your data\nOnce you have data for your variables of interest you should take a good look at them. First, take a look at each variable individually. Some useful questions with which to start include:\n\nWhat kind of data are they (continuous or categorical)?\nHow are they distributed (normally or are they skewed)?\nAre there any unusual data points? If so, why are they unusual?\nAre any observations missing? Is this missingness random or systematic?\n\nOne of the easiest ways to answer these and other important questions is by visualizing your variables. We can use the many great plot functions in ggplot to do this:\n\nCategorical variables\n\n\n\n\n\n\n\nContinuous variables"
+    "objectID": "content/01-introduction.html",
+    "href": "content/01-introduction.html",
+    "title": "Linear Regression: A Refresher",
+    "section": "",
+    "text": "library(tidyverse)\nlibrary(poliscidata)\nlibrary(janitor)\nlibrary(scales)\nlibrary(wbstats)\nlibrary(broom)\nlibrary(ggdist)\nYou have a brilliant idea describing the relationship between an outcome of interest and a variable that you think is driving interesting changes to that outcome. You have a very clever theory describing the relationship between these two phenomena. Now you want to provide empirical support of that theory.\nThis quick refresher will outline the steps required to fit a linear regression model against two continuous variables: a dependent variable (or outcome of interest) and an independent variable (or the thing you think is driving changes to that outcome of interest). For a more in-depth set of notes on each of these steps, please refer to the GVPT622: Quantitative Methods for Political Science notes."
+  },
+  {
+    "objectID": "content/01-introduction.html#do-richer-countries-enjoy-better-health-outcomes",
+    "href": "content/01-introduction.html#do-richer-countries-enjoy-better-health-outcomes",
+    "title": "Linear Regression: A Refresher",
+    "section": "Do richer countries enjoy better health outcomes?",
+    "text": "Do richer countries enjoy better health outcomes?\nLet’s return to a familiar question: what is the relationship between a country’s health and its wealth? This research question will help guide our refresher."
   },
   {
     "objectID": "content/01-introduction.html#step-1-collect-your-data",
@@ -77,13 +42,6 @@
     "text": "Step 3: Fit your linear model\nWe can now fit a linear regression model to our data to better capture and generalize this relationship.\n\nAn Ordinary Least Squares (OLS) regression finds the straight line that minimizes the distance between itself and all of the data points.\n\nWe can visualize that relationship using geom_smooth() from ggplot:\n\nggplot(gapminder_df, aes(x = log_gdp_per_cap, y = life_exp)) + \n  geom_point() + \n  geom_smooth(method = \"lm\", se = F) + \n  theme_minimal() + \n  labs(x = \"Logged GDP per capita\",\n       y = \"Average life expectancy (years)\") + \n  scale_x_continuous(labels = label_dollar())\n\n\n\n\nWe can fit that model using lm():\n\nm &lt;- lm(life_exp ~ log_gdp_per_cap, data = gapminder_df)\n\nm\n\n\nCall:\nlm(formula = life_exp ~ log_gdp_per_cap, data = gapminder_df)\n\nCoefficients:\n    (Intercept)  log_gdp_per_cap  \n         33.427            4.316  \n\n\nThis gives us an estimated linear relationship between a country’s health and wealth. Formally:\n\\[\nLife\\ expectancy = \\beta_0 + \\beta_{1} Logged\\ GDP\\ per\\ capita + \\epsilon\n\\]\nOur model estimates the following relationship:\n\\[\nLife\\ expectancy = 33.427 + 4.316 Logged\\ GDP\\ per\\ capita + \\epsilon\n\\]\nWe can use this model to do all kinds of amazing things, including (hopefully) providing empirical support for our theories and making predictions about some outcome of interest."
   },
   {
-    "objectID": "content/01-introduction.html#do-richer-countries-enjoy-better-health-outcomes",
-    "href": "content/01-introduction.html#do-richer-countries-enjoy-better-health-outcomes",
-    "title": "Linear Regression: A Refresher",
-    "section": "Do richer countries enjoy better health outcomes?",
-    "text": "Do richer countries enjoy better health outcomes?\nLet’s return to a familiar question: what is the relationship between a country’s health and its wealth? This research question will help guide our refresher."
-  },
-  {
     "objectID": "content/01-introduction.html#step-4-interpret-your-model",
     "href": "content/01-introduction.html#step-4-interpret-your-model",
     "title": "Linear Regression: A Refresher",
@@ -103,5 +61,12 @@
     "title": "Linear Regression: A Refresher",
     "section": "Step 6: Evaluate your coefficients",
     "text": "Step 6: Evaluate your coefficients\nAt this stage, we have a model that fits our data well. We now want to ask whether the relationship we have uncovered is statistically significantly different from no relationship. In other words, is this all just random noise?\nAssume that we have a pure random sample of our population. If we were to pull a different pure random sample from our population we would get a different set of coefficients. That’s totally fine! However, we need to work out what these different coefficients could plausibly be. Once we have done that, we can determine whether or not they include zero (or no relationship).\n\n\n\n\n\n\nNote\n\n\n\nFor the long version of this, return to the Regression notes from GVPT622.\n\n\nWe use the coefficients we produced using our data as our best guesses:\n\ntidy(m) |&gt; \n  select(term:estimate)\n\n# A tibble: 2 × 2\n  term            estimate\n  &lt;chr&gt;              &lt;dbl&gt;\n1 (Intercept)        33.4 \n2 log_gdp_per_cap     4.32\n\n\nWe can then use the standard deviations around these best guesses to work out how spread out around this best guess alternative plausible coefficients sit.\n\n\n\n\n\n\nTip\n\n\n\nThe standard deviation, (\\(s\\)), is calculated using two pieces of information: how well our line of best fit fits our observed data; and how much information (or data) we used to fit our model.\n\n\nYou can find each coefficient’s standard deviation using broom::tidy():\n\ntidy(m) |&gt; \n  select(term:std.error)\n\n# A tibble: 2 × 3\n  term            estimate std.error\n  &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;\n1 (Intercept)        33.4      1.82 \n2 log_gdp_per_cap     4.32     0.203\n\n\nWe can now build out the plausible set of alternative coefficients:\n\ntibble(\n  x = rnorm(1e6, \n            mean = tidy(m) |&gt; filter(term == \"log_gdp_per_cap\") |&gt; pull(estimate),\n            sd = tidy(m) |&gt; filter(term == \"log_gdp_per_cap\") |&gt; pull(std.error))\n) |&gt; \n  ggplot(aes(x = x)) + \n  stat_halfeye() + \n  theme_minimal()\n\n\n\n\nIf we were to build an infinite number of linear regression models from an infinite number of pure random samples from the world (think: multiverse) we would get a series of coefficients that follow the distribution plotted above. Does this include zero (or no relationship)?\n\n\n\n\n\n\nNote\n\n\n\nRemember, regression coefficients tell us the expected change in our dependent variable changes for each one-unit increase in our independent variable, on average. If there is no association between our variables, there will be no change in our dependent variable and our regression coefficient will be zero.\n\n\nMost of the time you will be required to demonstrate that at least 95 percent of these plausible alternative coefficients do not include zero to claim statistical significance. To do this, we need to calculate the probability that we would observe the coefficient we found (here: 4.316) if it were actually equal to zero. This probability is referred to as the p-value. We calculate it by finding our coefficient’s T-statistic.\n\n\n\n\n\n\nTip\n\n\n\nThe T-distribution is standard and centered at zero. We can transform our coefficient to its T-statistic and place it within this broader T-distribution to determine how likely we are to observe this or a more extreme value.\n\n\nbroom::tidy() provides both the T-statistic and p-value for our coefficients:\n\ntidy(m)\n\n# A tibble: 2 × 5\n  term            estimate std.error statistic  p.value\n  &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;\n1 (Intercept)        33.4      1.82       18.3 1.17e-44\n2 log_gdp_per_cap     4.32     0.203      21.3 2.77e-53"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\n            Advanced Quantitative Methods for Political Science\n        ",
+    "section": "",
+    "text": "Advanced Quantitative Methods for Political Science\n        \n        \n            An introduction to multivariate analysis.\n        \n        \n            Spring 2024Department of Government and PoliticsUniversity of Maryland, College Park\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nProfessor\n\n   Dr Michael Hanmer\n   mhanmer@umd.edu\n\n\n\nTeaching Assistant\n\n   Harriet Goers\n   Chincoteague Building\n   hgoers@umd.edu\n   hgoers\n\n\n\n\n\nCourse details\n\n   January 24 - May 9\n   Thursday, 9:30 - 12:15 PM\n   Tydings Building, Room 1111\n\n\n\nLab details\n\n   TBD\n   TBD\n\n\n\nOffice hours\n\n   TBD\n   Zoom\n\n\n\n\nContacting me\nE-mail is the best ways to get in contact with me. I will try to respond to all course-related e-mails within 24 hours."
   }
 ]
