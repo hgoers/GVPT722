@@ -1,0 +1,43 @@
+author: Harriet Goers
+
+professor: 
+  name: Dr Michael Hanmer
+  email: mhanmer@umd.edu
+  url: "https://gvpt.umd.edu/facultyprofile/hanmer/michael"
+
+instructor:
+  name: Harriet Goers
+  name_no_title: Harriet Goers
+  email: hgoers@umd.edu
+  url: "https://www.harrietgoers.com"
+  github: hgoers
+  office: "Chincoteague Building"
+  contact_policy: >-
+    E-mail is the best ways to get in contact with me. I will try to respond to all course-related e-mails within 24 hours.
+
+course:
+  number: "GVPT722"
+  title: "Advanced Quantitative Methods for Political Science"
+  subtitle: "An introduction to multivariate analysis."
+  semester: "Spring 2024"
+  time: "Thursday, 9:30 - 12:15 PM"
+  location: "Tydings Building, Room 1111"
+  dates: "January 24 - May 9"
+  github: "https://github.com/hgoers/GVPT722"
+  copyright_year: "2024"
+  
+lab:
+  time: "TBD"
+  location: "TBD"
+
+office:
+  time: "TBD"
+  location: "Zoom"
+
+university:
+  name: University of Maryland, College Park
+  url: "https://www.umd.edu/"
+
+school:
+  name: Department of Government and Politics
+  url: "https://gvpt.umd.edu/"
