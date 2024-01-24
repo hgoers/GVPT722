@@ -124,10 +124,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../schedule.qmd" rel="" target="">
- <span class="menu-text">Schedule</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link active" href="../content/01-introduction.html" rel="" target="" aria-current="page">
  <span class="menu-text">Content</span></a>
   </li>  
@@ -170,12 +166,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#do-richer-countries-enjoy-better-health-outcomes" id="toc-do-richer-countries-enjoy-better-health-outcomes" class="nav-link active" data-scroll-target="#do-richer-countries-enjoy-better-health-outcomes">Do richer countries enjoy better health outcomes?</a></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#do-richer-countries-enjoy-better-health-outcomes" id="toc-do-richer-countries-enjoy-better-health-outcomes" class="nav-link" data-scroll-target="#do-richer-countries-enjoy-better-health-outcomes">Do richer countries enjoy better health outcomes?</a></li>
   <li><a href="#step-1-collect-your-data" id="toc-step-1-collect-your-data" class="nav-link" data-scroll-target="#step-1-collect-your-data">Step 1: Collect your data</a></li>
   <li><a href="#step-2-know-your-data" id="toc-step-2-know-your-data" class="nav-link" data-scroll-target="#step-2-know-your-data">Step 2: Know your data</a>
   <ul class="collapse">
   <li><a href="#individual-variables" id="toc-individual-variables" class="nav-link" data-scroll-target="#individual-variables">Individual variables</a></li>
-  <li><a href="#your-two-variables" id="toc-your-two-variables" class="nav-link" data-scroll-target="#your-two-variables">Your two variables</a></li>
+  <li><a href="#the-relationship-between-these-two-variables" id="toc-the-relationship-between-these-two-variables" class="nav-link" data-scroll-target="#the-relationship-between-these-two-variables">The relationship between these two variables</a></li>
   </ul></li>
   <li><a href="#step-3-fit-your-linear-model" id="toc-step-3-fit-your-linear-model" class="nav-link" data-scroll-target="#step-3-fit-your-linear-model">Step 3: Fit your linear model</a></li>
   <li><a href="#step-4-interpret-your-model" id="toc-step-4-interpret-your-model" class="nav-link" data-scroll-target="#step-4-interpret-your-model">Step 4: Interpret your model</a></li>
@@ -208,6 +206,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(poliscidata)</span>
@@ -217,21 +217,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You have a brilliant idea describing the relationship between an outcome of interest and a variable that you think is driving interesting changes to that outcome. You have a very clever theory describing the relationship between these two phenomena. Now you want to provide empirical support of that theory.</p>
-<p>This quick refresher will outline the steps required to fit a linear regression model against two continuous variables: a dependent variable (or outcome of interest) and an independent variable (or the thing you think is driving changes to that outcome of interest). For a more in-depth set of notes on each of these steps, please refer to the <a href="hgoers.github.io/gvpt622">GVPT622: Quantitative Methods for Political Science notes</a>.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>You have a brilliant idea describing the relationship between an outcome of interest and a variable that you think is driving interesting changes to that outcome. You have a very clever theory describing the relationship between these two phenomena. Now you want to provide empirical support for that theory.</p>
+<p>This quick refresher will outline the steps required to fit a linear regression model against two continuous variables: a <strong>dependent variable</strong> (our outcome of interest) and an <strong>independent variable</strong> (the thing you think is driving changes to that outcome of interest).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For a more in-depth set of notes on each of these steps, please refer to the <a href="https://hgoers.github.io/GVPT622">GVPT622: Quantitative Methods for Political Science notes</a>.</p>
+</div>
+</div>
+</section>
 <section id="do-richer-countries-enjoy-better-health-outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="do-richer-countries-enjoy-better-health-outcomes">Do richer countries enjoy better health outcomes?</h2>
-<p>Let’s return to a familiar question: what is the relationship between a country’s health and its wealth? This research question will help guide our refresher.</p>
+<p>Let’s return to a familiar question: what is the relationship between a country’s health and its wealth?</p>
+<p>Here, our outcome of interest is the average health of countries’ citizens. We want to determine what factors are important determinants of a country’s citizens’ health. We theorize that the level of wealth each country’s citizens hold is an important determinant of their overall health.</p>
+<p>Simply put, our goal is to produce the best model we can of how our outcome of interest occurs. You might hear people refer to this process - how an outcome of interest occurs - as the <strong>data generation process</strong>. This is just a rather sterile way of asking how our outcome of interest comes to be. For example, what factors drove the level of health of countries last year? How did they shape those health outcomes?</p>
+<p>We can use a good model of our outcome of interest to achieve two worthwhile goals. First, this model provides us with <strong>explanatory</strong> traction. This, generally speaking, is your raison d’être as an academic. Your research goals should be to identify and explain the mechanisms driving changes to some important outcome of interest. To do that, you need to identify what factors are the important determinants of that outcome of interest. What gets people out to vote? What drives countries to war with one another? Why do some countries experience democratic backsliding? You need to find and then explain what factors are the most important drivers of these outcomes. You can use these statistical tools to do just that.</p>
+<p>Second, this model provides us with <strong>predictive</strong> power. If we know the factors that are driving (or at least strongly associated with) changes to our outcome of interest and we know how they are shaping that outcome, we can predict how changes to those factors will effect our outcome of interest. For example, if you know that large spikes in the price of food staples are strongly associated with the onset of civil unrest, you can alert policymakers to the increased risk of that unrest if such spikes occur. You can also use your model to inform policymakers of the expected effects of various policies or interventions that they may be considering.</p>
+<p>Having completed GVPT622, you now have the knowledge and skills to test empirically the relationship between two variables: a dependent and an independent variable. Let’s refresh those.</p>
 </section>
 <section id="step-1-collect-your-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-collect-your-data">Step 1: Collect your data</h2>
-<p>To answer this question, we need data on the health and wealth of each country’s citizens. I propose to follow the approach applied by the Gapminder project. We will use the average life expectancy of each country’s citizens as a proxy measure of the health of its citizens. Countries with higher average life expectancy are assumed to have higher levels of health.</p>
-<p>We will use each country’s gross domestic product (GDP) per capita as our proxy measure of its citizens’ average wealth. Countries with higher GDP per capita are assumed to have wealthier citizens.</p>
-<p>Our measurable hypothesis is as follows:</p>
+<p>Do richer countries enjoy better health outcomes? To answer this question, we need data on the health and wealth of each country’s citizens. We will use historical data to learn about the relationship between a country’s health and wealth. We will then extrapolate from that historical relationship to a generalized understanding of the relationship.</p>
+<p>To do this, we need an observable and measurable factor that appropriately represents each of these concepts. I propose to follow the approach applied by the Gapminder project. We will use the average life expectancy of each country’s citizens as a measure of the health of its citizens. Countries with higher average life expectancy are assumed to have higher levels of health. We will use each country’s gross domestic product (GDP) per capita as our proxy measure of its citizens’ average wealth. Countries with higher GDP per capita are assumed to have wealthier citizens.</p>
+<p>We might expect that as the wealth of country’s citizens increases, so too does their overall health. Our measurable hypothesis is; therefore, as follows:</p>
 <blockquote class="blockquote">
 <p>The higher a country’s GDP per capita, the longer its average life expectancy will be.</p>
 </blockquote>
-<p>We have access through the World Bank to reliable statistics on both of these variables. We can use the <code>wbstats</code> R package to pull these data from the World Bank API from within our R script.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>All hypotheses must be testable. In other words, we must be able to use data to prove whether or not our hypothesis is true or false.</p>
+</div>
+</div>
+<p>The World Bank provides reliable data on both of these variables. We can use the <code>wbstats</code> R package to pull these data from the World Bank API all from within our R script.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>gapminder_df <span class="ot">&lt;-</span> <span class="fu">wb_data</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">indicator =</span> <span class="fu">c</span>(<span class="st">"SP.DYN.LE00.IN"</span>, <span class="st">"NY.GDP.PCAP.CD"</span>),</span>
@@ -262,13 +297,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 # ℹ 207 more rows</code></pre>
 </div>
 </div>
-<div class="aside-tip">
-<p>You need to make sure that your data are collected in a consistent manner. Be careful if you are pulling data from multiple sources: different data collection and processing methods may create artificial difference in your observations that can lead you to uncovering a false relationship.</p>
-</div>
 </section>
 <section id="step-2-know-your-data" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-know-your-data">Step 2: Know your data</h2>
-<p>Once you have data for your variables of interest you should take a good look at them.</p>
+<p>Once you have data for your variables of interest you should take a good look at them. We now have access to data on 217 countries’ average life expectancy and GDP per capita.</p>
 <section id="individual-variables" class="level3">
 <h3 class="anchored" data-anchor-id="individual-variables">Individual variables</h3>
 <p>First, take a look at each variable individually. Some useful questions with which to start include:</p>
@@ -279,35 +311,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Are any observations missing? Is this missingness random or systematic?</p></li>
 </ul>
 <p>One of the easiest ways to answer these and other important questions is by visualizing your variables. We can use the many great plot functions in <code>ggplot</code> to do this.</p>
+<p>Let’s start with our outcome of interest: a country’s average life expectancy.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> gdp_per_cap)) <span class="sc">+</span> </span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> life_exp)) <span class="sc">+</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"GDP per capita (in current USD)"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Average life expectancy (in years)"</span>,</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
+<p>This is what we are trying to model.</p>
+<p>We suspect that the average wealth of a country’s citizens is associated with their overall level of health. Let’s look at the distribution of countries’ GDP per capita:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> life_exp)) <span class="sc">+</span> </span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> gdp_per_cap)) <span class="sc">+</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Average life expectancy (in years)"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"GDP per capita (in current USD)"</span>,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 </section>
-<section id="your-two-variables" class="level3">
-<h3 class="anchored" data-anchor-id="your-two-variables">Your two variables</h3>
-<p>Now you should take a look at the relationship between your two variables of interest.</p>
+<section id="the-relationship-between-these-two-variables" class="level3">
+<h3 class="anchored" data-anchor-id="the-relationship-between-these-two-variables">The relationship between these two variables</h3>
+<p>Now you can take a look at the relationship between your two variables of interest.</p>
 <p>Some good questions with which to start:</p>
 <ul>
 <li><p>How do the two variables move with each other? As one goes up, does the other also go up, go down, or stay roughly constant?</p></li>
@@ -315,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Are there any noticable clusters or groups of observations?</p></li>
 <li><p>Are there any unusual observations? Ones sitting out on their own?</p></li>
 </ul>
-<p>Let’s visualize the relationship between health and wealth:</p>
+<p>Let’s visualize the relationship between each country’s average life expectancy and its GDP per capita:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> gdp_per_cap, <span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
@@ -324,10 +359,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years)"</span>) <span class="sc">+</span> </span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>This relationship is positive: as a country’s wealth increases, so too does its health. However, this relationship is not linear. An increase of $1,000 GDP per capita tends to be associated with a large increase in the country’s average life expectancy when the country has relatively low GDP per capita compared to the change in a country’s average life expectancy that tends to be associated with that same $1,000 increase in GDP per capita for relatively wealthier countries.</p>
+<p>This relationship is positive: as a country’s wealth increases, so too does its health. However, this relationship is not linear. An increase of $1,000 GDP per capita tends to be associated with a large increase in the country’s average life expectancy when the country has relatively low GDP per capita compared to the change in a richer country’s average life expectancy that tends to be associated with that same $1,000 increase in GDP per capita.</p>
 <p>We can model non-linear relationships; however, these models can be difficult to interpret. Happily the relationship between a country’s average life expectancy and its <em>logged</em> GDP per capita is linear:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> log_gdp_per_cap, <span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
@@ -337,7 +372,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years)"</span>) <span class="sc">+</span> </span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>This transformation means that we can now appropriately fit a linear model to these two variables: <em>logged</em> GDP per capita and average life expectancy.</p>
@@ -359,7 +394,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years)"</span>) <span class="sc">+</span> </span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>We can fit that model using <code>lm()</code>:</p>
@@ -390,8 +425,8 @@ Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
 <section id="step-4-interpret-your-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-4-interpret-your-model">Step 4: Interpret your model</h2>
 <p>What does this model tell us about the estimated relationship between a country’s life expectancy and its logged GDP per capita?</p>
-<p>First, let’s look at the regression coefficient for a country’s logged GDP per capita. We found that every one unit increase in a country’s logged GDP per capita is associated with a 4.316 years increase in its citizens’ average life expectancy, on average.</p>
-<p>Second, let’s look at that intercept coefficient. A country with a logged GDP per capita of zero is expected to have an average life expectancy of 33.427 years, on average. This is not a very useful piece of information because there are no countries with zero (logged) GDP per capita. Therefore, this intercept coefficient is more usefully though of as a statistical artifact that baselines our model.</p>
+<p>First, let’s look at the regression coefficient for a country’s logged GDP per capita. We found that every one unit increase in a country’s logged GDP per capita is associated with a 4.316 year increase in its citizens’ average life expectancy, on average.</p>
+<p>Second, let’s look at that intercept coefficient. A country with a logged GDP per capita of zero is expected to have an average life expectancy of 33.427 years, on average. This is not a very useful piece of information because there are no countries with zero (logged) GDP per capita. Therefore, this intercept coefficient is more usefully thought of as a statistical artifact that grounds our model.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -402,35 +437,119 @@ Warning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Linear regression models cannot detect causal relationships. You cannot use this model to determine whether changes to your dependent variable are caused by changes to your independent variable. Therefore, you need to be careful when interpreting linear regression models. Use words like “associated with” instead of “causes”.</p>
+<p>Linear regression models cannot detect causal relationships. You cannot use this model to determine whether changes to your dependent variable are caused by changes to your independent variable. Here, we cannot use this model as evidence of changes to a country’s GDP per capita causing changes in its average life expectancy. Therefore, you need to be careful when interpreting linear regression models. Use words like “associated with” instead of “causes”.</p>
 </div>
 </div>
 </section>
 <section id="step-5-evaluate-your-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-5-evaluate-your-model">Step 5: Evaluate your model</h2>
 <p>How well does our model fit our data? This is a complicated question without a single answer. As we step through this you should think critically about what questions you should ask of your data and your model that would help convince you that you have found the underlying relationship.</p>
-<p>Ultimately, we want to find a generalized relationship between two variables of interest. We can then use this generalized relationship to develop our understanding of our outcome of interest and the variables that affect it.</p>
+<p>The first thing that is worth noting is that in the previous step we moved away from focusing on modelling our outcome of interest: each country’s average life expectancy. Instead, we wanted to understand the relationship between that outcome and our independent variable (each country’s GDP per capita). Let’s step back for a second and look again at modelling the outcome of interest.</p>
+<p>To do this, we can see what our model predicts each country’s average life expectancy to be given its GDP per capita. To work this out, we simply need to plug each country’s GDP per capita into our model:</p>
+<p><span class="math display">\[
+Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
+\]</span></p>
+<p>Happily, <code>broom::augment()</code> does this for us:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="fu">augment</span>(m)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>m_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 202 × 9
+   .rownames life_exp log_gdp_per_cap .fitted .resid    .hat .sigma  .cooksd
+   &lt;chr&gt;        &lt;dbl&gt;           &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+ 1 1             74.6           10.3     77.8 -3.17  0.00944   4.25 0.00268 
+ 2 2             62.0            5.87    58.8  3.20  0.0255    4.25 0.00762 
+ 3 3             61.6            7.56    66.1 -4.43  0.00887   4.25 0.00492 
+ 4 4             76.5            8.76    71.2  5.22  0.00498   4.24 0.00380 
+ 5 6             78.7           10.7     79.6 -0.898 0.0125    4.26 0.000287
+ 6 7             75.4            9.27    73.5  1.94  0.00531   4.26 0.000558
+ 7 8             72.0            8.51    70.2  1.88  0.00525   4.26 0.000519
+ 8 10            78.5            9.75    75.5  2.98  0.00670   4.25 0.00167 
+ 9 11            83.3           11.0     81.0  2.34  0.0154    4.26 0.00240 
+10 12            81.2           10.9     80.4  0.818 0.0142    4.26 0.000271
+# ℹ 192 more rows
+# ℹ 1 more variable: .std.resid &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p><code>augment()</code> takes each of our 217 countries’ logged GDP per capita (<code>log_gdp_per_cap</code>), plugs it into our model (written above), and tells us the corresponding predicted average life expectancy (<code>.fitted</code>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Note that some data are missing for some countries. That is why we have less than 217 predicted values.</p>
+</div>
+</div>
+<p>Let’s take a look at both our predicted average life expectancy and the actual average life expectancy of each country in our dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(m_pred) <span class="sc">+</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">x =</span> .fitted), <span class="at">fill =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Average life expectancy (in years)"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>The distribution of the predicted average life expectancy is provided in blue. The actual average life expectancy of each county is provided in gray.</p>
+<p>A density curve might also help here:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(m_pred) <span class="sc">+</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x =</span> .fitted), <span class="at">colour =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Average life expectancy (in years)"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>We’re looking pretty good! Ultimately; however, we want to find a generalized relationship between our outcome of interest and the independent variable that we think is an important driver of that outcome. Rather than focusing on building a model that perfectly predicts the average life expectancy of countries given their GDP per capita in 2021, we want to learn something about the general shape of this relationship. A linear regression model helps us do this.</p>
+<p>To illustrate, let’s go back to our model:</p>
+<p><span class="math display">\[
+Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
+\]</span></p>
+<p>Let’s plot out the predicted average life expectancy for hypothetical countries with any logged GDP per capita within a plausible range:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m, <span class="at">newdata =</span> <span class="fu">tibble</span>(<span class="at">log_gdp_per_cap =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="at">by =</span> <span class="fl">0.01</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> log_gdp_per_cap, <span class="at">y =</span> .fitted)) <span class="sc">+</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Logged GDP per capita (in current USD)"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Predicted average life expectancy (in years)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>Here, we have used historical data that describe the actual average life expectancy of countries globally and their actual GDP per capita to build our understanding of an important factor associated with the overall health of a country’s citizens. In doing this, we have gained <strong>explanatory traction</strong>: there is a strong, positive association between a country’s GDP per capita and its average life expectancy. Countries with higher GDP per capita tend to have longer average life expectancy. We have also gained <strong>predictive power</strong>: for any given (logged) GDP per capita, we can predict what that country’s average life expectancy would be. Further, we can predict the change in a country’s average life expectancy that may result from a change in its GDP per capita.</p>
+<p>All of this knowledge that we have gained rests on the strength of our model. Have we included all of the important drivers of a country’s average life expectancy? Have we used the right models of the relationship between those variables and average life expectancy? How much confidence do we have in our model’s ability to explain these relationships and to use those inputs to predict average life expectancy?</p>
 <p>OLS regression is one approach to finding this generalized relationship. Remember, an OLS regression finds the straight line that minimizes the distance between itself and all of the data points. To illustrate, let’s look back at our fitted model within the context of the data points used to generate it:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> log_gdp_per_cap, <span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F) <span class="sc">+</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Logged GDP per capita"</span>,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years)"</span>) <span class="sc">+</span> </span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gapminder_df, <span class="fu">aes</span>(<span class="at">x =</span> log_gdp_per_cap, <span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F) <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Logged GDP per capita"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years)"</span>) <span class="sc">+</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_dollar</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>This is a strong and clean relationship: I can clearly see that countries with higher logged GDP per capita tend to have longer average life expectancies. This is incorporated into our model, which formalizes this positive relationship.</p>
-<p>There are many different ways we can think about error and evaluate our model, but before you apply any more complicated statistical tests you should take a look at your model in the context of your data. This really is the best way to determine whether your model is capturing the underlying relationship between your variables.</p>
+<p>There are many different ways we can think about error, but before you apply any more complicated statistical tests you should take a look at your model in the context of your data. This really is the best way to determine whether your model is capturing the underlying relationship between your variables.</p>
 <section id="error-for-each-data-point" class="level3">
 <h3 class="anchored" data-anchor-id="error-for-each-data-point">Error for each data point</h3>
-<p>An OLS regression finds the straight line that minimizes the distance between itself and all of the data points. We can look at how far the predicted value produced by our model is from each data point (whihc here represents a country’s actual average life expectancy and logged GDP per capita in 2023). This distance is called the <strong>residual</strong>. We can use <code>broom::augment()</code> to find it:</p>
+<p>An OLS regression finds the straight line that minimizes the distance between itself and all of the data points. We can look at how far the predicted value produced by our model is from each data point. This distance is called the <strong>residual</strong>. As above, we can use <code>broom::augment()</code> to find it:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(life_exp, .fitted, .resid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(life_exp, .fitted, .resid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 202 × 3
    life_exp .fitted .resid
@@ -448,15 +567,14 @@ Warning
 # ℹ 192 more rows</code></pre>
 </div>
 </div>
-<p>For each 217 country, we have the observed average life expectancy (<code>life_exp</code>), the model’s predicted average life expectancy (<code>.fitted</code>, which is determined using the country’s observed logged GDP per capita), and the difference between these two values (<code>.resid</code>).</p>
-<p>We can take a broader look at those differences:</p>
+<p>Let’s plot those differences to make them easier to digest:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">augment</span>(m), <span class="fu">aes</span>(<span class="at">x =</span> .resid)) <span class="sc">+</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">augment</span>(m), <span class="fu">aes</span>(<span class="at">x =</span> .resid)) <span class="sc">+</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>() <span class="sc">+</span> </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>) <span class="sc">+</span> </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>If our model perfectly predicted each country’s life expectancy, we would see no difference between the predicted and observed values. There would just be a very tall straight line at zero on the graph above.</p>
@@ -477,7 +595,7 @@ Note
 </section>
 <section id="model-wide-tools" class="level3">
 <h3 class="anchored" data-anchor-id="model-wide-tools">Model-wide tools</h3>
-<p>Sometimes we need a measure of the model’s overall accuracy. Here, I will refer you back to our notes from GVPT622.</p>
+<p>Sometimes we need a measure of the model’s overall accuracy. Here, I will refer you back to our notes from <a href="https://hgoers.github.io/GVPT622/content/03-bivariate_relationships.html#a-model-wide-value-for-error">GVPT622: Relationships Between Two Variables</a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -508,13 +626,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>For the long version of this, return to the <a href="hgoers.github.io/content/11-regression.html">Regression notes from GVPT622</a>.</p>
+<p>For the long version of this, return to the <a href="https://hgoers.github.io/GVPT622/content/11-regression.html">regression notes from GVPT622</a>.</p>
 </div>
 </div>
 <p>We use the coefficients we produced using our data as our best guesses:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term<span class="sc">:</span>estimate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term<span class="sc">:</span>estimate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   term            estimate
@@ -523,7 +641,7 @@ Note
 2 log_gdp_per_cap     4.32</code></pre>
 </div>
 </div>
-<p>We can then use the standard deviations around these best guesses to work out how spread out around this best guess alternative plausible coefficients sit.</p>
+<p>We can then use the standard deviations around these best guesses to work out how spread out around this best guess alternative plausible coefficients would sit.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -539,8 +657,8 @@ Tip
 </div>
 <p>You can find each coefficient’s standard deviation using <code>broom::tidy()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term<span class="sc">:</span>std.error)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(term<span class="sc">:</span>std.error)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 3
   term            estimate std.error
@@ -551,16 +669,16 @@ Tip
 </div>
 <p>We can now build out the plausible set of alternative coefficients:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>, </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean =</span> <span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"log_gdp_per_cap"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(estimate),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd =</span> <span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"log_gdp_per_cap"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(std.error))</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>() <span class="sc">+</span> </span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>, </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean =</span> <span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"log_gdp_per_cap"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(estimate),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd =</span> <span class="fu">tidy</span>(m) <span class="sc">|&gt;</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"log_gdp_per_cap"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(std.error))</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span> </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">.width =</span> <span class="fu">c</span>(.<span class="dv">025</span>, <span class="fl">0.975</span>)) <span class="sc">+</span> </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="01-introduction_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>If we were to build an infinite number of linear regression models from an infinite number of pure random samples from the world (think: multiverse) we would get a series of coefficients that follow the distribution plotted above. Does this include zero (or no relationship)?</p>
@@ -577,7 +695,8 @@ Note
 <p>Remember, regression coefficients tell us the expected change in our dependent variable changes for each one-unit increase in our independent variable, on average. If there is no association between our variables, there will be no change in our dependent variable and our regression coefficient will be zero.</p>
 </div>
 </div>
-<p>Most of the time you will be required to demonstrate that at least 95 percent of these plausible alternative coefficients do not include zero to claim statistical significance. To do this, we need to calculate the probability that we would observe the coefficient we found (here: 4.316) if it were actually equal to zero. This probability is referred to as the <strong>p-value</strong>. We calculate it by finding our coefficient’s T-statistic.</p>
+<p>Most of the time you will be required to demonstrate that at least 95 percent of these plausible alternative coefficients do not include zero to claim statistical significance. In the graph above, this 95 percent is provided by the bar at the bottom of the density curve.</p>
+<p>To work out whether 95 percent of these plausible alternative coefficients include zero we need to calculate the probability that we would observe the coefficient we found (here <span class="math inline">\(\beta_1 =\)</span> 4.316) if it were actually equal to zero. This probability is referred to as the <strong>p-value</strong>. We calculate it by finding our coefficient’s T-statistic.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -588,12 +707,12 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The T-distribution is standard and centered at zero. We can transform our coefficient to its T-statistic and place it within this broader T-distribution to determine how likely we are to observe this or a more extreme value.</p>
+<p>The T-distribution is standard and centered at zero. We can transform our coefficient to its T-statistic and place it within this T-distribution to determine how likely we are to observe this or a more extreme value.</p>
 </div>
 </div>
 <p><code>broom::tidy()</code> provides both the T-statistic and p-value for our coefficients:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
   term            estimate std.error statistic  p.value
@@ -602,6 +721,7 @@ Tip
 2 log_gdp_per_cap     4.32     0.203      21.3 2.77e-53</code></pre>
 </div>
 </div>
+<p>The coefficient we observed is statistically significant: there is a <em>very, very, very</em> small chance (far less than 5% certainly) we would be able to pull a perfect random sample from our population and fit this model if there truly was no relationship between a country’s average life expectancy and its GDP per capita.</p>
 
 
 </section>
