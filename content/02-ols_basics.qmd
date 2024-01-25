@@ -1,0 +1,300 @@
+---
+title: "OLS Basics"
+format: 
+  html:
+    fig-width: 10
+execute:
+  message: false
+  warning: false
+bibliography: references.bib
+---
+
+:::{.callout-warning}
+THIS IS A DRAFT.
+:::
+
+## Packages
+
+```{r}
+library(tidyverse)
+library(broom)
+library(ggdist)
+library(poliscidata)
+```
+
+```{r}
+set.seed(1234)
+```
+
+## Regression models
+
+This week we are going to continue to look at how we can model the distribution of our outcome of interest using a single predictor.
+
+Here's the general formula for a linear regression model with a single predictor:
+
+$$
+Y = \beta_0 + \beta_1X_1 + \epsilon
+$$
+
+Let's work backwards to help build our intuition for this model. Let's start with a modeled relationship between some outcome, $Y$, and a predictor, $X_1$:
+
+$$
+Y = 10 + 20X_1 + \epsilon
+$$
+
+Think of this as the *true relationship* between $Y$ and $X_1$.
+
+::: callout-note
+Out there in the real world we use modeling to attempt to find this *true relationship*. If only we had access to it!
+:::
+
+### Random error
+
+This equation has two unknown variables: $X_1$ and $\epsilon$. You need both to be able to calculate the corresponding values for $Y$.
+
+$X_1$ will in many ways be more intuitive for you. Generally, it represents some vector of values that make sense: perhaps it's a person's age, a country's GDP, or a binary value telling you whether or not someone voted. The error term can be a bit more abstract, so let's take a minute to look at it more closely.
+
+This error term is (hopefully!) a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.
+
+You need to make some assumptions about that randomness. For example, let's say that the error in this model is normally distributed with a mean of zero and a standard deviation of 50. In other words, there is some random noise in our data: $Y$ does not always precisely equal $10 + 20X_1$. Some random value will always be added to $10 + 20X_1$. That value will be drawn randomly from this distribution:
+
+```{r}
+ggplot(tibble(error = rnorm(1e6, mean = 0, sd = 50)), aes(x = error)) + 
+  geom_density(fill = "#A2E3C4") + 
+  theme_minimal()
+```
+
+The coloured area under that curve represents the probability that its error value will be drawn. This means that the error value is most likely to a number around zero (where the curve peaks). It is very unlikely to be a number bigger than around 150 or smaller than around -150.
+
+Notably, this error value is completely independent of $X_1$ and $Y$ (you don't need these values to work out what your error value). To demonstrate, let's draw some of those random error values from this distribution:
+
+```{r}
+rnorm(1, mean = 0, sd = 50)
+```
+
+```{r}
+rnorm(1, mean = 0, sd = 50)
+```
+
+```{r}
+rnorm(1, mean = 0, sd = 50)
+```
+
+::: callout-note
+This semester we will talk a lot about the assumptions you are required to make when you fit a linear regression model. These include some assumptions about error, including its shape and uniformity.
+:::
+
+## Fitting our regression model
+
+Let's make $X_1$ equal all the whole numbers between one and 100. We can take this vector and our random error and find 100 values of $Y$:
+
+```{r}
+x_1 <- 1:100
+error <- rnorm(100, mean = 0, sd = 50)
+
+df <- tibble(x_1 = x_1,
+             y = 10 + 20*x_1 + error)
+
+df
+```
+
+Let's plot those:
+
+```{r}
+ggplot(df, aes(x = x_1, y = y)) + 
+  geom_point() + 
+  theme_minimal()
+```
+
+What is the line-of-best-fit? In other words, what is the line that minimizes the distance between itself and all of these points?
+
+```{r}
+m <- lm(y ~ x_1, data = df)
+
+summary(m)
+```
+
+Hmm, it's different from the true relationship. It's this:
+
+$$
+Y = 8.09 + 20.08X_1 + \epsilon
+$$
+
+Instead of this:
+
+$$
+Y = 10 + 20X_1 + \epsilon
+$$
+
+This is despite the fact that we set everything up according to the true relationship between $Y$ and $X_1$!
+
+Why is it different? The long and short answer is: that pesky random error!
+
+Random error will always exist. That's okay. That's why we built it into our true relationship. We have some statistical tools to help us out.
+
+Looking back at our model's output we can see that there is a lot of information about its uncertainty in those coefficient estimates.
+
+```{r}
+tidy(m)
+```
+
+In addition to our coefficient estimates (`estimate`), we also have access to each estimate's standard error (`std.error`), t-statistic (`statistic`), and p-value (`p.value`). Let's focus on the standard error. We can use this to work out all of the plausible alternative coefficient estimates that our model could have found if that random error had been different. Let's take a look at those plausible alternatives to see whether the true relationship ($\beta_0 = 10$ and $\beta_1 = 20$) is sitting in there.
+
+Let's start with the intercept. Centering our plausible set of intercept estimates on our model's best guess - `r tidy(m) |> filter(term == "(Intercept)") |> pull(estimate) |> round(2)` - let's simulate those alternative estimates using our uncertainty (the intercept coefficient's standard error) and see where the "true" intercept estimate (represented by the black line on the graph below) sits within this context:
+
+```{r}
+intercept_est <- tidy(m) |> 
+  filter(term == "(Intercept)") |> 
+  pull(estimate)
+
+intercept_est
+
+intercept_se <- tidy(m) |> 
+  filter(term == "(Intercept)") |> 
+  pull(std.error)
+
+intercept_se
+```
+
+```{r}
+tibble(intercept = rnorm(1e6, mean = intercept_est, sd = intercept_se)) |> 
+  ggplot(aes(x = intercept)) + 
+  stat_halfeye(.width = c(0.025, 0.975), fill = "#A2E3C4") +
+  geom_vline(xintercept = 10) + 
+  theme_minimal()
+```
+
+We can do the same for our model's best guess of $\beta_1$:
+
+```{r}
+beta_1_est <- tidy(m) |> 
+  filter(term == "x_1") |> 
+  pull(estimate)
+
+beta_1_est
+
+beta_1_se <- tidy(m) |> 
+  filter(term == "x_1") |> 
+  pull(std.error)
+
+beta_1_se
+```
+
+```{r}
+tibble(beta_1 = rnorm(1e6, mean = beta_1_est, sd = beta_1_se)) |> 
+  ggplot(aes(x = beta_1)) + 
+  stat_halfeye(.width = c(0.025, 0.975), fill = "#3095A2") +
+  geom_vline(xintercept = 20) + 
+  theme_minimal()
+```
+
+Often in political science we are required to accept that the true estimates sit somewhere with 95 percent of these plausible alternatives. Happily for us, the true values for the intercept (10) and $\beta_1$ (20) sit within this range (shown by the horizontal black lines on the graphs).
+
+## Statistical significance
+
+Traditionally, we are required to accept that 95 percent of all alternative coefficient estimates are plausible. Sadly for us, zero is included within this range of plausible values for the intercept coefficient. This coefficient would not; therefore, be considered to be statistically significant at the 95 percent confidence level.
+
+We can learn that more quickly using the intercept coefficient's p-value (which is less than 0.05, or the 5 percent risk we are willing to take on that we believe a null relationship):
+
+```{r}
+tidy(m)
+```
+
+::: callout-note
+The p-value tells us how likely we would be to observe the coefficient estimate that we did if it were actually equal to zero. It is calculated using the coefficient estimate's t-statistic (`statistic`), which is a transformation of the coefficient estimate into its place along a standard distribution: the t-distribution.
+:::
+
+What if we had more certainty around our estimates? In other words, what if there was less error? Let's reduce the spread of our random error by reducing its standard deviation from 50 to 5:
+
+```{r}
+error_smaller <- rnorm(100, mean = 0, sd = 5)
+
+df_smaller <- tibble(x_1 = x_1,
+                     y = 10 + 20*x_1 + error_smaller)
+
+df_smaller
+```
+
+Let's plot that:
+
+```{r}
+ggplot(df_smaller, aes(x = x_1, y = y)) + 
+  geom_point() + 
+  theme_minimal()
+```
+
+Those data points are much more tightly placed around the line-of-best-fit. Let's find that line:
+
+```{r}
+m_smaller <- lm(y ~ x_1, data = df_smaller)
+
+summary(m_smaller)
+```
+
+Or:
+
+$$
+Y = 9.2587 + 20.0112X_1 + \epsilon
+$$
+
+That's closer to the true relationship! But - of course - there is still uncertainty in those estimates. Let's look at the plausible range of intercept estimates:
+
+```{r}
+intercept_est_smaller <- tidy(m_smaller) |> 
+  filter(term == "(Intercept)") |> 
+  pull(estimate)
+
+intercept_est_smaller
+
+intercept_se_smaller <- tidy(m_smaller) |> 
+  filter(term == "(Intercept)") |> 
+  pull(std.error)
+
+intercept_se_smaller
+```
+
+```{r}
+tibble(intercept = rnorm(1e6, mean = intercept_est_smaller, sd = intercept_se_smaller)) |> 
+  ggplot(aes(x = intercept)) + 
+  stat_halfeye(.width = c(0.025, 0.975), fill = "#A2E3C4") +
+  geom_vline(xintercept = 10) + 
+  theme_minimal()
+```
+
+No zero in sight! The range of values included within this plausible range is much smaller and it still includes the true intercept (10). By reducing our uncertainty, we gained more confident insight into the true intercept coefficient.
+
+::: callout-tip
+This is an important point to think about: we lost the zero because the true intercept is different from zero. Sometimes you will theorize that changes to a predictor are associated with changes to your outcome of interest. Sometimes the truth is that there is no meaningful relationship between the two. We can learn a lot from strong null results. You should always aim to reduce your uncertainty, even if it leads to a stronger zero.
+:::
+
+## Interpreting your regression models
+
+We use regression models to provide empirical evidence of the relationship between our outcome of interest and a set of predictors that we theorize to be important drivers of that outcome.
+
+Regression models *cannot* prove causality. This can make them difficult or awkward to interpret. You need to be very careful with the language you use to describe your model to avoid being misleading.
+
+Let's step through interpreting your model results. To do this, we will look at the (highly statistically significant) relationship between an individual's feelings towards President Obama and their dog ownership.
+
+The National Election Survey asked respondents both their feelings towards President Obama (rating between zero and 100, with higher values indicating more support) and whether or not they own a dog. Let's fit a linear regression model against their responses:
+
+```{r}
+m <- lm(obama_therm ~ own_dog, data = nes)
+
+summary(m)
+```
+
+Our regression model is as follows:
+
+$$
+Obama\ thermometer = 74.3047 - 9.2858*Owns\ a\ dog + \epsilon
+$$
+
+Although it is tempting to state that dog owners report, on average, 9.28 points less support for President Obama than non-dog owners, this suggests an effect for which we really have no proof. According to @gelman2020, an effect is usually thought of as "the change associated with some treatment, or intervention" (pg. 84). Here, we would be suggesting that if we gave someone a dog, their support for Obama would drop by 9.28 points. That's not actually what we have found. Rather, we have observed that, on average, people who were surveyed who had a dog had lower opinions of Obama than those who did not own a dog.
+
+Another way of thinking about this is to acknowledge that regression models using observational data only allow us to make comparisons between our units of observation. Here, we can make comparisons between respondents to the NES. We cannot; however, use this model to make statements about changes to any individual respondent. The NES did not give someone a dog and then ask them how their feelings towards Obama changed. We cannot suggest that we have insight into the effects of such an intervention (as cute as it would be).
+
+**When you are interpreting a regression model, you should use comparative language.** For example, we can say that, under the fitted model, the average difference in feelings towards President Obama between a person with a dog and a person without a dog is 9.28 points.
+
+::: callout-tip
+This care with your language will become even more important when we move on to looking at multiple predictors.
+:::

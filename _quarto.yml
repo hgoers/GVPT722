@@ -21,6 +21,7 @@ website:
       style: "docked"
       contents:
         - content/01-introduction.qmd
+        - content/02-ols_basics.qmd
         
   page-footer:
     left: |
