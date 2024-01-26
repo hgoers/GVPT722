@@ -9,7 +9,7 @@ execute:
 bibliography: references.bib
 ---
 
-:::{.callout-warning}
+::: callout-warning
 THIS IS A DRAFT.
 :::
 
@@ -20,6 +20,7 @@ library(tidyverse)
 library(broom)
 library(ggdist)
 library(poliscidata)
+library(modelsummary)
 ```
 
 ```{r}
@@ -52,7 +53,15 @@ Out there in the real world we use modeling to attempt to find this *true relati
 
 This equation has two unknown variables: $X_1$ and $\epsilon$. You need both to be able to calculate the corresponding values for $Y$.
 
-$X_1$ will in many ways be more intuitive for you. Generally, it represents some vector of values that make sense: perhaps it's a person's age, a country's GDP, or a binary value telling you whether or not someone voted. The error term can be a bit more abstract, so let's take a minute to look at it more closely.
+$X_1$ will in many ways be more intuitive for you. Generally, it represents some **vector** of values that make sense: perhaps it's a person's age, a country's GDP, or a binary value telling you whether or not someone voted. The error term can be a bit more abstract, so let's take a minute to look at it more closely.
+
+::: callout-note
+A quick note on notation! Generally, we will use capital letters (for example, $Y$ and $X_1$) to denote vectors and lower case letters (for example, $y$ and $x_1$) to denote single values (usually with another subscript telling us the observation to which that single value belongs).
+
+What is a vector? Here, I mean a series of values. In other words, **it is a fancy term for some variable.** The term comes from matrix algebra. A matrix with only one row or column is referred to as a vector. Think of it simply as one column (variable) or one row (unit of observation) of a dataframe.
+
+For example, if our outcome of interest is whether or not an individual will vote in the next election, we might use data on whether or not survey respondents voted in the last election to study the predictors of voting. In this case, our vector $Y$ will be a series of `1`s and `0`s describing whether or not each survey respondent voted in the last election.
+:::
 
 This error term is (hopefully!) a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.
 
@@ -164,6 +173,10 @@ tibble(intercept = rnorm(1e6, mean = intercept_est, sd = intercept_se)) |>
   theme_minimal()
 ```
 
+::: callout-note
+I expect these plausible alternative coefficients to be normally distributed. For a simulated proof of why we can assume this, please check out the [Regression notes from GVPT622](https://hgoers.github.io/GVPT622/content/11-regression.html#uncertainty-around-this-relationship).
+:::
+
 We can do the same for our model's best guess of $\beta_1$:
 
 ```{r}
@@ -261,7 +274,7 @@ tibble(intercept = rnorm(1e6, mean = intercept_est_smaller, sd = intercept_se_sm
   theme_minimal()
 ```
 
-No zero in sight! The range of values included within this plausible range is much smaller and it still includes the true intercept (10). By reducing our uncertainty, we gained more confident insight into the true intercept coefficient.
+No zero in sight! The range of values included within this plausible range is much smaller and it still includes the true intercept (10). By reducing our uncertainty, we gained more confident insight into where the true intercept coefficient lies.
 
 ::: callout-tip
 This is an important point to think about: we lost the zero because the true intercept is different from zero. Sometimes you will theorize that changes to a predictor are associated with changes to your outcome of interest. Sometimes the truth is that there is no meaningful relationship between the two. We can learn a lot from strong null results. You should always aim to reduce your uncertainty, even if it leads to a stronger zero.
@@ -273,14 +286,17 @@ We use regression models to provide empirical evidence of the relationship betwe
 
 Regression models *cannot* prove causality. This can make them difficult or awkward to interpret. You need to be very careful with the language you use to describe your model to avoid being misleading.
 
-Let's step through interpreting your model results. To do this, we will look at the (highly statistically significant) relationship between an individual's feelings towards President Obama and their dog ownership.
+Let's step through interpreting your model results. To do this, we will look at the (highly precise) relationship between an individual's feelings towards President Obama and their dog ownership.
 
-The National Election Survey asked respondents both their feelings towards President Obama (rating between zero and 100, with higher values indicating more support) and whether or not they own a dog. Let's fit a linear regression model against their responses:
+The National Election Survey (NES) asked respondents both their feelings towards President Obama (rating between zero and 100, with higher values indicating more support) and whether or not they own a dog. Let's fit a linear regression model against their responses to these two questions:
 
 ```{r}
 m <- lm(obama_therm ~ own_dog, data = nes)
 
-summary(m)
+modelsummary(m,
+             statistic = "[{conf.low}, {conf.high}]",
+             stars = T,
+             coef_rename = c("own_dogYes" = "Owns a dog"))
 ```
 
 Our regression model is as follows:
@@ -289,12 +305,37 @@ $$
 Obama\ thermometer = 74.3047 - 9.2858*Owns\ a\ dog + \epsilon
 $$
 
-Although it is tempting to state that dog owners report, on average, 9.28 points less support for President Obama than non-dog owners, this suggests an effect for which we really have no proof. According to @gelman2020, an effect is usually thought of as "the change associated with some treatment, or intervention" (pg. 84). Here, we would be suggesting that if we gave someone a dog, their support for Obama would drop by 9.28 points. That's not actually what we have found. Rather, we have observed that, on average, people who were surveyed who had a dog had lower opinions of Obama than those who did not own a dog.
+It is tempting to state that the estimated effect of dog ownership on an individual's feelings towards Obama is a decrease of 9.28 points, on average and holding all else constant. However, this suggests an effect for which we really have no proof. According to @gelman2020, an effect is usually thought of as "the change associated with some treatment, or intervention" (pg. 84). Here, we would be suggesting that if we gave someone a dog, their support for Obama would drop by 9.28 points. That's not actually what we have found. Rather, we have observed that, on average, people who were surveyed who had a dog had lower opinions of Obama than those who did not own a dog.
 
-Another way of thinking about this is to acknowledge that regression models using observational data only allow us to make comparisons between our units of observation. Here, we can make comparisons between respondents to the NES. We cannot; however, use this model to make statements about changes to any individual respondent. The NES did not give someone a dog and then ask them how their feelings towards Obama changed. We cannot suggest that we have insight into the effects of such an intervention (as cute as it would be).
+Another way of thinking about this is to acknowledge that regression models using observational data only allow us to make comparisons between our units of observation. Here, we can make comparisons between respondents to the NES. We cannot, however, use this model to make statements about changes to any individual respondent. The NES did not give someone a dog and then ask them how their feelings towards Obama changed. We cannot suggest that we have insight into the effects of such an intervention (as cute as it would be).
 
 **When you are interpreting a regression model, you should use comparative language.** For example, we can say that, under the fitted model, the average difference in feelings towards President Obama between a person with a dog and a person without a dog is 9.28 points.
 
 ::: callout-tip
 This care with your language will become even more important when we move on to looking at multiple predictors.
 :::
+
+Remember: regression is just fancy averaging. This binary predictor makes this point easy to illustrate. For example, let's look at how we can interpret the intercept. Individuals who do not own a dog (`own_dog` $= 0$) are predicted to report feeling `r tidy(m) |> filter(term == "(Intercept)") |> pull(estimate) |> round(2)` points towards President Obama, on average and holding all else constant.
+
+Where did this come from you may ask? *It's just fancy averaging!*
+
+```{r}
+avg_responses <- nes |> 
+  drop_na(own_dog) |> 
+  group_by(own_dog) |> 
+  summarise(avg_obama_therm = mean(obama_therm, na.rm = T))
+
+avg_responses
+```
+
+There it is! It's just the average response provided by those who do not own a dog. How cool is that?!
+
+You may also have noticed that the difference between the average response provided by dog owners and non-dog owners is roughly 9 points. Hmm...
+
+```{r}
+mutate(avg_responses, diff = avg_obama_therm - lag(avg_obama_therm))
+```
+
+That's our coefficient estimate! It's just the difference in the average response provided by dog owners and non-dog owners.
+
+This is the beauty of linear regression: we can gain so much insight into the important predictors of the things that we really care about by applying simple and clear statistical processes to our data.
