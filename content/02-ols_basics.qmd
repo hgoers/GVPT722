@@ -53,7 +53,7 @@ Out there in the real world we use modeling to attempt to find this *true relati
 
 This equation has two unknown variables: $X_1$ and $\epsilon$. You need both to be able to calculate the corresponding values for $Y$.
 
-$X_1$ will in many ways be more intuitive for you. Generally, it represents some **vector** of values that make sense: perhaps it's a person's age, a country's GDP, or a binary value telling you whether or not someone voted. The error term can be a bit more abstract, so let's take a minute to look at it more closely.
+$X_1$ will in many ways be more intuitive for you. Generally, it represents some **vector** of values that representing something tangible: perhaps it's a person's age, a country's GDP, or a binary value telling you whether or not a country is a democracy. The error term can be a bit more abstract, so let's take a minute to look at it more closely.
 
 ::: callout-note
 A quick note on notation! Generally, we will use capital letters (for example, $Y$ and $X_1$) to denote vectors and lower case letters (for example, $y$ and $x_1$) to denote single values (usually with another subscript telling us the observation to which that single value belongs).
@@ -63,9 +63,9 @@ What is a vector? Here, I mean a series of values. In other words, **it is a fan
 For example, if our outcome of interest is whether or not an individual will vote in the next election, we might use data on whether or not survey respondents voted in the last election to study the predictors of voting. In this case, our vector $Y$ will be a series of `1`s and `0`s describing whether or not each survey respondent voted in the last election.
 :::
 
-This error term is (hopefully!) a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.
+The error term; on the other hand, is a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.
 
-You need to make some assumptions about that randomness. For example, let's say that the error in this model is normally distributed with a mean of zero and a standard deviation of 50. In other words, there is some random noise in our data: $Y$ does not always precisely equal $10 + 20X_1$. Some random value will always be added to $10 + 20X_1$. That value will be drawn randomly from this distribution:
+We can learn some useful things about the random error effecting our outcome of interest. For example, let's say that the error in this true relationship is normally distributed with a mean of zero and a standard deviation of 50. In other words, there is some random noise in our data: $Y$ does not always precisely equal $10 + 20X_1$. Some random value will always be added to $10 + 20X_1$. That value will be drawn randomly from this distribution:
 
 ```{r}
 ggplot(tibble(error = rnorm(1e6, mean = 0, sd = 50)), aes(x = error)) + 
@@ -73,9 +73,9 @@ ggplot(tibble(error = rnorm(1e6, mean = 0, sd = 50)), aes(x = error)) +
   theme_minimal()
 ```
 
-The coloured area under that curve represents the probability that its error value will be drawn. This means that the error value is most likely to a number around zero (where the curve peaks). It is very unlikely to be a number bigger than around 150 or smaller than around -150.
+The coloured area under that curve represents the probability that the corresponding error value (along the $x$-axis) will be drawn. This means that each error value randomly drawn is most likely to be a number around zero (where the curve peaks). It is very unlikely to be a number bigger than around 150 or smaller than around -150.
 
-Notably, this error value is completely independent of $X_1$ and $Y$ (you don't need these values to work out what your error value). To demonstrate, let's draw some of those random error values from this distribution:
+Notably, this error value is **completely independent of** $X_1$ **and** $Y$ (you don't need these values to work out your error value). To demonstrate, let's draw some of those random error values from this distribution:
 
 ```{r}
 rnorm(1, mean = 0, sd = 50)
@@ -139,9 +139,9 @@ This is despite the fact that we set everything up according to the true relatio
 
 Why is it different? The long and short answer is: that pesky random error!
 
-Random error will always exist. That's okay. That's why we built it into our true relationship. We have some statistical tools to help us out.
+Random error will always exist. That's okay. That's why we built it into our true relationship. We have some statistical tools to help us deal out.
 
-Looking back at our model's output we can see that there is a lot of information about its uncertainty in those coefficient estimates.
+Looking back at our model's output we can see that we are provided with a lot of information about its uncertainty in those coefficient estimates.
 
 ```{r}
 tidy(m)
@@ -201,7 +201,7 @@ tibble(beta_1 = rnorm(1e6, mean = beta_1_est, sd = beta_1_se)) |>
   theme_minimal()
 ```
 
-Often in political science we are required to accept that the true estimates sit somewhere with 95 percent of these plausible alternatives. Happily for us, the true values for the intercept (10) and $\beta_1$ (20) sit within this range (shown by the horizontal black lines on the graphs).
+Often in political science we are required to accept that the true estimates sit somewhere with 95 percent of these alternatives. Happily for us, the true values for the intercept (10) and $\beta_1$ (20) sit within this range (shown by the horizontal black lines on the graphs).
 
 ## Statistical significance
 
@@ -317,7 +317,7 @@ This care with your language will become even more important when we move on to 
 
 Remember: regression is just fancy averaging. This binary predictor makes this point easy to illustrate. For example, let's look at how we can interpret the intercept. Individuals who do not own a dog (`own_dog` $= 0$) are predicted to report feeling `r tidy(m) |> filter(term == "(Intercept)") |> pull(estimate) |> round(2)` points towards President Obama, on average and holding all else constant.
 
-Where did this come from you may ask? *It's just fancy averaging!*
+Where did this come from, you may ask? *It's just fancy averaging!*
 
 ```{r}
 avg_responses <- nes |> 
@@ -339,3 +339,85 @@ mutate(avg_responses, diff = avg_obama_therm - lag(avg_obama_therm))
 That's our coefficient estimate! It's just the difference in the average response provided by dog owners and non-dog owners.
 
 This is the beauty of linear regression: we can gain so much insight into the important predictors of the things that we really care about by applying simple and clear statistical processes to our data.
+
+## Making predictions using your regression model
+
+This leads us neatly to another great use for our regression model: predictions. We can use our model to predict our outcome of interest.
+
+For example, imagine that I pulled someone randomly from the US voting population and asked them their feelings towards President Obama on a 100-point scale. What would be your best guess of their response?
+
+We have access to the NES, which is a representative sample of the US voting population. In other words, they pulled `r nrow(nes) |> scales::comma()` people randomly from the US voting population and asked them this very question. We can look at the first 10 respondents' answers:
+
+```{r}
+head(nes$obama_therm, n = 10)
+```
+
+Imagine that the only information I provide to you is these `r nrow(nes) |> scales::comma()` individuals' responses. Your educated best guess may then be the average of their response:
+
+```{r}
+mean(nes$obama_therm, na.rm = T)
+```
+::: {.callout-tip collapse="true"}
+It's just fancy averaging!
+
+```{r}
+lm(obama_therm ~ 1, data = nes)
+```
+:::
+
+Now I might ask you what other piece of information you would like to know about this random individual that might improve your guess. You may respond that you would like to know whether or not they identify as a Democrat. You suspect that Democrats will have warmer feelings towards Obama than non-Democrats. 
+
+You adopt the same approach (your best guess is the average response), but you can now look at Democrats and non-Democrats separately. 
+
+```{r}
+obama_therm_dem <- nes |> 
+  group_by(dem) |> 
+  summarise(avg_obama_therm = mean(obama_therm, na.rm = T))
+
+obama_therm_dem
+```
+
+Now your best guess may be `r obama_therm_dem |> filter(dem == 1) |> pull(avg_obama_therm) |> round(2)` if the random person identifies as a Democrat and `r obama_therm_dem |> filter(dem == 0) |> pull(avg_obama_therm) |> round(2)` if they do not.
+
+::: {.callout-tip collapse="true"}
+It's just fancy averaging!
+
+```{r}
+lm(obama_therm ~ dem, data = nes)
+```
+
+Remember, the coefficient estimate for `dem` is the estimated difference between individuals who do not identify as Democrats (`dem` $= 0$) and individuals who identify as Democrats (`dem` $= 1$). In other words, add those two values together and you will get the average response provided by Democrats: `r obama_therm_dem |> filter(dem == 1) |> pull(avg_obama_therm) |> round(2)`. 
+:::
+
+Have you improved your guess? How might we evaluate this? One approach would be to look at how far our predicted values were from the observed values.
+
+Using our most simple approach, we will always predict the average feeling thermometer value provided by respondents to the NES. Using our slightly more sophisticated approach, we will predict the average response provided by Democrats if the individual is a Democrat, or the average response provided by non-Democrats if they do not identify as a Democrat. Let's map those predictions against the actual responses provided by NES participants:
+
+```{r}
+pred <- nes |> 
+  transmute(dem, 
+            obama_therm,
+            pred_simple = mean(nes$obama_therm, na.rm = T)) |> 
+  left_join(obama_therm_dem) |> 
+  rename(pred_party_id = avg_obama_therm)
+
+pred |> 
+  select(dem, obama_therm, pred_simple, pred_party_id) |> 
+  head()
+```
+
+Here, we have stored our simple prediction in the `pred_simple` variable and our approach that accounts for party identification in the `pred_party_id` column.
+
+How does each approach perform?
+
+```{r}
+pred |> 
+  mutate(resid_simple = pred_simple - obama_therm,
+         resid_party_id = pred_party_id - obama_therm) |> 
+  summarise(r_2_simple = sum(resid_simple^2, na.rm = T),
+            r_2_party_id = sum(resid_party_id^2, na.rm = T))
+```
+
+The simple approach predicts values further from the observed values than our approach that accounts for party ID. Great! It is worthwhile asking our random individual to which party they belong.
+
+Soon, we will look at including more than one predictor in our models. This will help us improve our predictive power even further. 

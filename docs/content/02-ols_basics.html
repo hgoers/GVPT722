@@ -202,6 +202,7 @@ div.csl-indent {
   <li><a href="#fitting-our-regression-model" id="toc-fitting-our-regression-model" class="nav-link" data-scroll-target="#fitting-our-regression-model">Fitting our regression model</a></li>
   <li><a href="#statistical-significance" id="toc-statistical-significance" class="nav-link" data-scroll-target="#statistical-significance">Statistical significance</a></li>
   <li><a href="#interpreting-your-regression-models" id="toc-interpreting-your-regression-models" class="nav-link" data-scroll-target="#interpreting-your-regression-models">Interpreting your regression models</a></li>
+  <li><a href="#making-predictions-using-your-regression-model" id="toc-making-predictions-using-your-regression-model" class="nav-link" data-scroll-target="#making-predictions-using-your-regression-model">Making predictions using your regression model</a></li>
   </ul>
 </nav>
     </div>
@@ -279,7 +280,7 @@ Note
 <section id="random-error" class="level3">
 <h3 class="anchored" data-anchor-id="random-error">Random error</h3>
 <p>This equation has two unknown variables: <span class="math inline">\(X_1\)</span> and <span class="math inline">\(\epsilon\)</span>. You need both to be able to calculate the corresponding values for <span class="math inline">\(Y\)</span>.</p>
-<p><span class="math inline">\(X_1\)</span> will in many ways be more intuitive for you. Generally, it represents some <strong>vector</strong> of values that make sense: perhaps it’s a person’s age, a country’s GDP, or a binary value telling you whether or not someone voted. The error term can be a bit more abstract, so let’s take a minute to look at it more closely.</p>
+<p><span class="math inline">\(X_1\)</span> will in many ways be more intuitive for you. Generally, it represents some <strong>vector</strong> of values that representing something tangible: perhaps it’s a person’s age, a country’s GDP, or a binary value telling you whether or not a country is a democracy. The error term can be a bit more abstract, so let’s take a minute to look at it more closely.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -295,8 +296,8 @@ Note
 <p>For example, if our outcome of interest is whether or not an individual will vote in the next election, we might use data on whether or not survey respondents voted in the last election to study the predictors of voting. In this case, our vector <span class="math inline">\(Y\)</span> will be a series of <code>1</code>s and <code>0</code>s describing whether or not each survey respondent voted in the last election.</p>
 </div>
 </div>
-<p>This error term is (hopefully!) a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.</p>
-<p>You need to make some assumptions about that randomness. For example, let’s say that the error in this model is normally distributed with a mean of zero and a standard deviation of 50. In other words, there is some random noise in our data: <span class="math inline">\(Y\)</span> does not always precisely equal <span class="math inline">\(10 + 20X_1\)</span>. Some random value will always be added to <span class="math inline">\(10 + 20X_1\)</span>. That value will be drawn randomly from this distribution:</p>
+<p>The error term; on the other hand, is a set of random values. It captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.</p>
+<p>We can learn some useful things about the random error effecting our outcome of interest. For example, let’s say that the error in this true relationship is normally distributed with a mean of zero and a standard deviation of 50. In other words, there is some random noise in our data: <span class="math inline">\(Y\)</span> does not always precisely equal <span class="math inline">\(10 + 20X_1\)</span>. Some random value will always be added to <span class="math inline">\(10 + 20X_1\)</span>. That value will be drawn randomly from this distribution:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">tibble</span>(<span class="at">error =</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">50</span>)), <span class="fu">aes</span>(<span class="at">x =</span> error)) <span class="sc">+</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">"#A2E3C4"</span>) <span class="sc">+</span> </span>
@@ -305,8 +306,8 @@ Note
 <p><img src="02-ols_basics_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>The coloured area under that curve represents the probability that its error value will be drawn. This means that the error value is most likely to a number around zero (where the curve peaks). It is very unlikely to be a number bigger than around 150 or smaller than around -150.</p>
-<p>Notably, this error value is completely independent of <span class="math inline">\(X_1\)</span> and <span class="math inline">\(Y\)</span> (you don’t need these values to work out what your error value). To demonstrate, let’s draw some of those random error values from this distribution:</p>
+<p>The coloured area under that curve represents the probability that the corresponding error value (along the <span class="math inline">\(x\)</span>-axis) will be drawn. This means that each error value randomly drawn is most likely to be a number around zero (where the curve peaks). It is very unlikely to be a number bigger than around 150 or smaller than around -150.</p>
+<p>Notably, this error value is <strong>completely independent of</strong> <span class="math inline">\(X_1\)</span> <strong>and</strong> <span class="math inline">\(Y\)</span> (you don’t need these values to work out your error value). To demonstrate, let’s draw some of those random error values from this distribution:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">50</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -413,8 +414,8 @@ Y = 10 + 20X_1 + \epsilon
 \]</span></p>
 <p>This is despite the fact that we set everything up according to the true relationship between <span class="math inline">\(Y\)</span> and <span class="math inline">\(X_1\)</span>!</p>
 <p>Why is it different? The long and short answer is: that pesky random error!</p>
-<p>Random error will always exist. That’s okay. That’s why we built it into our true relationship. We have some statistical tools to help us out.</p>
-<p>Looking back at our model’s output we can see that there is a lot of information about its uncertainty in those coefficient estimates.</p>
+<p>Random error will always exist. That’s okay. That’s why we built it into our true relationship. We have some statistical tools to help us deal out.</p>
+<p>Looking back at our model’s output we can see that we are provided with a lot of information about its uncertainty in those coefficient estimates.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -497,7 +498,7 @@ Note
 <p><img src="02-ols_basics_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>Often in political science we are required to accept that the true estimates sit somewhere with 95 percent of these plausible alternatives. Happily for us, the true values for the intercept (10) and <span class="math inline">\(\beta_1\)</span> (20) sit within this range (shown by the horizontal black lines on the graphs).</p>
+<p>Often in political science we are required to accept that the true estimates sit somewhere with 95 percent of these alternatives. Happily for us, the true values for the intercept (10) and <span class="math inline">\(\beta_1\)</span> (20) sit within this range (shown by the horizontal black lines on the graphs).</p>
 </section>
 <section id="statistical-significance" class="level2">
 <h2 class="anchored" data-anchor-id="statistical-significance">Statistical significance</h2>
@@ -733,7 +734,7 @@ Tip
 </div>
 </div>
 <p>Remember: regression is just fancy averaging. This binary predictor makes this point easy to illustrate. For example, let’s look at how we can interpret the intercept. Individuals who do not own a dog (<code>own_dog</code> <span class="math inline">\(= 0\)</span>) are predicted to report feeling 74.3 points towards President Obama, on average and holding all else constant.</p>
-<p>Where did this come from you may ask? <em>It’s just fancy averaging!</em></p>
+<p>Where did this come from, you may ask? <em>It’s just fancy averaging!</em></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>avg_responses <span class="ot">&lt;-</span> nes <span class="sc">|&gt;</span> </span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(own_dog) <span class="sc">|&gt;</span> </span>
@@ -763,6 +764,138 @@ Tip
 </div>
 <p>That’s our coefficient estimate! It’s just the difference in the average response provided by dog owners and non-dog owners.</p>
 <p>This is the beauty of linear regression: we can gain so much insight into the important predictors of the things that we really care about by applying simple and clear statistical processes to our data.</p>
+</section>
+<section id="making-predictions-using-your-regression-model" class="level2">
+<h2 class="anchored" data-anchor-id="making-predictions-using-your-regression-model">Making predictions using your regression model</h2>
+<p>This leads us neatly to another great use for our regression model: predictions. We can use our model to predict our outcome of interest.</p>
+<p>For example, imagine that I pulled someone randomly from the US voting population and asked them their feelings towards President Obama on a 100-point scale. What would be your best guess of their response?</p>
+<p>We have access to the NES, which is a representative sample of the US voting population. In other words, they pulled 5,916 people randomly from the US voting population and asked them this very question. We can look at the first 10 respondents’ answers:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(nes<span class="sc">$</span>obama_therm, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  15 100  70  30  70  45  50  60  15 100</code></pre>
+</div>
+</div>
+<p>Imagine that the only information I provide to you is these 5,916 individuals’ responses. Your educated best guess may then be the average of their response:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(nes<span class="sc">$</span>obama_therm, <span class="at">na.rm =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 60.74377</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It’s just fancy averaging!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(obama_therm <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = obama_therm ~ 1, data = nes)
+
+Coefficients:
+(Intercept)  
+      60.74  </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Now I might ask you what other piece of information you would like to know about this random individual that might improve your guess. You may respond that you would like to know whether or not they identify as a Democrat. You suspect that Democrats will have warmer feelings towards Obama than non-Democrats.</p>
+<p>You adopt the same approach (your best guess is the average response), but you can now look at Democrats and non-Democrats separately.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>obama_therm_dem <span class="ot">&lt;-</span> nes <span class="sc">|&gt;</span> </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(dem) <span class="sc">|&gt;</span> </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_obama_therm =</span> <span class="fu">mean</span>(obama_therm, <span class="at">na.rm =</span> T))</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>obama_therm_dem</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+    dem avg_obama_therm
+  &lt;dbl&gt;           &lt;dbl&gt;
+1     0            44.2
+2     1            85.3
+3    NA            65.7</code></pre>
+</div>
+</div>
+<p>Now your best guess may be 85.31 if the random person identifies as a Democrat and 44.24 if they do not.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>It’s just fancy averaging!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(obama_therm <span class="sc">~</span> dem, <span class="at">data =</span> nes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = obama_therm ~ dem, data = nes)
+
+Coefficients:
+(Intercept)          dem  
+      44.24        41.06  </code></pre>
+</div>
+</div>
+<p>Remember, the coefficient estimate for <code>dem</code> is the estimated difference between individuals who do not identify as Democrats (<code>dem</code> <span class="math inline">\(= 0\)</span>) and individuals who identify as Democrats (<code>dem</code> <span class="math inline">\(= 1\)</span>). In other words, add those two values together and you will get the average response provided by Democrats: 85.31.</p>
+</div>
+</div>
+</div>
+<p>Have you improved your guess? How might we evaluate this? One approach would be to look at how far our predicted values were from the observed values.</p>
+<p>Using our most simple approach, we will always predict the average feeling thermometer value provided by respondents to the NES. Using our slightly more sophisticated approach, we will predict the average response provided by Democrats if the individual is a Democrat, or the average response provided by non-Democrats if they do not identify as a Democrat. Let’s map those predictions against the actual responses provided by NES participants:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> nes <span class="sc">|&gt;</span> </span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(dem, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>            obama_therm,</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">pred_simple =</span> <span class="fu">mean</span>(nes<span class="sc">$</span>obama_therm, <span class="at">na.rm =</span> T)) <span class="sc">|&gt;</span> </span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(obama_therm_dem) <span class="sc">|&gt;</span> </span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">pred_party_id =</span> avg_obama_therm)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>pred <span class="sc">|&gt;</span> </span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(dem, obama_therm, pred_simple, pred_party_id) <span class="sc">|&gt;</span> </span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  dem obama_therm pred_simple pred_party_id
+1   0          15    60.74377      44.24474
+2   1         100    60.74377      85.30587
+3   0          70    60.74377      44.24474
+4   1          30    60.74377      85.30587
+5   0          70    60.74377      44.24474
+6   0          45    60.74377      44.24474</code></pre>
+</div>
+</div>
+<p>Here, we have stored our simple prediction in the <code>pred_simple</code> variable and our approach that accounts for party identification in the <code>pred_party_id</code> column.</p>
+<p>How does each approach perform?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>pred <span class="sc">|&gt;</span> </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">resid_simple =</span> pred_simple <span class="sc">-</span> obama_therm,</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">resid_party_id =</span> pred_party_id <span class="sc">-</span> obama_therm) <span class="sc">|&gt;</span> </span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">r_2_simple =</span> <span class="fu">sum</span>(resid_simple<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> T),</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">r_2_party_id =</span> <span class="fu">sum</span>(resid_party_id<span class="sc">^</span><span class="dv">2</span>, <span class="at">na.rm =</span> T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  r_2_simple r_2_party_id
+1    6582137      4364116</code></pre>
+</div>
+</div>
+<p>The simple approach predicts values further from the observed values than our approach that accounts for party ID. Great! It is worthwhile asking our random individual to which party they belong.</p>
+<p>Soon, we will look at including more than one predictor in our models. This will help us improve our predictive power even further.</p>
 
 
 
