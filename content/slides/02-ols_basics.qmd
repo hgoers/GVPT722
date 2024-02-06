@@ -1,0 +1,534 @@
+---
+title: "OLS Basics"
+subtitle: "GVPT722"
+format: 
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    theme: solarized
+    embed-resources: true
+execute: 
+  message: false
+  warning: false
+  echo: true
+---
+
+## Today's class
+
+1.  Fitting a regression model
+2.  Interpreting statistical significance
+3.  Interpreting substantive meaning
+4.  Making predictions using your model
+
+## Packages for today
+
+```{r}
+library(tidyverse)
+library(broom)
+library(ggdist)
+library(poliscidata)
+library(modelsummary)
+```
+
+```{r}
+#| echo: false
+
+set.seed(12345)
+```
+
+## Regression models
+
+Let's look at the relationship between an outcome of interest, $Y$, and a predictor of that outcome, $X_1$:
+
+$$
+Y = \beta_0 + \beta_1X_1 + \epsilon
+$$
+
+## Regression models
+
+Let's look at the relationship between an outcome of interest, $Y$, and a predictor of that outcome, $X_1$:
+
+$$
+Y = \beta_0 + \beta_1X_1 + \epsilon
+$$
+
+Let's assume that we know the *true relationship* between $Y$ and $X_1$:
+
+$$
+Y = 10 + 20X_1 + \epsilon
+$$
+
+## Solving for $Y$
+
+$$
+Y = 10 + 20X_1 + \epsilon
+$$
+
+-   This equation has two unknown variables: $X_1$ and $\epsilon$.
+
+-   You need both to work out the value of $Y$.
+
+## Random error
+
+-   The error term captures all of the random things that inevitably muddy the relationship between our outcomes of interest and our predictors in the real world.
+
+-   It is a set of random values.
+
+## A world with no random error
+
+```{r}
+#| echo: false
+
+tibble(x = 1:100) |> 
+  mutate(y = 10 + 20*x) |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F) + 
+  theme_minimal()
+```
+
+## A world with random error
+
+```{r}
+#| echo: false
+
+error <- rnorm(100, mean = 0, sd = 50)
+
+tibble(x = 1:100) |> 
+  mutate(y = 10 + 20*x + error) |> 
+  ggplot(aes(x = x, y = y)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F) + 
+  theme_minimal()
+```
+
+## Looking closely at that random error
+
+We can learn about the shape of our random error.
+
+For example, let's assume that this random error:
+
+-   Is normally distributed,
+
+-   Has a mean of zero,
+
+-   Has a standard deviation of 50.
+
+## Looking closely at that random error
+
+```{r}
+ggplot(tibble(error = rnorm(1e6, mean = 0, sd = 50)), aes(x = error)) + 
+  geom_density(fill = "#A2E3C4") + 
+  theme_minimal()
+```
+
+## Looking closely at that random error
+
+Random error is always added to $10 + 20X_1$ to produce $Y$. Let's simulate that process:
+
+```{r}
+
+error <- rnorm(1, mean = 0, sd = 50)
+error
+
+x_1 <- 1
+x_1
+
+y <- 10 + 20*x_1 + error
+y
+```
+
+## Looking closely at that random error
+
+Random error is always added to $10 + 20X_1$ to produce $Y$. Let's simulate that process:
+
+```{r}
+
+error <- rnorm(1, mean = 0, sd = 50)
+error
+
+x_1 <- 2
+x_1
+
+y <- 10 + 20*x_1 + error
+y
+```
+
+## Looking closely at that random error
+
+Random error is always added to $10 + 20X_1$ to produce $Y$. Let's simulate that process:
+
+```{r}
+
+error <- rnorm(1, mean = 0, sd = 50)
+error
+
+x_1 <- 3
+x_1
+
+y <- 10 + 20*x_1 + error
+y
+```
+
+## Fitting our regression model
+
+Assume $X_1$ is equal to all whole numbers between one and 100:
+
+```{r}
+x_1 <- 1:100
+```
+
+Let's find the 100 corresponding values of $Y$:
+
+```{r}
+error <- rnorm(100, mean = 0, sd = 50)
+
+df <- tibble(x_1 = x_1,
+             y = 10 + 20*x_1 + error)
+
+head(df, n = 5)
+```
+
+## Fitting our regression model
+
+```{r}
+ggplot(df, aes(x = x_1, y = y)) + 
+  geom_point() + 
+  theme_minimal()
+```
+
+## What is the line-of-best-fit?
+
+In other words, what is the line that minimizes the distance between itself and all of these points?
+
+```{r}
+m <- lm(y ~ x_1, data = df)
+
+modelsummary(m, statistic = NULL, coef_rename = c(x_1 = "X1"))
+```
+
+## What is the line-of-best-fit?
+
+Our fitted model is:
+
+$$
+Y = 14.331 + 20.130X_1 + \epsilon
+$$
+
+Instead of this:
+
+$$
+Y = 10 + 20X_1 + \epsilon
+$$
+
+*Why?*
+
+## Uncertainty around coefficients
+
+We have information about how uncertain we are of these coefficients:
+
+```{r}
+
+tidy(m)
+```
+
+## Uncertainty around the intercept
+
+Our best guess of the intercept:
+
+```{r}
+
+intercept_est <- tidy(m) |> 
+  filter(term == "(Intercept)") |> 
+  pull(estimate)
+
+intercept_est
+```
+
+Our level of uncertainty in that best guess:
+
+```{r}
+
+intercept_se <- tidy(m) |> 
+  filter(term == "(Intercept)") |> 
+  pull(std.error)
+
+intercept_se
+```
+
+## Uncertainty around the intercept
+
+```{r}
+#| echo: false
+
+tibble(intercept = rnorm(1e6, mean = intercept_est, sd = intercept_se)) |> 
+  ggplot(aes(x = intercept)) + 
+  stat_halfeye(.width = c(0.025, 0.975), fill = "#A2E3C4") +
+  geom_vline(xintercept = 10) + 
+  theme_minimal()
+```
+
+## Uncertainty around $\beta_1$
+
+Our best guess:
+
+```{r}
+beta_1_est <- tidy(m) |> 
+  filter(term == "x_1") |> 
+  pull(estimate)
+
+beta_1_est
+```
+
+Our uncertainty around this best guess:
+
+```{r}
+beta_1_se <- tidy(m) |> 
+  filter(term == "x_1") |> 
+  pull(std.error)
+
+beta_1_se
+```
+
+## Uncertainty around $\beta_1$
+
+```{r}
+#| echo: false
+
+tibble(beta_1 = rnorm(1e6, mean = beta_1_est, sd = beta_1_se)) |> 
+  ggplot(aes(x = beta_1)) + 
+  stat_halfeye(.width = c(0.025, 0.975), fill = "#3095A2") +
+  geom_vline(xintercept = 20) + 
+  theme_minimal()
+```
+
+## Statistical significance
+
+Traditionally, we are required to accept that 95 percent of all alternative coefficient estimates are plausible.
+
+-   What estimates are included in this range?
+
+```{r}
+
+modelplot(m) + 
+  geom_vline(xintercept = 0, colour = "red")
+```
+
+## P-values
+
+Tells us how likely we would be to observe the coefficient estimate that we did if it were actually equal to zero.
+
+```{r}
+tidy(m)
+```
+
+## Interpreting regression models: substantive meaning
+
+-   Regression models *cannot* prove causality.
+
+-   This can make them difficult or awkward to interpret.
+
+## Obama and dog owners
+
+The National Election Survey asked respondents both their feelings towards President Obama (rating between zero and 100, with higher values indicating more support) and whether or not they own a dog.
+
+## Obama and dog owners
+
+Let’s fit a linear regression model against their responses to these two questions:
+
+```{r}
+
+m <- lm(obama_therm ~ own_dog, data = nes)
+
+modelsummary(m,
+             statistic = NULL,
+             stars = T,
+             coef_rename = c("own_dogYes" = "Owns a dog"))
+```
+
+## Obama and dog owners
+
+Our regression model is as follows:
+
+$$
+Obama\ thermometer = 74.305 - 9.286* Owns\ a\ dog + \epsilon
+$$
+
+What does this mean substantively?
+
+## Obama and dog owners
+
+It is tempting to state that:
+
+-   The estimated effect of dog ownership on an individual’s feelings towards Obama is a decrease of 9.28 points, on average and holding all else constant.
+
+But, this suggests an effect for which we have no proof!
+
+-   We would be suggesting that if we gave someone a dog, their support for Obama would drop by 9.28 points.
+
+-   That’s not actually what we have found!
+
+## Obama and dog owners
+
+*We have observed that, on average, people who were surveyed who had a dog had lower opinions of Obama than those who did not own a dog.*
+
+-   Regression models using observational data only allow us to make comparisons between our units of observation.
+
+-   Here, we can make comparisons between respondents to the NES. We cannot, however, use this model to make statements about changes to any individual respondent.
+
+## Where do coefficient estimates come from?
+
+$$
+Obama\ thermometer = \\ 74.305 - 9.286 * Owns\ a\ dog + \epsilon
+$$
+
+```{r}
+avg_responses <- nes |> 
+  drop_na(own_dog) |> 
+  group_by(own_dog) |> 
+  summarise(avg_obama_therm = mean(obama_therm, 
+                                   na.rm = T)) |> 
+  mutate(diff = avg_obama_therm - lag(avg_obama_therm))
+
+avg_responses
+```
+
+## Making predictions using our model
+
+Imagine that I pulled someone randomly from the US voting population and asked them their feelings towards President Obama on a 100-point scale. What would be your best guess of their response?
+
+## Making predictions using our model
+
+The NES pulled 5,916 people randomly from the US voting population and asked them this very question.
+
+What were their responses?
+
+```{r}
+nes |> 
+  select(caseid, obama_therm) |> 
+  slice_head(n = 10)
+```
+
+## Making predictions using our model
+
+Imagine that the only information I provide to you is these 5,916 individuals’ responses.
+
+-   Your educated best guess may then be the average of their response:
+
+```{r}
+mean(nes$obama_therm, na.rm = T)
+```
+
+## Making predictions using our model
+
+Imagine that the only information I provide to you is these 5,916 individuals’ responses.
+
+-   Your educated best guess may then be the average of their response:
+
+```{r}
+mean(nes$obama_therm, na.rm = T)
+```
+
+-   It's just fancy averaging! 
+
+```{r}
+lm(obama_therm ~ 1, data = nes)
+```
+
+## Making predictions using our model
+
+What other piece of information you would like to know about this random individual that might improve your guess?
+
+## Making predictions using our model
+
+What other piece of information you would like to know about this random individual that might improve your guess?
+
+*Are they a Democrat?*
+
+```{r}
+
+nes |> 
+  select(caseid, obama_therm, dem) |> 
+  slice_head(n = 10)
+```
+
+## Making predictions using our model
+
+-   Now you can look at Democrats and non-Democrats separately:
+
+```{r}
+obama_therm_dem <- nes |> 
+  drop_na(obama_therm, dem) |> 
+  group_by(dem) |> 
+  summarise(avg_obama_therm = mean(obama_therm, na.rm = T))
+
+obama_therm_dem
+```
+
+## Making predictions using our model
+
+-   Now you can look at Democrats and non-Democrats separately:
+
+```{r}
+obama_therm_dem
+```
+
+```{r}
+lm(obama_therm ~ dem, data = nes) |> 
+  tidy() |> 
+  transmute(term, estimate, cum_est = estimate + lag(estimate))
+```
+
+## Have we improved our guess?
+
+How accurately do we predict individuals' feelings towards Obama? 
+
+```{r}
+#| echo: false
+
+pred <- nes |> 
+  transmute(caseid, 
+            dem, 
+            obama_therm,
+            pred_simple = mean(nes$obama_therm, na.rm = T)) |> 
+  left_join(obama_therm_dem) |> 
+  rename(pred_party_id = avg_obama_therm)
+
+pred |> 
+  select(caseid, dem, obama_therm, pred_simple, pred_party_id) |> 
+  head(n = 12)
+```
+
+## How does each approach perform? 
+
+```{r}
+#| echo: false
+
+pred |> 
+  drop_na(obama_therm, dem) |> 
+  sample_n(50) |> 
+  ggplot(aes(y = factor(caseid))) + 
+  geom_point(aes(x = obama_therm, colour = factor(dem))) +
+  geom_point(aes(x = pred_party_id)) + 
+  geom_vline(xintercept = mean(nes$obama_therm, na.rm = T)) + 
+  theme_minimal() + 
+  labs(x = "Obama thermometer",
+       y = "Respondent ID",
+       colour = "Democrat")
+```
+
+## How does each approach perform? 
+
+What's the sum of those distances? 
+
+```{r}
+pred |> 
+  mutate(resid_simple = pred_simple - obama_therm,
+         resid_party_id = pred_party_id - obama_therm) |> 
+  summarise(r_2_simple = scales::comma(sum(resid_simple^2, na.rm = T)),
+            r_2_party_id = scales::comma(sum(resid_party_id^2, na.rm = T)))
+```
+
+::: {.aside}
+Remember: this is the $R^2$ value.
+:::

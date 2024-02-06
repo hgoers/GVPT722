@@ -9,6 +9,12 @@ execute:
 bibliography: references.bib
 ---
 
+## Slides
+
+```{=html}
+<iframe class="slide-deck" src="../content/slides/02-ols_basics.html" width = "100%" height = 600px></iframe>
+```
+
 ## Packages
 
 ```{r}
