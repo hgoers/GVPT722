@@ -162,6 +162,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">OLS Basics</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/03-statistical_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Inference</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -415,7 +421,7 @@ lm(formula = life_exp ~ log_gdp_per_cap, data = gapminder_df)
 
 Coefficients:
     (Intercept)  log_gdp_per_cap  
-         33.427            4.316  </code></pre>
+         33.217            4.343  </code></pre>
 </div>
 </div>
 <p>This gives us an estimated linear relationship between a country’s health and wealth. Formally:</p>
@@ -431,8 +437,8 @@ Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
 <section id="step-4-interpret-your-model" class="level2">
 <h2 class="anchored" data-anchor-id="step-4-interpret-your-model">Step 4: Interpret your model</h2>
 <p>What does this model tell us about the estimated relationship between a country’s life expectancy and its logged GDP per capita?</p>
-<p>First, let’s look at the regression coefficient for a country’s logged GDP per capita. We found that every one unit increase in a country’s logged GDP per capita is associated with a 4.316 year increase in its citizens’ average life expectancy, on average.</p>
-<p>Second, let’s look at that intercept coefficient. A country with a logged GDP per capita of zero is expected to have an average life expectancy of 33.427 years, on average. This is not a very useful piece of information because there are no countries with zero (logged) GDP per capita. Therefore, this intercept coefficient is more usefully thought of as a statistical artifact that grounds our model.</p>
+<p>First, let’s look at the regression coefficient for a country’s logged GDP per capita. We found that every one unit increase in a country’s logged GDP per capita is associated with a 4.343 year increase in its citizens’ average life expectancy, on average.</p>
+<p>Second, let’s look at that intercept coefficient. A country with a logged GDP per capita of zero is expected to have an average life expectancy of 33.217 years, on average. This is not a very useful piece of information because there are no countries with zero (logged) GDP per capita. Therefore, this intercept coefficient is more usefully thought of as a statistical artifact that grounds our model.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -460,20 +466,20 @@ Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>m_pred <span class="ot">&lt;-</span> <span class="fu">augment</span>(m)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>m_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 202 × 9
+<pre><code># A tibble: 201 × 9
    .rownames life_exp log_gdp_per_cap .fitted .resid    .hat .sigma  .cooksd
    &lt;chr&gt;        &lt;dbl&gt;           &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
- 1 1             74.6           10.3     77.8 -3.17  0.00944   4.25 0.00268 
- 2 2             62.0            5.87    58.8  3.20  0.0255    4.25 0.00762 
- 3 3             61.6            7.56    66.1 -4.43  0.00887   4.25 0.00492 
- 4 4             76.5            8.76    71.2  5.22  0.00498   4.24 0.00380 
- 5 6             78.7           10.7     79.6 -0.898 0.0125    4.26 0.000287
- 6 7             75.4            9.27    73.5  1.94  0.00531   4.26 0.000558
- 7 8             72.0            8.51    70.2  1.88  0.00525   4.26 0.000519
- 8 10            78.5            9.75    75.5  2.98  0.00670   4.25 0.00167 
- 9 11            83.3           11.0     81.0  2.34  0.0154    4.26 0.00240 
-10 12            81.2           10.9     80.4  0.818 0.0142    4.26 0.000271
-# ℹ 192 more rows
+ 1 1             74.6           10.3     77.9 -3.24  0.00956   4.24 0.00285 
+ 2 2             62.0            5.87    58.7  3.25  0.0255    4.24 0.00793 
+ 3 3             61.6            7.56    66.1 -4.43  0.00887   4.23 0.00494 
+ 4 4             76.5            8.76    71.3  5.20  0.00500   4.23 0.00380 
+ 5 6             78.7           10.7     79.7 -0.978 0.0127    4.24 0.000348
+ 6 7             75.4            9.27    73.5  1.90  0.00536   4.24 0.000542
+ 7 8             72.0            8.51    70.2  1.86  0.00526   4.24 0.000511
+ 8 10            78.5            9.75    75.6  2.93  0.00677   4.24 0.00164 
+ 9 11            83.3           11.0     81.1  2.25  0.0156    4.24 0.00226 
+10 12            81.2           10.9     80.5  0.733 0.0144    4.24 0.000221
+# ℹ 191 more rows
 # ℹ 1 more variable: .std.resid &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -557,20 +563,20 @@ Life\ expectancy = 33.427 + 4.316 Logged\ GDP\ per\ capita + \epsilon
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(life_exp, .fitted, .resid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 202 × 3
+<pre><code># A tibble: 201 × 3
    life_exp .fitted .resid
       &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
- 1     74.6    77.8 -3.17 
- 2     62.0    58.8  3.20 
+ 1     74.6    77.9 -3.24 
+ 2     62.0    58.7  3.25 
  3     61.6    66.1 -4.43 
- 4     76.5    71.2  5.22 
- 5     78.7    79.6 -0.898
- 6     75.4    73.5  1.94 
- 7     72.0    70.2  1.88 
- 8     78.5    75.5  2.98 
- 9     83.3    81.0  2.34 
-10     81.2    80.4  0.818
-# ℹ 192 more rows</code></pre>
+ 4     76.5    71.3  5.20 
+ 5     78.7    79.7 -0.978
+ 6     75.4    73.5  1.90 
+ 7     72.0    70.2  1.86 
+ 8     78.5    75.6  2.93 
+ 9     83.3    81.1  2.25 
+10     81.2    80.5  0.733
+# ℹ 191 more rows</code></pre>
 </div>
 </div>
 <p>Let’s plot those differences to make them easier to digest:</p>
@@ -643,8 +649,8 @@ Note
 <pre><code># A tibble: 2 × 2
   term            estimate
   &lt;chr&gt;              &lt;dbl&gt;
-1 (Intercept)        33.4 
-2 log_gdp_per_cap     4.32</code></pre>
+1 (Intercept)        33.2 
+2 log_gdp_per_cap     4.34</code></pre>
 </div>
 </div>
 <p>We can then use the standard deviations around these best guesses to work out how spread out around this best guess alternative plausible coefficients would sit.</p>
@@ -669,8 +675,8 @@ Tip
 <pre><code># A tibble: 2 × 3
   term            estimate std.error
   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;
-1 (Intercept)        33.4      1.82 
-2 log_gdp_per_cap     4.32     0.203</code></pre>
+1 (Intercept)        33.2      1.82 
+2 log_gdp_per_cap     4.34     0.203</code></pre>
 </div>
 </div>
 <p>We can now build out the plausible set of alternative coefficients:</p>
@@ -702,7 +708,7 @@ Note
 </div>
 </div>
 <p>Most of the time you will be required to demonstrate that at least 95 percent of these plausible alternative coefficients do not include zero to claim statistical significance. In the graph above, this 95 percent is provided by the bar at the bottom of the density curve.</p>
-<p>To work out whether 95 percent of these plausible alternative coefficients include zero we need to calculate the probability that we would observe the coefficient we found (here <span class="math inline">\(\beta_1 =\)</span> 4.316) if it were actually equal to zero. This probability is referred to as the <strong>p-value</strong>. We calculate it by finding our coefficient’s T-statistic.</p>
+<p>To work out whether 95 percent of these plausible alternative coefficients include zero we need to calculate the probability that we would observe the coefficient we found (here <span class="math inline">\(\beta_1 =\)</span> 4.343) if it were actually equal to zero. This probability is referred to as the <strong>p-value</strong>. We calculate it by finding our coefficient’s T-statistic.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -723,8 +729,8 @@ Tip
 <pre><code># A tibble: 2 × 5
   term            estimate std.error statistic  p.value
   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-1 (Intercept)        33.4      1.82       18.3 1.17e-44
-2 log_gdp_per_cap     4.32     0.203      21.3 2.77e-53</code></pre>
+1 (Intercept)        33.2      1.82       18.2 3.01e-44
+2 log_gdp_per_cap     4.34     0.203      21.4 1.67e-53</code></pre>
 </div>
 </div>
 <p>The coefficient we observed is statistically significant: there is a <em>very, very, very</em> small chance (far less than 5% certainly) we would be able to pull a perfect random sample from our population and fit this model if there truly was no relationship between a country’s average life expectancy and its GDP per capita.</p>

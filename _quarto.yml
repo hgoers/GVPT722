@@ -22,6 +22,7 @@ website:
       contents:
         - content/01-introduction.qmd
         - content/02-ols_basics.qmd
+        - content/03-statistical_inference.qmd
         
   page-footer:
     left: |

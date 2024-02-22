@@ -14,7 +14,6 @@ bibliography: references.bib
 ```{=html}
 <iframe class="slide-deck" src="../content/slides/02-ols_basics.html" width = "100%" height = 600px></iframe>
 ```
-
 ## Packages
 
 ```{r}
@@ -359,6 +358,7 @@ Imagine that the only information I provide to you is these `r nrow(nes) |> scal
 ```{r}
 mean(nes$obama_therm, na.rm = T)
 ```
+
 ::: {.callout-tip collapse="true"}
 It's just fancy averaging!
 
@@ -367,9 +367,9 @@ lm(obama_therm ~ 1, data = nes)
 ```
 :::
 
-Now I might ask you what other piece of information you would like to know about this random individual that might improve your guess. You may respond that you would like to know whether or not the random individual identifies as a Democrat. You suspect that Democrats will have warmer feelings towards Obama than non-Democrats. 
+Now I might ask you what other piece of information you would like to know about this random individual that might improve your guess. You may respond that you would like to know whether or not the random individual identifies as a Democrat. You suspect that Democrats will have warmer feelings towards Obama than non-Democrats.
 
-You adopt the same approach (your best guess is the average response), but you can now look at Democrats and non-Democrats separately. 
+You adopt the same approach (your best guess is the average response), but you can now look at Democrats and non-Democrats separately.
 
 ```{r}
 obama_therm_dem <- nes |> 
@@ -388,7 +388,7 @@ It's just fancy averaging!
 lm(obama_therm ~ dem, data = nes)
 ```
 
-Remember, the coefficient estimate for `dem` is the estimated difference between individuals who do not identify as Democrats (`dem` $= 0$) and individuals who identify as Democrats (`dem` $= 1$). In other words, add those two values together and you will get the average response provided by Democrats. 
+Remember, the coefficient estimate for `dem` is the estimated difference between individuals who do not identify as Democrats (`dem` $= 0$) and individuals who identify as Democrats (`dem` $= 1$). In other words, add those two values together and you will get the average response provided by Democrats.
 :::
 
 Have you improved your guess? How might we evaluate this? One approach would be to look at how far our predicted values were from the observed values.
@@ -422,4 +422,4 @@ pred |>
 
 The simple approach predicts values further from the observed values than our approach that accounts for party ID. Great! It is worthwhile asking our random individual to which party they belong.
 
-Soon, we will look at including more than one predictor in our models. This will help us improve our predictive power even further. 
+Soon, we will look at including more than one predictor in our models. This will help us improve our predictive power even further.

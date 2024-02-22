@@ -429,7 +429,7 @@ Imagine that the only information I provide to you is these 5,916 individuals’
 mean(nes$obama_therm, na.rm = T)
 ```
 
--   It's just fancy averaging! 
+-   It's just fancy averaging!
 
 ```{r}
 lm(obama_therm ~ 1, data = nes)
@@ -481,7 +481,7 @@ lm(obama_therm ~ dem, data = nes) |>
 
 ## Have we improved our guess?
 
-How accurately do we predict individuals' feelings towards Obama? 
+How accurately do we predict individuals' feelings towards Obama?
 
 ```{r}
 #| echo: false
@@ -499,7 +499,7 @@ pred |>
   head(n = 12)
 ```
 
-## How does each approach perform? 
+## How does each approach perform?
 
 ```{r}
 #| echo: false
@@ -517,9 +517,9 @@ pred |>
        colour = "Democrat")
 ```
 
-## How does each approach perform? 
+## How does each approach perform?
 
-What's the sum of those distances? 
+What's the sum of those distances?
 
 ```{r}
 pred |> 
@@ -529,6 +529,6 @@ pred |>
             r_2_party_id = scales::comma(sum(resid_party_id^2, na.rm = T)))
 ```
 
-::: {.aside}
+::: aside
 Remember: this is the $R^2$ value.
 :::

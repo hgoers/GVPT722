@@ -1,0 +1,268 @@
+---
+title: "Consistency and bias"
+subtitle: "GVPT722"
+format: 
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    theme: solarized
+    embed-resources: true
+execute: 
+  message: false
+  warning: false
+  echo: true
+---
+
+## What problem are we solving?
+
+*Building confidence in your inference from a finite number of random samples.*
+
+## Data and packages
+
+```{r}
+library(tidyverse)
+library(poliscidata)
+library(modelsummary)
+library(broom)
+library(ggdist)
+```
+
+Because we are working with randomness:
+
+```{r}
+set.seed(222)
+```
+
+## Consistency
+
+Refers to the probability that each random sample from our population will produce a similar set of estimates of our regression coefficients.
+
+## Consistency
+
+*What is the relationship between an individual's feelings towards President Obama and their party affiliation?*
+
+```{r}
+poliscidata::nes |> 
+  select(caseid, obama_therm, dem) |> 
+  glimpse()
+```
+
+## Consistency
+
+*What is the relationship between an individual's feelings towards President Obama and their party affiliation?*
+
+```{r}
+m <- lm(obama_therm ~ dem, data = nes)
+```
+
+```{r}
+#| echo: false
+
+modelsummary(m, 
+             coef_rename = c(dem = "Democrat"), 
+             statistic = NULL, 
+             stars = T,
+             gof_map = c("nobs"))
+```
+
+::: aside
+Individuals who identify as Democrats have, on average, `r tidy(m) |> filter(term == "dem") |> pull(estimate) |> round(1)` points warmer feelings towards President Obama than individuals who do not identify as Democrats. 
+:::
+
+## Random sample from our "population"
+
+Let's start with a random sample of 100 respondents:
+
+```{r}
+nes_100 <- nes |> 
+  sample_n(100) |> 
+  select(caseid, obama_therm, dem)
+
+glimpse(nes_100)
+```
+
+## Learning from this sample
+
+```{r}
+m <- lm(obama_therm ~ dem, data = nes_100)
+```
+
+```{r}
+#| echo: false
+
+modelsummary(m, 
+             coef_rename = c(dem = "Democrat"), 
+             statistic = NULL, 
+             stars = T,
+             gof_map = c("nobs"))
+```
+
+## Acknowledging randomness
+
+Let's take a different random sample of 100 respondents:
+
+```{r}
+nes_100 <- nes |> 
+  sample_n(100) |> 
+  select(caseid, obama_therm, dem)
+
+glimpse(nes_100)
+```
+
+## Acknowledging randomness
+
+Let's take a different random sample of 100 respondents:
+
+```{r}
+m <- lm(obama_therm ~ dem, data = nes_100)
+```
+
+```{r}
+#| echo: false
+
+modelsummary(m, 
+             coef_rename = c(dem = "Democrat"), 
+             statistic = NULL, 
+             stars = T,
+             gof_map = c("nobs"))
+```
+
+## Acknowledging randomness
+
+Let's take 1,000 different random samples of 100 respondents. 
+
+```{r}
+#| echo: false
+
+random_sample_nes <- function(n) {
+  
+  nes_sample <- nes |> 
+    sample_n(n) |> 
+    select(caseid, obama_therm, dem)
+  
+  m <- lm(obama_therm ~ dem, data = nes_sample)
+  
+  dem_estimate <- tidy(m) |> 
+    filter(term == "dem") |> 
+    pull(estimate)
+  
+  dem_estimate
+  
+}
+
+nes_100_dem_estimates <- map(rep(100, 1000), random_sample_nes)
+
+ggplot(tibble(beta_dem = unlist(nes_100_dem_estimates)), 
+       aes(x = beta_dem)) + 
+  stat_halfeye() + 
+  theme_minimal()
+```
+
+## Building confidence in our one random sample
+
+We can only take a finite number of random samples from our population.
+
+-   How can we increase our confidence that the estimated coefficients produced by these random samples is close to the truth? 
+
+## Building confidence in our one random sample
+
+We can do this by increasing our sample size. The larger the sample size, the more consistent the estimates.
+
+-   Let's look at 1,000 different random samples of 300 respondents. 
+
+-   And 1,000 different random samples of 1,000 respondents. 
+
+Do we get more consistent estimates? 
+
+## Building confidence in our one random sample
+
+```{r}
+#| echo: false
+
+nes_300_dem_estimates <- map(rep(300, 1000), random_sample_nes)
+
+nes_1000_dem_estimates <- map(rep(1000, 1000), random_sample_nes)
+
+tibble(sample_size = 100, 
+       beta_dem = unlist(nes_100_dem_estimates)) |> 
+  bind_rows(
+    tibble(
+      sample_size = 300,
+      beta_dem = unlist(nes_300_dem_estimates)
+    )
+  ) |> 
+  bind_rows(
+    tibble(
+      sample_size = 1000,
+      beta_dem = unlist(nes_1000_dem_estimates)
+    )
+  ) |> 
+  ggplot(aes(x = beta_dem, fill = factor(sample_size))) + 
+  stat_halfeye(alpha = 0.5) + 
+  theme_minimal() + 
+  theme(legend.position = "bottom") + 
+  labs(fill = "Sample size")
+```
+
+## Bias
+
+*A biased coefficient estimate will systematically be higher or lower than the true value.*
+
+## What if we only sampled from males? 
+
+What happens to our understanding of the relationship between an individual’s feelings towards Obama and their party affiliation?
+
+```{r}
+nes_men <- nes |> 
+  filter(gender == "Male") |> 
+  select(caseid, obama_therm, dem, gender)
+
+glimpse(nes_men)
+```
+
+## A consistent but biased estimate
+
+Let's take a random sample of 1,000 individuals from this male-only pool.  
+
+```{r}
+#| echo: false
+
+nes_1000_men <- sample_n(nes_men, 1000)
+
+m_men <- lm(obama_therm ~ dem, data = nes_1000_men)
+
+modelsummary(list("Males only" = m_men), 
+             coef_rename = c(dem = "Democrat"), 
+             statistic = NULL, 
+             stars = T,
+             gof_map = "nobs")
+```
+
+## A consistent but biased estimate
+
+```{r}
+#| echo: false
+
+nes_1000 <- sample_n(nes, 1000)
+
+m_all_sample <- lm(obama_therm ~ dem, data = nes_1000)
+m_all <- lm(obama_therm ~ dem, data = nes)
+
+modelsummary(list("Males only" = m_men, 
+                  "All respondents" = m_all_sample,
+                  "'True' relationship" = m_all), 
+             coef_rename = c(dem = "Democrat"), 
+             statistic = NULL, 
+             stars = T,
+             gof_map = "nobs")
+```
+
+## Summary
+
+-   Cannot take infinite samples from our population
+
+-   Can use our understanding of uncertainty to increase our confidence in a single or finite number of random samples from our population (*consistency*)
+
+-   Need to ensure that we are not excluding groups of observations from the population from which we draw those random samples (*bias*)
+
+-   **We aim to have consistent *and* unbiased estimates of our coefficients**
