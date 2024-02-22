@@ -28,14 +28,6 @@ set.seed(222)
 
 ## Consistency and bias
 
-::: {style="position: relative; padding-bottom: 64.98194945848375%; height: 0;"}
-<iframe src="https://www.loom.com/embed/665790e3436e4e98b2696cd983bb0475?sid=ea912ad3-152b-4660-97f6-fa3e0ccae6aa" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-
-</iframe>
-:::
-
-## An illustrative example
-
 To illustrate these concepts, we are going to look at the relationship between an individual's feelings towards President Obama and whether or not they identify as a Democrat. We will use responses to the NES, which can be accessed here:
 
 ```{r}
