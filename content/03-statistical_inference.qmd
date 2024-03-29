@@ -8,10 +8,6 @@ execute:
   warning: false
 ---
 
-::: callout-warning
-THIS IS A DRAFT.
-:::
-
 ## Packages
 
 ```{r}

@@ -23,7 +23,8 @@ website:
         - content/01-introduction.qmd
         - content/02-ols_basics.qmd
         - content/03-statistical_inference.qmd
-        
+        - content/04-model_specification.qmd
+        - content/04-panel_data.qmd
   page-footer:
     left: |
       Content {{< fa brands creative-commons >}} {{< var course.copyright_year >}} by [{{< var instructor.name_no_title >}}]({{< var instructor.url >}}) <br>

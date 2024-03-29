@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>GVPT722 - Model Specification</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="..//files/img/hex-testudo.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../html/custom.css">
+</head>
+
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">GVPT722</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../content/01-introduction.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Content</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/04-model_specification.html">Model Specification</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation docked overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/01-introduction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Linear Regression: A Refresher</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/02-ols_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OLS Basics</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/03-statistical_inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Statistical Inference</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/04-model_specification.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Model Specification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/04-panel_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Panel Data</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
+  <li><a href="#the-economic-benefits-of-justice" id="toc-the-economic-benefits-of-justice" class="nav-link" data-scroll-target="#the-economic-benefits-of-justice">The economic benefits of justice</a></li>
+  <li><a href="#adding-more-predictors" id="toc-adding-more-predictors" class="nav-link" data-scroll-target="#adding-more-predictors">Adding more predictors</a>
+  <ul class="collapse">
+  <li><a href="#using-this-richer-model" id="toc-using-this-richer-model" class="nav-link" data-scroll-target="#using-this-richer-model">Using this richer model</a></li>
+  </ul></li>
+  <li><a href="#including-categorical-variables-with-multiple-categories" id="toc-including-categorical-variables-with-multiple-categories" class="nav-link" data-scroll-target="#including-categorical-variables-with-multiple-categories">Including categorical variables with multiple categories</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Model Specification</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>THIS IS A DRAFT.</p>
+</div>
+</div>
+<section id="set-up" class="level2">
+<h2 class="anchored" data-anchor-id="set-up">Set up</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marginaleffects)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="the-economic-benefits-of-justice" class="level2">
+<h2 class="anchored" data-anchor-id="the-economic-benefits-of-justice">The economic benefits of justice</h2>
+<p><span class="citation" data-cites="appel2012">Appel and Loyle (<a href="#ref-appel2012" role="doc-biblioref">2012</a>)</span> find that post-conflict states that engage in post-conflict justice initiatives, including truth and reconciliation commissions, receive more foreign direct investment than states that do not establish these post-conflict justice institutions. This is a great paper and I encourage you to take a look at <a href="https://journals.sagepub.com/doi/10.1177/0022343312450044">their argument</a> in detail if this interests you.</p>
+<p>Today we are going to explore this finding using their data. Let’s start by reading it in and cleaning it up a little.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ebj_raw <span class="ot">&lt;-</span> rio<span class="sc">::</span><span class="fu">import</span>(<span class="st">"https://github.com/joshuaalley/cross-sectional-ols/raw/master/appel-loyle-2012/appelloyle_jprdata.dta"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ebj_raw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 95
+Columns: 25
+$ testnewid_lag       &lt;dbl&gt; 2880000, 2882880, 2850000, 3080000, 3083080, 13613…
+$ ccode               &lt;dbl&gt; 41, 41, 52, 70, 70, 90, 92, 92, 93, 93, 95, 101, 1…
+$ id                  &lt;dbl&gt; 71, 71, 154, 102, 102, 67, 141, 141, 116, 116, 123…
+$ damage              &lt;dbl&gt; 0.000000, 12.855902, -2.787351, 0.000000, -8.94999…
+$ victory_lag         &lt;dbl&gt; 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0,…
+$ peace_agreement_lag &lt;dbl&gt; 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,…
+$ issue_territory_lag &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ cw_duration_lag     &lt;dbl&gt; 1, 1, 1, 1, 1, 31, 1, 13, 2, 9, 1, 1, 20, 1, 1, 5,…
+$ fv8                 &lt;dbl&gt; 1182.4979, 1088.6803, 7742.7363, 6894.7041, 7780.0…
+$ fv10                &lt;dbl&gt; 8.407080e+09, 8.055394e+09, 9.542938e+09, 6.284180…
+$ fv11                &lt;dbl&gt; -2.13246846, -14.88329220, 1.93709719, -7.86348295…
+$ fv27                &lt;dbl&gt; 0.00, 0.00, 0.84, 0.39, 0.39, 0.43, 0.29, 0.45, 0.…
+$ fv34                &lt;dbl&gt; -0.7681904, -0.0871520, -1.1305820, 1.1804080, 1.1…
+$ v2diff              &lt;dbl&gt; -0.3388218, 0.2509360, 5.1753235, -0.5635655, -1.1…
+$ v3Mdiff             &lt;dbl&gt; -9.800000, 6.600000, 510.158875, -340.690430, 6460…
+$ coldwar             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1,…
+$ xratf               &lt;dbl&gt; 0.0000000, 1.7766030, 0.0000000, 1.9780277, 1.1296…
+$ labor               &lt;dbl&gt; 68.5, 67.9, 55.2, 59.8, 61.3, 63.1, 61.8, 60.9, 58…
+$ physint             &lt;dbl&gt; 2, 0, 5, 2, 2, 3, NA, 5, 3, 2, 4, 1, 4, 4, NA, NA,…
+$ worker              &lt;dbl&gt; 0, 0, 2, 0, 1, 0, NA, 0, 2, 2, 1, 2, 1, 0, NA, NA,…
+$ polity2             &lt;dbl&gt; 7, -7, 9, 4, 6, 8, -1, 7, 0, 6, 8, 8, 5, 2, -7, -9…
+$ v60mean             &lt;dbl&gt; 27.36550, 27.36550, 84.86728, 54.65190, 57.42015, …
+$ v63mean             &lt;dbl&gt; 0.1613218, 0.1319793, 66.6174469, 23.7497063, 15.0…
+$ v64mean             &lt;dbl&gt; 55.02233, 56.09750, 72.61483, 74.67104, 75.23493, …
+$ truthvictim         &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,…</code></pre>
+</div>
+</div>
+<p>We will change some of these variable names to make them easier to understand:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ebj_df <span class="ot">&lt;-</span> ebj_raw <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(id, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">net_fdi =</span> v3Mdiff, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">truthvictim =</span> <span class="fu">factor</span>(truthvictim, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Commission not established"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                                                         <span class="st">"Commission established"</span>)),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">gdp_per_cap =</span> fv8,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">polity2 =</span> <span class="fu">case_when</span>(polity2 <span class="sc">&gt;</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Democracy"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                                polity2 <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">~</span> <span class="st">"Autocracy"</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Hybrid"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>They are interested in measuring the relationship between net FDI inflows over a 10-year period after a conflict and the establishment of a truth and reconciliation commission. Let’s take a quick look at these two main variables of interest.</p>
+<p>Starting with their dependent variable, <code>net_fdi</code>, we can see that the majority of states’ net FDI inflows are clustered around $0. Some post-conflict states received less FDI inflows over the 10-year period following conflict, while others received more.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There appears to be a clear outlier: a net inflow of $24,836.79 million. We will keep this in because this is not the focus of today’s session, but I would encourage you to explore whether these findings are sensitive to its inclusion.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ebj_df, <span class="fu">aes</span>(<span class="at">x =</span> net_fdi)) <span class="sc">+</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Net FDI inflows (USD million)"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>They also provide us with data on whether a post-conflict leader established a truth and reconciliation commission after the conflict: <code>truthvictim</code>. Let’s take a closer look at this main explanatory variable of interest:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tabyl</span>(ebj_df, truthvictim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                truthvictim  n   percent
+ Commission not established 77 0.8105263
+     Commission established 18 0.1894737</code></pre>
+</div>
+</div>
+<p>The majority of post-conflict states over this period did not established a truth and reconciliation commission after the conflict.</p>
+<p>Of the states that did, do they tend to receive higher net FDI inflows than their less reconciliatory counterparts?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ebj_df, <span class="fu">aes</span>(<span class="at">x =</span> net_fdi, <span class="at">y =</span> truthvictim, <span class="at">fill =</span> truthvictim)) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>() <span class="sc">+</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Net FDI inflows (USD million)"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span> </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>It is difficult to see with such skewed data, but it appears to be the case that states that established a truth and reconciliation commission received higher net FDI inflows on average than those states that did not.</p>
+<p>We can formally test this using linear regression:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim, <span class="at">data =</span> ebj_df)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">425.006</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(323.874)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Commission established</td>
+<td style="text-align: center;">1763.517*</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; box-shadow: 0px 1.5px;"></td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(744.049)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Num.Obs.</td>
+<td style="text-align: center;">95</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R2</td>
+<td style="text-align: center;">0.057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">R2 Adj.</td>
+<td style="text-align: center;">0.047</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: center;">1784.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: center;">1792.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log.Lik.</td>
+<td style="text-align: center;">−889.253</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">5.618</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RMSE</td>
+<td style="text-align: center;">2811.91</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
+<td style="text-align: center;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<p>According to this, post-conflict states that did not establish a truth and reconciliation commission received on average net FDI inflows of $425.01 million in the 10-year period after conflict.</p>
+<p>In contrast, states that <em>did</em> establish a truth and reconciliation commission received on average net FDI inflows of $2,188.52 million.</p>
+<p>These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of $1,763.52 million is; therefore, substantially significant.</p>
+<p>We can visualize this estimated difference:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"truthvictim"</span>) <span class="sc">+</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Truth and reconciliation commission established"</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>States that did not establish a commission plausibly receive no net FDI inflows in this post-conflict period. Further, it is plausible that investment leaves their economies: this net inflow can be negative. On the other hand, states that do establish a commission enjoy, on average, billions in net FDI inflows. For an economy struggling to establish indigenous production in a post-conflict setting, this can be critical to their long-term economic development. Again, this is further proof of the substantive significance of this relationship.</p>
+</section>
+<section id="adding-more-predictors" class="level2">
+<h2 class="anchored" data-anchor-id="adding-more-predictors">Adding more predictors</h2>
+<p>One of Appel and Loyle’s major contributions is their critique of approaches to estimating net FDI inflows that only focus on economic factors. They argue that there are several political factors that are significant determinants of other countries’ and foreign firms’ willingness to invest in these war-torn countries.</p>
+<p>This critique is very valid, but it suggests that there are many different things influencing this outcome of interest, including economic factors. We have only looked at the political! The economists might turn around and accuse us of doing the very thing Appel and Loyle accused them of!</p>
+<p>Let’s add some of those economic factors into our model. We will start with an intuitive one: individuals’ economic wealth (measured as GDP per capita). I expect that foreign firms will be more willing to invest larger sums of money into economies with richer citizens. These citizens will be more willing and able to purchase the goods and services provided by those firms.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap, <span class="at">data =</span> ebj_df)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">−319.173</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(396.052)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Commission established</td>
+<td style="text-align: center;">1673.288*</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(714.015)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GDP per capita (USD current)</td>
+<td style="text-align: center;">0.318**</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; box-shadow: 0px 1.5px;"></td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.105)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Num.Obs.</td>
+<td style="text-align: center;">95</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R2</td>
+<td style="text-align: center;">0.142</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">R2 Adj.</td>
+<td style="text-align: center;">0.124</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: center;">1777.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: center;">1787.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log.Lik.</td>
+<td style="text-align: center;">−884.742</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">7.638</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RMSE</td>
+<td style="text-align: center;">2681.52</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
+<td style="text-align: center;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<p>We continue to find a positive and statistically significant relationship between the establishment of a truth and reconciliation commission and net FDI inflows. This model also accounts for the association between the state’s GDP per capita and those inflows.</p>
+<p>The intercept here is not informative on its own. It tells us the estimated average net FDI inflows for states that did not establish a truth and reconciliation commission and in which citizens had a GDP per capita of $0. Although the majority of states did not establish a truth and reconciliation commission, there are no states in the world that have a GDP per capita of $0.</p>
+<p>Let’s focus on the other coefficients. We find that states that established a truth and reconciliation commission received, on average, net FDI inflows of $1,673.29 million more than states that did not in the 10-year period after conflict. This is a slightly smaller estimated difference than we found in the model that did not account for individuals’ average wealth, but it remains large.</p>
+<p>We also find that an increase in the GDP per capita of a state of $1,000 is associated with an increase of $318.45 million in net FDI inflow.</p>
+<section id="using-this-richer-model" class="level3">
+<h3 class="anchored" data-anchor-id="using-this-richer-model">Using this richer model</h3>
+<p>We now have a richer understanding of the determinants of net FDI inflows to post-conflict countries. We have accounted for both an economic and political determinants of those flows. Although it is often useful to look at the estimated relationship of each of those variables individually (as we did just above), we often learn more by looking at the whole model in context.</p>
+<p>As usual, one of the easiest ways to do this and to communicate this is through visualizations. Let’s look at the predicted net FDI inflows for post-conflict countries that established and did not establish commissions across a range of plausible GDP per capita values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>We can see the positive relationship between GDP per capita and net FDI inflows <em>and</em> that states that have established a commission start at a higher predicted effect than those that did not establish a commission.</p>
+</section>
+</section>
+<section id="including-categorical-variables-with-multiple-categories" class="level2">
+<h2 class="anchored" data-anchor-id="including-categorical-variables-with-multiple-categories">Including categorical variables with multiple categories</h2>
+<p>Let’s extend this analysis further and briefly depart from Appel and Loyle’s models. What if we believe that the country’s regime type influences its net FDI inflows? For example, we may theorize that strong democracies and strong autocracies provide the political stability required to comfort foreign investors. These investors believe that the strong control democrats and autocrats have over their citizens and institutions reduces some of the negative impact of post-conflict volatility. However, hybrid regimes do not tend to have this control. Investors are; therefore, less likely to invest in post-conflict countries with hybrid regimes.</p>
+<p>Here, we have a categorical variable with three categories: democracy, hybrid regime, and autocracy. We have thus far largely dealt with binary categorical variables (voted or not, Southern or not, female or not). How do we use and interpret multiple categorical variables in regression analysis?</p>
+<p>Happily, the intuition remains the same as with our binary categorical variables. We hold one category out as our baseline category and then compare the associated effects of the other categories to this one. Let’s step through that using our model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap <span class="sc">+</span> polity2, <span class="at">data =</span> ebj_df)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Democracy"</span> <span class="ot">=</span> <span class="st">"Democracy"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Hybrid"</span> <span class="ot">=</span> <span class="st">"Hybrid"</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;(1)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">−432.860</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(524.558)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Commission established</td>
+<td style="text-align: center;">1755.880*</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(733.164)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GDP per capita (USD current)</td>
+<td style="text-align: center;">0.317**</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(0.106)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Democracy</td>
+<td style="text-align: center;">−318.530</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(778.650)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hybrid</td>
+<td style="text-align: center;">408.522</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; box-shadow: 0px 1.5px;"></td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(642.224)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Num.Obs.</td>
+<td style="text-align: center;">95</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R2</td>
+<td style="text-align: center;">0.152</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">R2 Adj.</td>
+<td style="text-align: center;">0.114</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: center;">1780.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: center;">1795.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log.Lik.</td>
+<td style="text-align: center;">−884.202</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">4.036</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RMSE</td>
+<td style="text-align: center;">2666.31</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
+<td style="text-align: center;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<p>You’ll note that autocracies are missing from our regression table. This is because they are being held out as our baseline category. Their effect on net FDI inflows is captured by the intercept coefficient.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We often say that the intercept coefficient represents the predicted average value of our outcome of interest when all independent variables are set to zero. It might be useful for you to think of your baseline category as taking on the value zero. For example, we can think of <code>autocracy = 0</code>.</p>
+</div>
+</div>
+<p>Our model suggests that autocracies (<code>polity2 = "Autocracy"</code>) that have not established a commission (<code>truthjustice = 0</code>) and that have a GDP per capita equal to $0 (<code>gdp_per_cap = 0</code>) have a predicted average net FDI inflow of -$432.86 million. Great! Now what?</p>
+<p>The coefficients on whether the commission was established and the state’s GDP per capita can both be interpreted exactly as they were above (and as we have previously).</p>
+<p>However, the coefficients on democracies and hybrid regimes need to be interpreted in relation to autocracies (their baseline category). Therefore, the predicted average net FDI inflows for democracies is -$751.39 million, holding all else constant. This is calculated by adding the predicted average net FDI inflows for autocracies (-$432.86 million) to the predicted difference between democracies and autocracies (-$318.53 million).</p>
+<p>Similarly, the predicted average net FDI inflows for hybrid regimes is -$24.34 million, holding all else constant.</p>
+<p>In other words and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a truth and reconciliation commission and individuals’ wealth.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I’m not too worried: none of these coefficients are anywhere close to being statistically significant. But I hope this serves as a good illustration of how we can use multiple categorical variables in our analyses.</p>
+</div>
+</div>
+<p>We can see that clearly by visualizing this model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"polity2"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-appel2012" class="csl-entry" role="listitem">
+Appel, Benjamin J, and Cyanne E Loyle. 2012. <span>“The Economic Benefits of Justice: Post-Conflict Justice and Foreign Direct Investment.”</span> <em>Journal of Peace Research</em> 49 (5): 685–99. <a href="https://doi.org/10.1177/0022343312450044">https://doi.org/10.1177/0022343312450044</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Content <i class="fa-brands fa-creative-commons" aria-label="creative-commons"></i> 2024 by <a href="https://www.harrietgoers.com">Harriet Goers</a> <br> All content licensed under a <i class="fa-brands fa-creative-commons" aria-label="creative-commons"></i> <i class="fa-brands fa-creative-commons-by" aria-label="creative-commons-by"></i> <i class="fa-brands fa-creative-commons-nc" aria-label="creative-commons-nc"></i> <a href="https://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-Non Commercial 4.0 International license (CC BY-NC 4.0)</a></div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">Made with <i class="fa-brands fa-r-project" aria-label="r-project"></i> and <a href="https://quarto.org/">Quarto</a><br> <a href="https://www.andrewheiss.com/teaching/">Heavily inspired by course websites built by Dr Andrew Heiss</a></div>
+  </div>
+</footer>
+
+
+
+</body></html>

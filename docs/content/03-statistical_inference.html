@@ -171,6 +171,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Statistical Inference</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/04-model_specification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model Specification</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/04-panel_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Panel Data</span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -182,8 +194,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#packages" id="toc-packages" class="nav-link active" data-scroll-target="#packages">Packages</a></li>
-  <li><a href="#consistency-and-bias" id="toc-consistency-and-bias" class="nav-link" data-scroll-target="#consistency-and-bias">Consistency and bias</a></li>
-  <li><a href="#an-illustrative-example" id="toc-an-illustrative-example" class="nav-link" data-scroll-target="#an-illustrative-example">An illustrative example</a>
+  <li><a href="#consistency-and-bias" id="toc-consistency-and-bias" class="nav-link" data-scroll-target="#consistency-and-bias">Consistency and bias</a>
   <ul class="collapse">
   <li><a href="#consistency" id="toc-consistency" class="nav-link" data-scroll-target="#consistency">Consistency</a></li>
   <li><a href="#bias" id="toc-bias" class="nav-link" data-scroll-target="#bias">Bias</a></li>
@@ -212,19 +223,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>THIS IS A DRAFT.</p>
-</div>
-</div>
 <section id="packages" class="level2">
 <h2 class="anchored" data-anchor-id="packages">Packages</h2>
 <div class="cell">
@@ -240,13 +238,6 @@ Warning
 </section>
 <section id="consistency-and-bias" class="level2">
 <h2 class="anchored" data-anchor-id="consistency-and-bias">Consistency and bias</h2>
-<div style="position: relative; padding-bottom: 64.98194945848375%; height: 0;">
-<iframe src="https://www.loom.com/embed/665790e3436e4e98b2696cd983bb0475?sid=ea912ad3-152b-4660-97f6-fa3e0ccae6aa" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-</iframe>
-</div>
-</section>
-<section id="an-illustrative-example" class="level2">
-<h2 class="anchored" data-anchor-id="an-illustrative-example">An illustrative example</h2>
 <p>To illustrate these concepts, we are going to look at the relationship between an individual’s feelings towards President Obama and whether or not they identify as a Democrat. We will use responses to the NES, which can be accessed here:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>poliscidata<span class="sc">::</span>nes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -326,11 +317,15 @@ $ dem         &lt;dbl&gt; 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 
 <td style="text-align: center;">−432.813</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">65.961</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">RMSE</td>
 <td style="text-align: center;">25.41</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -415,11 +410,15 @@ $ dem         &lt;dbl&gt; 1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 
 <td style="text-align: center;">−449.166</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">62.030</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">RMSE</td>
 <td style="text-align: center;">26.05</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -587,11 +586,15 @@ $ gender      &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, Male, 
 <td style="text-align: center;">−4416.169</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">435.015</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">RMSE</td>
 <td style="text-align: center;">28.65</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -664,11 +667,15 @@ $ gender      &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, Male, 
 <td style="text-align: center;">−4461.647</td>
 </tr>
 <tr class="odd">
+<td style="text-align: left;">F</td>
+<td style="text-align: center;">463.948</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">RMSE</td>
 <td style="text-align: center;">28.73</td>
 </tr>
 </tbody><tfoot>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
