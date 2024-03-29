@@ -346,6 +346,10 @@ $$
 Average\ life\ expectancy = \beta_0 + b_{0, country} + \beta_1 Year + \epsilon
 $$
 
+:::{.callout-tip}
+This is sometimes referred to as a **random-intercept model** because we create different starting points for each group in our data. 
+:::
+
 In R, we use the `lme4::lme()` function: 
 
 ```{r}
@@ -358,7 +362,7 @@ If we look back at the results of the simple model we fit at the start, we will 
 
 The magic is happening a little under the hood in our errors. They are reported in those two new lines: SD (Intercept country) and SD (Observations).
 
-Our model has separated out the global relationship (not effected by country-specific factors) and the country-specific features.
+Our model has separated out the global relationship (not affected by country-specific factors) and the country-specific features.
 
 The **fixed effects** describe the overall relationship within our data. This is similar to your standard linear regression model fit across all observations. In other words, this is the global average and global growth in average life expectancy. We can isolate these components: 
 

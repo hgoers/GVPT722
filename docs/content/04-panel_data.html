@@ -763,6 +763,19 @@ Average\ life\ expectancy = \beta_0 + b_{0,country} + \beta_1 Year + b_{1,countr
 <p><span class="math display">\[
 Average\ life\ expectancy = \beta_0 + b_{0, country} + \beta_1 Year + \epsilon
 \]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This is sometimes referred to as a <strong>random-intercept model</strong> because we create different starting points for each group in our data.</p>
+</div>
+</div>
 <p>In R, we use the <code>lme4::lme()</code> function:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>m_multi <span class="ot">&lt;-</span> <span class="fu">lmer</span>(life_exp <span class="sc">~</span> year <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> country), <span class="at">data =</span> full_df)</span>
@@ -837,7 +850,7 @@ Average\ life\ expectancy = \beta_0 + b_{0, country} + \beta_1 Year + \epsilon
 </div>
 <p>If we look back at the results of the simple model we fit at the start, we will see very similar coefficients to those captured here. The estimated average life expectancy in 2000 across all countries globally was 67.52 years. This estimated average is increasing by an average of 0.29 years annually.</p>
 <p>The magic is happening a little under the hood in our errors. They are reported in those two new lines: SD (Intercept country) and SD (Observations).</p>
-<p>Our model has separated out the global relationship (not effected by country-specific factors) and the country-specific features.</p>
+<p>Our model has separated out the global relationship (not affected by country-specific factors) and the country-specific features.</p>
 <p>The <strong>fixed effects</strong> describe the overall relationship within our data. This is similar to your standard linear regression model fit across all observations. In other words, this is the global average and global growth in average life expectancy. We can isolate these components:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m_multi, <span class="at">effects =</span> <span class="st">"fixed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
