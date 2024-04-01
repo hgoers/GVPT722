@@ -248,19 +248,6 @@ div.csl-indent {
 
 </header>
 
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>THIS IS A DRAFT.</p>
-</div>
-</div>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
 <div class="cell">
@@ -310,7 +297,13 @@ $ v64mean             &lt;dbl&gt; 55.02233, 56.09750, 72.61483, 74.67104, 75.234
 $ truthvictim         &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,…</code></pre>
 </div>
 </div>
-<p>We will change some of these variable names to make them easier to understand:</p>
+<p>They provide us with data on 95 post-conflict states. We are going to clean this up a little for our purposes today. We will be concentrating on four variables:</p>
+<ul>
+<li><p><code>net_fdi</code>: net FDI inflows over a 10-year period after a conflict (USD, millions);</p></li>
+<li><p><code>truthvictim</code>: whether the state established a post-conflict justice institution after the conflict;</p></li>
+<li><p><code>gdp_per_cap</code>: the country’s annual GDP per capita (USD); and</p></li>
+<li><p><code>polity2</code>: the country’s regime type (which we will convert into a categorical variable listing whether the country is a democracy, autocracy, or hybrid regime).</p></li>
+</ul>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ebj_df <span class="ot">&lt;-</span> ebj_raw <span class="sc">|&gt;</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(id, </span>
@@ -322,8 +315,15 @@ $ truthvictim         &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                                polity2 <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">5</span> <span class="sc">~</span> <span class="st">"Autocracy"</span>,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                                <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Hybrid"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>They are interested in measuring the relationship between net FDI inflows over a 10-year period after a conflict and the establishment of a truth and reconciliation commission. Let’s take a quick look at these two main variables of interest.</p>
+<p>Appel and Loyle are interested in measuring the relationship between net FDI inflows over a 10-year period after a conflict and the establishment of a truth and reconciliation commission. Let’s take a quick look at these two main variables of interest.</p>
 <p>Starting with their dependent variable, <code>net_fdi</code>, we can see that the majority of states’ net FDI inflows are clustered around $0. Some post-conflict states received less FDI inflows over the 10-year period following conflict, while others received more.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ebj_df<span class="sc">$</span>net_fdi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+-1858.914    -0.572    38.290   759.146   408.250 24836.787 </code></pre>
+</div>
+</div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -334,23 +334,23 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>There appears to be a clear outlier: a net inflow of $24,836.79 million. We will keep this in because this is not the focus of today’s session, but I would encourage you to explore whether these findings are sensitive to its inclusion.</p>
+<p>There appears to be a clear outlier: a net inflow of $24,836.79 million. You can see that this is pulling up the average net FDI inflow well above the median inflow. We will keep this in because this is not the focus of today’s session, but I would encourage you to explore whether these findings are sensitive to its inclusion.</p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ebj_df, <span class="fu">aes</span>(<span class="at">x =</span> net_fdi)) <span class="sc">+</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Net FDI inflows (USD million)"</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span> </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ebj_df, <span class="fu">aes</span>(<span class="at">x =</span> net_fdi)) <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Net FDI inflows (USD million)"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span> </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-model_specification_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>They also provide us with data on whether a post-conflict leader established a truth and reconciliation commission after the conflict: <code>truthvictim</code>. Let’s take a closer look at this main explanatory variable of interest:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tabyl</span>(ebj_df, truthvictim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tabyl</span>(ebj_df, truthvictim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                truthvictim  n   percent
  Commission not established 77 0.8105263
@@ -360,9 +360,9 @@ Note
 <p>The majority of post-conflict states over this period did not established a truth and reconciliation commission after the conflict.</p>
 <p>Of the states that did, do they tend to receive higher net FDI inflows than their less reconciliatory counterparts?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ebj_df <span class="sc">|&gt;</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(truthvictim) <span class="sc">|&gt;</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_net_fdi =</span> <span class="fu">mean</span>(net_fdi))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ebj_df <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(truthvictim) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_net_fdi =</span> <span class="fu">mean</span>(net_fdi))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   truthvictim                avg_net_fdi
@@ -374,11 +374,11 @@ Note
 <p>States that established a truth and reconciliation commission received higher net FDI inflows, on average, than those states that did not. This difference looks substantial! It’s $1,763.52 million!</p>
 <p>But what are the chances this difference is simply the product of chance? We can formally test this using linear regression:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim, <span class="at">data =</span> ebj_df)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim, <span class="at">data =</span> ebj_df)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -450,6 +450,23 @@ Note
 </div>
 <p>According to this model, what is the average predicted net FDI inflows for countries that did not establish a truth and reconciliation commission?</p>
 <div class="callout callout-style-default callout-caution callout-titled" title="Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Post-conflict states that did not establish a truth and reconciliation commission received, on average, net FDI inflows of $425.01 million in the 10-year period after conflict.</p>
+</div>
+</div>
+</div>
+<p>According to this model, what is the average predicted net FDI inflows for countries that <em>did</em> establish a truth and reconciliation commission?</p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Answer">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
@@ -461,49 +478,33 @@ Answer
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>According to this, post-conflict states that did not establish a truth and reconciliation commission received on average net FDI inflows of $425.01 million in the 10-year period after conflict.</p>
-</div>
-</div>
-</div>
-<p>According to this model, what is the average predicted net FDI inflows for countries that <em>did</em> establish a truth and reconciliation commission?</p>
-<div class="callout callout-style-default callout-caution callout-titled" title="Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Answer
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>In contrast, states that <em>did</em> establish a truth and reconciliation commission received on average net FDI inflows of $2,188.52 million.</p>
+<p>In contrast, states that <em>did</em> establish a truth and reconciliation commission received, on average, net FDI inflows of $2,188.52 million.</p>
 <p>In other words:</p>
 <p><span class="math display">\[
-Average\ net\ FDI\ inflows_{Commission\ established} = \beta_0 + \beta_1 Commission\ established + \epsilon
+Average\ net\ FDI\ inflows = \beta_0 + \beta_1 Commission\ established + \epsilon
+\]</span></p>
+<p>When a commission was established (i.e.&nbsp;<span class="math inline">\(Commission\ established = 1\)</span>):</p>
+<p><span class="math display">\[
+Average\ net\ FDI\ inflows = 425.01 + 1763.52 * 1 + \epsilon \\
 \]</span></p>
 <p><span class="math display">\[
-Average\ net\ FDI\ inflows_{Commission\ established} = 425.01 + 1763.52 * 1 + \epsilon \\
-\]</span></p>
-<p><span class="math display">\[
-2188.52
+Average\ net\ FDI\ inflows = 2188.52
 \]</span></p>
 </div>
 </div>
 </div>
 <section id="substantive-significance" class="level3">
 <h3 class="anchored" data-anchor-id="substantive-significance">Substantive significance</h3>
-<p>This finding is substantively significant. These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of $1,763.52 million is; therefore, substantially significant.</p>
-<p>We can visualize this estimated difference:</p>
+<p>This finding is substantively significant. These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of $1,763.52 million is; therefore, likely to incentivize this policy.</p>
+<p>We can visualize this estimated difference in predicted net FDI inflows between states that established a commission and those that did not:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"truthvictim"</span>) <span class="sc">+</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Truth and reconciliation commission established"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"truthvictim"</span>) <span class="sc">+</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-model_specification_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>States that did not establish a commission plausibly receive no net FDI inflows in this post-conflict period. Further, it is plausible that investment leaves their economies: this net inflow can be negative. On the other hand, states that do establish a commission enjoy, on average, billions in net FDI inflows. For an economy struggling to establish indigenous production in a post-conflict setting, this can be critical to their long-term economic development. Again, this is further proof of the substantive significance of this relationship.</p>
@@ -514,13 +515,14 @@ Average\ net\ FDI\ inflows_{Commission\ established} = 425.01 + 1763.52 * 1 + \e
 <p>One of Appel and Loyle’s major contributions is their critique of approaches to estimating net FDI inflows that only focus on economic factors. They argue that there are several political factors that are significant determinants of other countries’ and foreign firms’ willingness to invest in these war-torn countries.</p>
 <p>This critique is very valid, but it suggests that there are many different things influencing this outcome of interest, including economic factors. We have only looked at the political! The economists might turn around and accuse us of doing the very thing Appel and Loyle accused them of!</p>
 <p>Let’s add some of those economic factors into our model. We will start with an intuitive one: individuals’ economic wealth (measured as GDP per capita). I expect that foreign firms will be more willing to invest larger sums of money into economies with richer citizens. These citizens will be more willing and able to purchase the goods and services provided by those firms.</p>
+<p>Therefore, I hypothesize that the greater a state’s GDP per capita, the larger its net FDI inflows.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap, <span class="at">data =</span> ebj_df)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap, <span class="at">data =</span> ebj_df)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -604,20 +606,20 @@ Average\ net\ FDI\ inflows_{Commission\ established} = 425.01 + 1763.52 * 1 + \e
 <p>We also find that an increase in the GDP per capita of a state of $1,000 is associated with an increase of $318.45 million in net FDI inflow.</p>
 <section id="using-this-richer-model" class="level3">
 <h3 class="anchored" data-anchor-id="using-this-richer-model">Using this richer model</h3>
-<p>We now have a richer understanding of the determinants of net FDI inflows to post-conflict countries. We have accounted for both an economic and political determinants of those flows. Although it is often useful to look at the estimated relationship of each of those variables individually (as we did just above), we often learn more by looking at the whole model in context.</p>
+<p>We now have a richer understanding of the determinants of net FDI inflows to post-conflict countries. We have accounted for both economic and political determinants of those flows. Although it is often useful to look at the estimated relationship of each of those variables individually (as we did just above), we often learn more by looking at the whole model in context.</p>
 <p>As usual, one of the easiest ways to do this and to communicate this is through visualizations. Let’s look at the predicted net FDI inflows for post-conflict countries that established and did not establish commissions across a range of plausible GDP per capita values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita"</span>,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita (USD)"</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-model_specification_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>We can see the positive relationship between GDP per capita and net FDI inflows <em>and</em> that states that have established a commission start at a higher predicted effect than those that did not establish a commission.</p>
+<p>We can see the positive relationship between GDP per capita and net FDI inflows <em>and</em> that states that have established a commission start and stay at a higher predicted inflow than those that did not establish a commission for any given value of GDP per capita.</p>
 </section>
 </section>
 <section id="including-categorical-variables-with-multiple-categories" class="level2">
@@ -626,14 +628,14 @@ Average\ net\ FDI\ inflows_{Commission\ established} = 425.01 + 1763.52 * 1 + \e
 <p>Here, we have a categorical variable with three categories: democracy, hybrid regime, and autocracy. We have thus far largely dealt with binary categorical variables (voted or not, Southern or not, female or not). How do we use and interpret multiple categorical variables in regression analysis?</p>
 <p>Happily, the intuition remains the same as with our binary categorical variables. We hold one category out as our baseline category and then compare the associated effects of the other categories to this one. Let’s step through that using our model:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap <span class="sc">+</span> polity2, <span class="at">data =</span> ebj_df)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Democracy"</span> <span class="ot">=</span> <span class="st">"Democracy"</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Hybrid"</span> <span class="ot">=</span> <span class="st">"Hybrid"</span>),</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi <span class="sc">~</span> truthvictim <span class="sc">+</span> gdp_per_cap <span class="sc">+</span> polity2, <span class="at">data =</span> ebj_df)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"truthvictimCommission established"</span> <span class="ot">=</span> <span class="st">"Commission established"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"gdp_per_cap"</span> <span class="ot">=</span> <span class="st">"GDP per capita (USD current)"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Democracy"</span> <span class="ot">=</span> <span class="st">"Democracy"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"polity2Hybrid"</span> <span class="ot">=</span> <span class="st">"Hybrid"</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -749,8 +751,8 @@ Tip
 <p>Our intercept isn’t particularly useful because it describes the predicted net FDI inflows for countries with a GDP per capita of $0. These don’t exist and will never exist, so let’s use our model to predict what the net FDI inflows for countries with a more realistic set of GDP per capita would look like.</p>
 <p>The average GDP per capita across our data is:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ebj_df<span class="sc">$</span>gdp_per_cap) <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  scales<span class="sc">::</span><span class="fu">dollar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(ebj_df<span class="sc">$</span>gdp_per_cap) <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  scales<span class="sc">::</span><span class="fu">dollar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "$2,390.53"</code></pre>
 </div>
@@ -758,15 +760,15 @@ Tip
 <p>Using our model, what do we predict to be the net FDI inflows for democracies, autocracies, and hybrid regimes that have this average level of GDP per capita and that either have a truth and reconcillation commission or do not?</p>
 <p>First, let’s create a table with each possible combination of these three variables of interest:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">truthvictim =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"Commission not established"</span>, <span class="st">"Commission established"</span>)), </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp_per_cap =</span> <span class="fu">mean</span>(ebj_df<span class="sc">$</span>gdp_per_cap)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cross_join</span>(</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(<span class="at">polity2 =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"Autocracy"</span>, <span class="st">"Democracy"</span>, <span class="st">"Hybrid"</span>)))</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>new_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">truthvictim =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"Commission not established"</span>, <span class="st">"Commission established"</span>)), </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp_per_cap =</span> <span class="fu">mean</span>(ebj_df<span class="sc">$</span>gdp_per_cap)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cross_join</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tibble</span>(<span class="at">polity2 =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"Autocracy"</span>, <span class="st">"Democracy"</span>, <span class="st">"Hybrid"</span>)))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>new_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 3
   truthvictim                gdp_per_cap polity2  
@@ -781,9 +783,9 @@ Tip
 </div>
 <p>Then we can use our model to predict what we expect a hypothetical state with each of these combinations of characteristics to receive in net FDI inflows:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">augment</span>(m, <span class="at">newdata =</span> new_data)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">augment</span>(m, <span class="at">newdata =</span> new_data)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 4
   truthvictim                gdp_per_cap polity2   .fitted
@@ -798,17 +800,17 @@ Tip
 </div>
 <p>That’s a bit unweildy. Let’s visualize it!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> truthvictim, <span class="at">colour =</span> polity2)) <span class="sc">+</span> </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span> </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Predicted net FDI inflows (USD, million)"</span>,</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>, </span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">"Regime type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(pred, <span class="fu">aes</span>(<span class="at">x =</span> .fitted, <span class="at">y =</span> truthvictim, <span class="at">colour =</span> polity2)) <span class="sc">+</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Predicted net FDI inflows (USD, million)"</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>, </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">colour =</span> <span class="st">"Regime type"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-model_specification_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>We can clearly see that, holding GDP per capita at its average, states that established commissions received, on average, larger net FDI inflows than states that did not no matter which regime type they had. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a truth and reconciliation commission and individuals’ wealth.</p>
+<p>We can clearly see that, holding GDP per capita constant at its average, states that established commissions received, on average, larger net FDI inflows than states that did not no matter which regime type they had. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a truth and reconciliation commission and individuals’ wealth.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -819,19 +821,19 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>I’m not too worried: none of these coefficients are anywhere close to being statistically significant. But I hope this serves as a good illustration of how we can use multiple categorical variables in our analyses.</p>
+<p>I’m not too worried: none of these coefficients are anywhere close to being statistically significant. I suspect that there is a more complex relationship underlying commercial actors’ beliefs about the stability of hybrid regimes, democracies, and autocracies and its effect on <em>net</em> investment flows. But I hope this serves as a good illustration of how we can use multiple categorical variables in our analyses.</p>
 </div>
 </div>
 <p>We are not restricted to only looking at one value of GDP per capita. We can use <code>marginaleffects::plot_predictions()</code> to plot all predicted values across a useful range of GDP per capita. We can also add in our uncertainty (and observe the overlap between regime types).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"polity2"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita"</span>,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"gdp_per_cap"</span>, <span class="st">"polity2"</span>, <span class="st">"truthvictim"</span>)) <span class="sc">+</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"GDP per capita"</span>,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Net FDI inflows (USD million)"</span>) <span class="sc">+</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>dollar) <span class="sc">+</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-model_specification_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-model_specification_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 

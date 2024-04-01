@@ -9,10 +9,6 @@ execute:
 bibliography: references.bib
 ---
 
-::: callout-warning
-THIS IS A DRAFT.
-:::
-
 ## Set up
 
 ```{r}
@@ -36,7 +32,15 @@ ebj_raw <- rio::import("https://github.com/joshuaalley/cross-sectional-ols/raw/m
 glimpse(ebj_raw)
 ```
 
-We will change some of these variable names to make them easier to understand: 
+They provide us with data on `r nrow(ebj_raw)` post-conflict states. We are going to clean this up a little for our purposes today. We will be concentrating on four variables:
+
+-   `net_fdi`: net FDI inflows over a 10-year period after a conflict (USD, millions);
+
+-   `truthvictim`: whether the state established a post-conflict justice institution after the conflict;
+
+-   `gdp_per_cap`: the country's annual GDP per capita (USD); and
+
+-   `polity2`: the country's regime type (which we will convert into a categorical variable listing whether the country is a democracy, autocracy, or hybrid regime).
 
 ```{r}
 ebj_df <- ebj_raw |> 
@@ -50,12 +54,16 @@ ebj_df <- ebj_raw |>
                                 TRUE ~ "Hybrid"))
 ```
 
-They are interested in measuring the relationship between net FDI inflows over a 10-year period after a conflict and the establishment of a truth and reconciliation commission. Let's take a quick look at these two main variables of interest. 
+Appel and Loyle are interested in measuring the relationship between net FDI inflows over a 10-year period after a conflict and the establishment of a truth and reconciliation commission. Let's take a quick look at these two main variables of interest. 
 
 Starting with their dependent variable, `net_fdi`, we can see that the majority of states' net FDI inflows are clustered around $0. Some post-conflict states received less FDI inflows over the 10-year period following conflict, while others received more. 
 
+```{r}
+summary(ebj_df$net_fdi)
+```
+
 ::: {.callout-note}
-There appears to be a clear outlier: a net inflow of `r ebj_df |> slice_max(net_fdi) |> pull(net_fdi) |> scales::dollar()` million. We will keep this in because this is not the focus of today's session, but I would encourage you to explore whether these findings are sensitive to its inclusion. 
+There appears to be a clear outlier: a net inflow of `r ebj_df |> slice_max(net_fdi) |> pull(net_fdi) |> scales::dollar()` million. You can see that this is pulling up the average net FDI inflow well above the median inflow. We will keep this in because this is not the focus of today's session, but I would encourage you to explore whether these findings are sensitive to its inclusion. 
 :::
 
 ```{r}
@@ -98,38 +106,40 @@ modelsummary(m,
 According to this model, what is the average predicted net FDI inflows for countries that did not establish a truth and reconciliation commission?
 
 ::: {.callout-caution collapse="true" title="Answer"}
-According to this, post-conflict states that did not establish a truth and reconciliation commission received on average net FDI inflows of `r tidy(m) |> filter(term == "(Intercept)") |> pull(estimate) |> scales::dollar()` million in the 10-year period after conflict. 
+Post-conflict states that did not establish a truth and reconciliation commission received, on average, net FDI inflows of `r tidy(m) |> filter(term == "(Intercept)") |> pull(estimate) |> scales::dollar()` million in the 10-year period after conflict. 
 :::
 
 According to this model, what is the average predicted net FDI inflows for countries that *did* establish a truth and reconciliation commission?
 
 ::: {.callout-caution collapse="true" title="Answer"}
-In contrast, states that *did* establish a truth and reconciliation commission received on average net FDI inflows of `r scales::dollar((tidy(m) |> filter(term == "truthvictimCommission established") |> pull(estimate)) + (tidy(m) |> filter(term == "(Intercept)") |> pull(estimate)))` million. 
+In contrast, states that *did* establish a truth and reconciliation commission received, on average, net FDI inflows of `r scales::dollar((tidy(m) |> filter(term == "truthvictimCommission established") |> pull(estimate)) + (tidy(m) |> filter(term == "(Intercept)") |> pull(estimate)))` million. 
 
 In other words: 
 
 $$
-Average\ net\ FDI\ inflows_{Commission\ established} = \beta_0 + \beta_1 Commission\ established + \epsilon
+Average\ net\ FDI\ inflows = \beta_0 + \beta_1 Commission\ established + \epsilon
+$$
+
+When a commission was established (i.e. $Commission\ established = 1$):
+
+$$
+Average\ net\ FDI\ inflows = 425.01 + 1763.52 * 1 + \epsilon \\
 $$
 
 $$
-Average\ net\ FDI\ inflows_{Commission\ established} = 425.01 + 1763.52 * 1 + \epsilon \\
-$$
-
-$$
-2188.52
+Average\ net\ FDI\ inflows = 2188.52
 $$
 :::
 
 ### Substantive significance
 
-This finding is substantively significant. These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of `r tidy(m) |> filter(term == "truthvictimCommission established") |> pull(estimate) |> scales::dollar()` million is; therefore, substantially significant.  
+This finding is substantively significant. These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of `r tidy(m) |> filter(term == "truthvictimCommission established") |> pull(estimate) |> scales::dollar()` million is; therefore, likely to incentivize this policy.  
 
-We can visualize this estimated difference:
+We can visualize this estimated difference in predicted net FDI inflows between states that established a commission and those that did not:
 
 ```{r}
 plot_predictions(m, condition = "truthvictim") + 
-  labs(x = "Truth and reconciliation commission established",
+  labs(x = NULL,
        y = "Net FDI inflows (USD million)") + 
   scale_y_continuous(labels = scales::dollar) + 
   theme_minimal()
@@ -144,6 +154,8 @@ One of Appel and Loyle's major contributions is their critique of approaches to 
 This critique is very valid, but it suggests that there are many different things influencing this outcome of interest, including economic factors. We have only looked at the political! The economists might turn around and accuse us of doing the very thing Appel and Loyle accused them of!
 
 Let's add some of those economic factors into our model. We will start with an intuitive one: individuals' economic wealth (measured as GDP per capita). I expect that foreign firms will be more willing to invest larger sums of money into economies with richer citizens. These citizens will be more willing and able to purchase the goods and services provided by those firms. 
+
+Therefore, I hypothesize that the greater a state's GDP per capita, the larger its net FDI inflows. 
 
 ```{r}
 m <- lm(net_fdi ~ truthvictim + gdp_per_cap, data = ebj_df)
@@ -164,20 +176,20 @@ We also find that an increase in the GDP per capita of a state of $1,000 is asso
 
 ### Using this richer model
 
-We now have a richer understanding of the determinants of net FDI inflows to post-conflict countries. We have accounted for both an economic and political determinants of those flows. Although it is often useful to look at the estimated relationship of each of those variables individually (as we did just above), we often learn more by looking at the whole model in context. 
+We now have a richer understanding of the determinants of net FDI inflows to post-conflict countries. We have accounted for both economic and political determinants of those flows. Although it is often useful to look at the estimated relationship of each of those variables individually (as we did just above), we often learn more by looking at the whole model in context. 
 
 As usual, one of the easiest ways to do this and to communicate this is through visualizations. Let's look at the predicted net FDI inflows for post-conflict countries that established and did not establish commissions across a range of plausible GDP per capita values.
 
 ```{r}
 plot_predictions(m, condition = c("gdp_per_cap", "truthvictim")) + 
-  labs(x = "GDP per capita",
+  labs(x = "GDP per capita (USD)",
        y = "Net FDI inflows (USD million)") + 
   scale_y_continuous(labels = scales::dollar) + 
   scale_x_continuous(labels = scales::dollar) + 
   theme_minimal()
 ```
 
-We can see the positive relationship between GDP per capita and net FDI inflows *and* that states that have established a commission start at a higher predicted effect than those that did not establish a commission. 
+We can see the positive relationship between GDP per capita and net FDI inflows *and* that states that have established a commission start and stay at a higher predicted inflow than those that did not establish a commission for any given value of GDP per capita. 
 
 ## Including categorical variables with multiple categories
 
@@ -256,10 +268,10 @@ ggplot(pred, aes(x = .fitted, y = truthvictim, colour = polity2)) +
        colour = "Regime type")
 ```
 
-We can clearly see that, holding GDP per capita at its average, states that established commissions received, on average, larger net FDI inflows than states that did not no matter which regime type they had. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a truth and reconciliation commission and individuals' wealth. 
+We can clearly see that, holding GDP per capita constant at its average, states that established commissions received, on average, larger net FDI inflows than states that did not no matter which regime type they had. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a truth and reconciliation commission and individuals' wealth. 
 
 ::: {.callout-note}
-I'm not too worried: none of these coefficients are anywhere close to being statistically significant. But I hope this serves as a good illustration of how we can use multiple categorical variables in our analyses. 
+I'm not too worried: none of these coefficients are anywhere close to being statistically significant. I suspect that there is a more complex relationship underlying commercial actors' beliefs about the stability of hybrid regimes, democracies, and autocracies and its effect on *net* investment flows. But I hope this serves as a good illustration of how we can use multiple categorical variables in our analyses. 
 :::
 
 We are not restricted to only looking at one value of GDP per capita. We can use `marginaleffects::plot_predictions()` to plot all predicted values across a useful range of GDP per capita. We can also add in our uncertainty (and observe the overlap between regime types).  
