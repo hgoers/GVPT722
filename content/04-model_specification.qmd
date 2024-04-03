@@ -1,5 +1,5 @@
 ---
-title: "Model Specification"
+title: "Multiple Linear Regression"
 format: 
   html:
     fig-width: 10
