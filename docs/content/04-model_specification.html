@@ -216,11 +216,11 @@ div.csl-indent {
   <li><a href="#the-economic-benefits-of-justice" id="toc-the-economic-benefits-of-justice" class="nav-link" data-scroll-target="#the-economic-benefits-of-justice">The economic benefits of justice</a></li>
   <li><a href="#net-fdi-inflows-to-post-conflict-states" id="toc-net-fdi-inflows-to-post-conflict-states" class="nav-link" data-scroll-target="#net-fdi-inflows-to-post-conflict-states">Net FDI inflows to post-conflict states</a></li>
   <li><a href="#pcj-institutions" id="toc-pcj-institutions" class="nav-link" data-scroll-target="#pcj-institutions">PCJ institutions</a></li>
-  <li><a href="#relationship-between-pcj-institutions-and-net-fdi" id="toc-relationship-between-pcj-institutions-and-net-fdi" class="nav-link" data-scroll-target="#relationship-between-pcj-institutions-and-net-fdi">Relationship between PCJ institutions and net FDI</a>
+  <li><a href="#relationship-between-pcj-institutions-and-net-fdi-inflows" id="toc-relationship-between-pcj-institutions-and-net-fdi-inflows" class="nav-link" data-scroll-target="#relationship-between-pcj-institutions-and-net-fdi-inflows">Relationship between PCJ institutions and net FDI inflows</a>
   <ul class="collapse">
   <li><a href="#substantive-significance" id="toc-substantive-significance" class="nav-link" data-scroll-target="#substantive-significance">Substantive significance</a></li>
   </ul></li>
-  <li><a href="#but-what-about-other-things-that-shape-net-fdi-inflows" id="toc-but-what-about-other-things-that-shape-net-fdi-inflows" class="nav-link" data-scroll-target="#but-what-about-other-things-that-shape-net-fdi-inflows">But what about other things that shape net FDI inflows?</a>
+  <li><a href="#but-what-about-other-factors-that-shape-net-fdi-inflows" id="toc-but-what-about-other-factors-that-shape-net-fdi-inflows" class="nav-link" data-scroll-target="#but-what-about-other-factors-that-shape-net-fdi-inflows">But what about other factors that shape net FDI inflows?</a>
   <ul class="collapse">
   <li><a href="#using-this-richer-model" id="toc-using-this-richer-model" class="nav-link" data-scroll-target="#using-this-richer-model">Using this richer model</a></li>
   <li><a href="#the-full-model" id="toc-the-full-model" class="nav-link" data-scroll-target="#the-full-model">The full model</a></li>
@@ -266,15 +266,16 @@ div.csl-indent {
 </section>
 <section id="the-economic-benefits-of-justice" class="level2">
 <h2 class="anchored" data-anchor-id="the-economic-benefits-of-justice">The economic benefits of justice</h2>
-<p><span class="citation" data-cites="appel2012">Appel and Loyle (<a href="#ref-appel2012" role="doc-biblioref">2012</a>)</span> (two wonderful UMD alumni) explore the determinants of foreign direct investment (FDI) flows into and out of post-conflict states. States that are emerging from civil war often have an acute need for foreign and stable sources of capital. However, multinational corporations and other foreign commercial actors are likely to view post-conflict states as relative high risk countries in which to invest: the risk of a return to violence and instability is often high in the immediate aftermath of a civil war. Understanding this, leaders of post-conflict states often attempt to decrease this perception of risk.</p>
-<p>Appel and Loyle argue that leaders can successfully do this by establishing post-conflict justice (PCJ) institutions. These institutions impose both domestic and reputational costs on post-conflict leaders. This cost allows leaders to signal to foreign commercial actors of their commitment to minimizing the risk of a return to violence and instability. This is a great paper and I encourage you to take a look at <a href="https://journals.sagepub.com/doi/10.1177/0022343312450044">their argument</a> in detail if this interests you.</p>
-<p>If their argument is correct, we should observe higher levels of FDI investment coming into post-conflict states that establish PCJ institutions than those that do not, on average and holding all else constant. In other words, if we have two identical post-conflict states (same economic conditions, same political conditions) foreign commerical actors should have the same beliefs about their risk of returning to conflict (and; therefore, their attractiveness as investment destinations). However, if one of these states has established PCJ institutions and the other has not, we expect those same foreign commercial actors to believe that the risk the former state will return to violence and instability is less than that of the latter. We cannot observe these actors’ beliefs about this risk. Rather, we can observe the consequence of those different beliefs: FDI inflows.</p>
-<p>Appel and Loyle find strong empirical evidence that post-conflict states that establish PCJ institutions receive substantially more FDI than states that do not. We will replicate and extend this empirical work. In doing so, we will become more familiar with the underlying mechanics of multiple linear regression and strengthen our ability to interpret these models.</p>
+<p><span class="citation" data-cites="appel2012">Appel and Loyle (<a href="#ref-appel2012" role="doc-biblioref">2012</a>)</span> (two wonderful UMD alumni) explore the determinants of foreign direct investment (FDI) flows into and out of post-conflict states. States that are emerging from civil war often have an acute need for foreign and stable sources of capital. However, multinational corporations and other foreign commercial actors are likely to view post-conflict states as high risk countries in which to invest: the risk of a return to violence and instability is often high in the immediate aftermath of a civil war. Understanding this, leaders of post-conflict states often attempt to decrease this perceived risk.</p>
+<p>Appel and Loyle argue that leaders can successfully do this by establishing post-conflict justice (PCJ) institutions. These institutions impose both domestic and reputational costs on post-conflict leaders. These costs allow leaders to signal their commitment to minimizing the risk of a return to violence and instability to foreign commercial actors. This is a great paper and I highly encourage you to take a look at <a href="https://journals.sagepub.com/doi/10.1177/0022343312450044">their argument</a> in detail.</p>
+<p>Their argument focuses on leaders’ attempts to change foreign commercial actors’ perceptions of the risk of a return to violence. We cannot directly observe these commercial actors’ perceptions. However, we can observe the outcome of these perceptions: investment. If Appel and Loyle’s argument is correct, we should observe higher levels of FDI investment coming into post-conflict states that establish PCJ institutions compared to those that do not, on average and holding all else constant.</p>
+<p>Appel and Loyle find strong evidence of this. We will replicate and modify this empirical work. In doing so, we will become more familiar with the underlying mechanics of multiple linear regression and strengthen our ability to interpret these models.</p>
 <p>Let’s get started!</p>
 </section>
 <section id="net-fdi-inflows-to-post-conflict-states" class="level2">
 <h2 class="anchored" data-anchor-id="net-fdi-inflows-to-post-conflict-states">Net FDI inflows to post-conflict states</h2>
 <p>Appel and Loyle provide us with data on 95 different post-conflict states. These include all states that had internal armed conflicts, including internationalized conflicts, that resulted in at least 25 battle-related deaths and were settled between 1970 and 2001.</p>
+<p>We can access these data through <code>polisciols::ebj</code>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(ebj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -373,8 +374,8 @@ Note
 </div>
 <p>The majority of post-conflict states did not have PCJ institutions.</p>
 </section>
-<section id="relationship-between-pcj-institutions-and-net-fdi" class="level2">
-<h2 class="anchored" data-anchor-id="relationship-between-pcj-institutions-and-net-fdi">Relationship between PCJ institutions and net FDI</h2>
+<section id="relationship-between-pcj-institutions-and-net-fdi-inflows" class="level2">
+<h2 class="anchored" data-anchor-id="relationship-between-pcj-institutions-and-net-fdi-inflows">Relationship between PCJ institutions and net FDI inflows</h2>
 <p>Of the states that do have a PCJ institution, do they tend to receive higher net FDI inflows than their less reconciliatory counterparts?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ebj <span class="sc">|&gt;</span> </span>
@@ -514,7 +515,7 @@ Average\ net\ FDI\ inflows = 2188.52
 <section id="substantive-significance" class="level3">
 <h3 class="anchored" data-anchor-id="substantive-significance">Substantive significance</h3>
 <p>This finding is substantively significant. These countries are recovering from conflict: their economies are really weak. Leaders are often very keen to find stable and reliable sources of funding to promote and strengthen their battered economies. This average difference of $1,763.52 million is; therefore, likely to incentivize this policy.</p>
-<p>Further, if we look at the range of plausible values the coefficient on the existence of a PCJ institution (i.e.&nbsp;the confidence interval) we can see states that did not establish a commission plausibly receive no net FDI inflows in this post-conflict period. In fact, it is plausible that investment leaves their economies: this net inflow can be negative. On the other hand, states that do establish a commission enjoy, on average, billions in net FDI inflows. For an economy struggling to establish indigenous production in a post-conflict setting, this can be critical to their long-term economic development. Again, this is further proof of the substantive significance of this relationship.</p>
+<p>Further, if we look at the range of plausible values of the coefficient on the existence of a PCJ institution (i.e.&nbsp;the confidence interval) we can see states that did not establish a commission plausibly receive no net FDI inflows in this post-conflict period. In fact, it is plausible that investment leaves their economies: this net inflow can be negative. On the other hand, states that do establish a commission enjoy, on average, billions in net FDI inflows. For an economy struggling to establish indigenous production in a post-conflict setting, this can be critical to their long-term economic development. Again, this is further proof of the substantive significance of this relationship.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -537,17 +538,16 @@ Tip
 <p><img src="04-model_specification_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>This is a clear illustration of my explanation above.</p>
 </div>
 </div>
 </section>
 </section>
-<section id="but-what-about-other-things-that-shape-net-fdi-inflows" class="level2">
-<h2 class="anchored" data-anchor-id="but-what-about-other-things-that-shape-net-fdi-inflows">But what about other things that shape net FDI inflows?</h2>
-<p>One of Appel and Loyle’s major contributions is their critique of approaches to estimating net FDI inflows that only focus only on economic factors. They argue that there are several political factors that are significant determinants of other countries’ and foreign firms’ willingness to invest in these war-torn countries.</p>
+<section id="but-what-about-other-factors-that-shape-net-fdi-inflows" class="level2">
+<h2 class="anchored" data-anchor-id="but-what-about-other-factors-that-shape-net-fdi-inflows">But what about other factors that shape net FDI inflows?</h2>
+<p>One of Appel and Loyle’s major contributions is their critique of approaches to estimating net FDI inflows that focus only on economic factors. They argue that there are several political factors that are significant determinants of other countries’ and foreign firms’ willingness to invest in these war-torn countries.</p>
 <p>This critique is very valid, but it suggests that there are many different things influencing this outcome of interest, including economic factors. We have only looked at the political! The economists might turn around and accuse us of doing the very thing Appel and Loyle accused them of!</p>
 <p>Let’s add some of those economic factors into our model. We will start with an intuitive one: individuals’ economic wealth (measured as GDP per capita). I expect that foreign firms will be more willing to invest larger sums of money into economies with richer citizens. These citizens will be more willing and able to purchase the goods and services provided by those firms.</p>
-<p>Therefore, I hypothesize that the greater a state’s GDP per capita, the larger its net FDI inflows.</p>
+<p>Therefore, I hypothesize that the greater a state’s GDP per capita, the larger its net FDI inflows. I expect this to be the case regardless of whether the state has established a PCJ institution. Let’s test this claim:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(net_fdi_inflows <span class="sc">~</span> pcj <span class="sc">+</span> gdp_per_capita, <span class="at">data =</span> ebj)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1042,7 +1042,7 @@ Tip
 <p><img src="04-model_specification_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>We can clearly see that states that established PCJ institutions received, on average, larger net FDI inflows than states that did not no matter their regime type. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a PCJ institution.</p>
+<p>We can clearly see that states that established PCJ institutions received, on average, larger net FDI inflows than states that did not, no matter their regime type. Further and completely counter to my hypothesis, hybrid regimes have, on average, the highest net FDI inflows compared to democracies and autocracies even when we account for whether the state has a PCJ institution.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
