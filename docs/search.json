@@ -277,14 +277,14 @@
     "href": "content/04-model_specification.html",
     "title": "Multiple Linear Regression",
     "section": "",
-    "text": "library(tidyverse)\nlibrary(broom)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(janitor)\nlibrary(ggdist)\nlibrary(polisciols)"
+    "text": "You will need to install a new package that I built for this class. Because it is not published on CRAN, you need to download it from Github directly. To do this, you also need devtools.\nRun the following to install these packages:\n\ninstall.packages(\"devtools\")\n\ndevtools::install_github(\"hgoers/polisciols\")\n\nYou then need to load all the relevant packages into your current R session:\n\nlibrary(tidyverse)\nlibrary(broom)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(janitor)\nlibrary(ggdist)\nlibrary(polisciols)"
   },
   {
     "objectID": "content/04-model_specification.html#set-up",
     "href": "content/04-model_specification.html#set-up",
     "title": "Multiple Linear Regression",
     "section": "",
-    "text": "library(tidyverse)\nlibrary(broom)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(janitor)\nlibrary(ggdist)\nlibrary(polisciols)"
+    "text": "You will need to install a new package that I built for this class. Because it is not published on CRAN, you need to download it from Github directly. To do this, you also need devtools.\nRun the following to install these packages:\n\ninstall.packages(\"devtools\")\n\ndevtools::install_github(\"hgoers/polisciols\")\n\nYou then need to load all the relevant packages into your current R session:\n\nlibrary(tidyverse)\nlibrary(broom)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(janitor)\nlibrary(ggdist)\nlibrary(polisciols)"
   },
   {
     "objectID": "content/04-model_specification.html#the-economic-benefits-of-justice",

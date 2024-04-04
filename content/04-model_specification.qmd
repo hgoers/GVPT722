@@ -11,6 +11,20 @@ bibliography: references.bib
 
 ## Set up
 
+You will need to install a new package that I built for this class. Because it is not published on CRAN, you need to download it from Github directly. To do this, you also need `devtools`. 
+
+Run the following to install these packages: 
+
+```{r}
+#| eval: false
+
+install.packages("devtools")
+
+devtools::install_github("hgoers/polisciols")
+```
+
+You then need to load all the relevant packages into your current R session: 
+
 ```{r}
 library(tidyverse)
 library(broom)
