@@ -505,7 +505,7 @@ Note
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>          log_population <span class="sc">+</span> log_distance <span class="sc">+</span> log_x_all,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -533,7 +533,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">democracy</td>
-<td style="text-align: center;">0.872</td>
+<td style="text-align: center;">0.872+</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -541,7 +541,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">conflict</td>
-<td style="text-align: center;">−3.560</td>
+<td style="text-align: center;">−3.560***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -549,7 +549,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">pol_dissimilarity</td>
-<td style="text-align: center;">2.163</td>
+<td style="text-align: center;">2.163***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -557,7 +557,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">wmd_pursuit</td>
-<td style="text-align: center;">2.198</td>
+<td style="text-align: center;">2.198**</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -597,7 +597,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">log_x_all</td>
-<td style="text-align: center;">0.620</td>
+<td style="text-align: center;">0.620***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -605,7 +605,7 @@ Note
 </tr>
 <tr class="odd">
 <td style="text-align: left;">pol_dissimilarity × wmd_pursuit</td>
-<td style="text-align: center;">−4.203</td>
+<td style="text-align: center;">−4.203+</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; box-shadow: 0px 1.5px;"></td>
@@ -643,7 +643,13 @@ Note
 <td style="text-align: left;">RMSE</td>
 <td style="text-align: center;">1.96</td>
 </tr>
-</tbody>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
+<td style="text-align: center;"></td>
+</tr>
+</tfoot>
+
 </table>
 
 
@@ -760,10 +766,23 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 </div>
 <p>The F-statistic for the joint hypothesis is 6.5826. The likelihood that we would get an F-statistic this large if, in fact, it was equal to zero is 0.001856. Therefore, we can reject the null hypothesis that both of these coefficients are equal to zero.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you look back at the regression table, you will see that <span class="math inline">\(\beta_{pol\_dissimilarity*wmd\_pursuit}\)</span> does not on its own meet this standard of statistical significance. This is why it is so important carefully interpret interactions.</p>
+</div>
+</div>
 <p>Therefore, we can say that the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs (<span class="math inline">\(\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} = 2.16 − 4.20\)</span>) is statistically significant.</p>
 <p>Is the predicted effect of pursuing WMDs among friends statistically significant?</p>
 <div class="callout callout-style-default callout-caution callout-titled" title="Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -772,7 +791,7 @@ Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Remember, the predicted effect of pursuing WMDs is equal to:</p>
 <p><span class="math display">\[
@@ -788,7 +807,7 @@ Answer
 </div>
 <p>Is the predicted effect of pursuing WMDs among foes statistically significant?</p>
 <div class="callout callout-style-default callout-caution callout-titled" title="Answer">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -797,7 +816,7 @@ Answer
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>When the trade partner is a foe, the effect of pursuing WMDs is equal to:</p>
 <p><span class="math display">\[

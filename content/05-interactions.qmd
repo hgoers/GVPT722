@@ -119,7 +119,7 @@ m <- lm(log(x_dual_use) ~ defence_ally + democracy + conflict + pol_dissimilarit
           log_population + log_distance + log_x_all,
         data = x_mass_destruction)
 
-modelsummary(m)
+modelsummary(m, stars = T)
 ```
 
 ::: {.callout-tip}
@@ -232,6 +232,10 @@ linearHypothesis(m, c("pol_dissimilarity = 0", "pol_dissimilarity:wmd_pursuit = 
 ```
 
 The F-statistic for the joint hypothesis is 6.5826. The likelihood that we would get an F-statistic this large if, in fact, it was equal to zero is 0.001856. Therefore, we can reject the null hypothesis that both of these coefficients are equal to zero. 
+
+::: {.callout-tip}
+If you look back at the regression table, you will see that $\beta_{pol\_dissimilarity*wmd\_pursuit}$ does not on its own meet this standard of statistical significance. This is why it is so important carefully interpret interactions. 
+:::
 
 Therefore, we can say that the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs ($\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} = 2.16 − 4.20$) is statistically significant. 
 
