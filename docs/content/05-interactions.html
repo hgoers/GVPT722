@@ -221,6 +221,7 @@ div.csl-indent {
   <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
   <li><a href="#exporting-mass-destruction" id="toc-exporting-mass-destruction" class="nav-link" data-scroll-target="#exporting-mass-destruction">Exporting mass destruction</a></li>
   <li><a href="#dual-use-trade" id="toc-dual-use-trade" class="nav-link" data-scroll-target="#dual-use-trade">Dual-use trade</a></li>
+  <li><a href="#are-these-effects-significant" id="toc-are-these-effects-significant" class="nav-link" data-scroll-target="#are-these-effects-significant">Are these effects significant?</a></li>
   </ul>
 </nav>
     </div>
@@ -259,12 +260,18 @@ Warning
 </div>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
+<p>You will need to install a new package to follow along:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(polisciols)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marginaleffects)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"car"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You then need to load all relevant packages into your R session:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(polisciols)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marginaleffects)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="exporting-mass-destruction" class="level2">
@@ -290,9 +297,9 @@ Note
 </div>
 <p>So, we should expect that the US traded less in these sensitive commodities with its enemies than with its friends. Let’s take a look:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x_mass_destruction <span class="sc">|&gt;</span> </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity) <span class="sc">|&gt;</span> </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">mean</span>(x_dual_use)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x_mass_destruction <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity) <span class="sc">|&gt;</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">mean</span>(x_dual_use)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   pol_dissimilarity avg_x_dual_use
@@ -305,9 +312,9 @@ Note
 <p>But wait, let’s not write off US foreign policy just yet. Dual-use commodities are sensitive because they can be used to produce or support WMDs. But not all countries that import these commodities pursue WMDs. Many need these commodities for civilian applications.</p>
 <p>So, it may in fact be the case that the US is only reticent to sell dual-use commodities to enemies that it knows are pursuing or have access to WMDs. Let’s include this characteristic in our summary:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x_mass_destruction <span class="sc">|&gt;</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">mean</span>(x_dual_use))) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x_mass_destruction <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avg_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">mean</span>(x_dual_use))) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
 # Groups:   pol_dissimilarity [2]
@@ -329,18 +336,18 @@ Note
 <h2 class="anchored" data-anchor-id="dual-use-trade">Dual-use trade</h2>
 <p>Fuhrmann draws on existing literature to build an understanding of the determinants of trade in dual-use commodities. Let’s build his baseline model of US exports of dual-use commodities:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> defence_ally <span class="sc">+</span> democracy <span class="sc">+</span> conflict <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>          wmd_pursuit <span class="sc">+</span> wmd_acquisition <span class="sc">+</span> log_gdp <span class="sc">+</span> log_population <span class="sc">+</span> </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>          log_distance <span class="sc">+</span> log_x_all,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_gdp"</span> <span class="ot">=</span> <span class="st">"Average GDP (USD logged)"</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_population"</span> <span class="ot">=</span> <span class="st">"Average population (logged)"</span>,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_distance"</span> <span class="ot">=</span> <span class="st">"Distance between the United States and the country (logged)"</span>,</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_x_all"</span> <span class="ot">=</span> <span class="st">"Total imports from the US (USD logged)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> defence_ally <span class="sc">+</span> democracy <span class="sc">+</span> conflict <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>          wmd_pursuit <span class="sc">+</span> wmd_acquisition <span class="sc">+</span> log_gdp <span class="sc">+</span> log_population <span class="sc">+</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>          log_distance <span class="sc">+</span> log_x_all,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_gdp"</span> <span class="ot">=</span> <span class="st">"Average GDP (USD logged)"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_population"</span> <span class="ot">=</span> <span class="st">"Average population (logged)"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_distance"</span> <span class="ot">=</span> <span class="st">"Distance between the United States and the country (logged)"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_x_all"</span> <span class="ot">=</span> <span class="st">"Total imports from the US (USD logged)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -484,21 +491,21 @@ Note
 </div>
 <p>His argument focuses the level of political similarity between the US and its trade partner. Let’s look at the value of dual-use exports this model predicts friends and foes to receive:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"pol_dissimilarity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"pol_dissimilarity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="05-interactions_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
+<p><img src="05-interactions_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>As above, we see that countries with strongly dissimilar foreign policy agendas to the US receive the most dual-use exports from it. This runs counter to our expectations.</p>
 <p>This model assumes that the association between exports in dual-use commodities and the level of compatibility between the trade partner’s and the United States’ foreign policy is constant across all trade partners regardless of their desire or capacity to produce WMDs. However, as Fuhrmann argues, this should not be the case: the US should be much more reticent to export dual-use commodities to states that are pursuing foreign policies that are not aligned with the US’s interests <em>and</em> seek to produce WMDs.</p>
 <p>We can capture this by introducing into our model an interaction between dissimilarities and whether a state is pursuing acquiring nuclear, chemical, or biological weapons:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> defence_ally <span class="sc">+</span> democracy <span class="sc">+</span> conflict <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>          wmd_pursuit <span class="sc">+</span> wmd_acquisition <span class="sc">+</span> wmd_pursuit <span class="sc">*</span> pol_dissimilarity <span class="sc">+</span> log_gdp <span class="sc">+</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>          log_population <span class="sc">+</span> log_distance <span class="sc">+</span> log_x_all,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> defence_ally <span class="sc">+</span> democracy <span class="sc">+</span> conflict <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>          wmd_pursuit <span class="sc">+</span> wmd_acquisition <span class="sc">+</span> wmd_pursuit <span class="sc">*</span> pol_dissimilarity <span class="sc">+</span> log_gdp <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>          log_population <span class="sc">+</span> log_distance <span class="sc">+</span> log_x_all,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -653,10 +660,10 @@ Tip
 </div>
 <div class="callout-body-container callout-body">
 <p>To include an interaction in your <code>lm()</code> function, multiply the two variables together. Above, I included an interaction between <code>pol_dissimilarity</code> and <code>wmd_pursuit</code> by including <em>in addition to the two variables on their own</em> <code>pol_dissimilarity * wmd_pursuit</code>.</p>
-<p>You must also include the interacted variables on their own. Above I included:</p>
+<p>You must also include the <strong>constituative variables</strong> on their own. Above I included:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> ... <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> wmd_pursuit <span class="sc">+</span> wmd_pursuit <span class="sc">*</span> pol_dissimilarity, </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">data =</span> x_mass_destruction)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(<span class="fu">log</span>(x_dual_use) <span class="sc">~</span> ... <span class="sc">+</span> pol_dissimilarity <span class="sc">+</span> wmd_pursuit <span class="sc">+</span> wmd_pursuit <span class="sc">*</span> pol_dissimilarity, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>   <span class="at">data =</span> x_mass_destruction)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -684,9 +691,9 @@ Dual\ use\ exports = -0.66 - 2 * wmd\_pursuit + \epsilon
 <p>We can contrast this with our expectations among states that do not share the US’s political goals. When these states are pursuing WMDs, they receive -2.66 logged dollars of exports in these useful commodities from the US. As expected, this is less than that received by dissimilar states that are not pursuing these weapons (who we predict will receive -0.66 logged dollars in exports).</p>
 <p>Let’s make this a little more tangible. Let’s find the average value of dual-use exports our model predicts friends and foes pursuring and not pursuing WMDs to receive:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">pred_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">exp</span>(<span class="fu">mean</span>(.fitted))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">pred_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">exp</span>(<span class="fu">mean</span>(.fitted))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
 # Groups:   pol_dissimilarity [2]
@@ -698,10 +705,134 @@ Dual\ use\ exports = -0.66 - 2 * wmd\_pursuit + \epsilon
 4                 1           1 $104,650,927   </code></pre>
 </div>
 </div>
-<p>As expected, friends who pursue WMDs are predicted to receive more dual-use exports than friends who are not pursuing these weapons. Foes who pursue WMDs are predicted to receive less dual-use exports than foes who are not pursuing these weapons.</p>
-<p>More generally, the coefficient of political dissimilarity represents <em>the difference between</em> the predicted value of dual-use exports (logged) between the US and states that are politically similar to the US and that did not pursue acquiring WMDs.</p>
-<p>The coefficient of WMD pursuit represents the <em>difference between</em> the predicted value of dual-use exports (logged) between the US and states that are not pursuing acquiring WMDs and those that are.</p>
-<p>The coefficient of the interaction term compares the predicted value of dual-use exports (logged) between the US and states that did or did not pursue acquiring WMDs.</p>
+<p>Overall, the predicted effect of political dissimilarity is equal to:</p>
+<p><span class="math display">\[
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * wmd\_pursuit = 2.16 - 4.20*wmd\_pursuit
+\]</span></p>
+<p>In other words: the effect on dual-use exports from the US of political dissimilarity <strong>depends</strong> on whether or not the trade partner is pursuing WMDs. Just as we theorized!</p>
+<p>This also means that <span class="math inline">\(\beta_{pol\_dissimilarity}\)</span> represents the predicted effect of political dissimilarity <em>when the trade partner is not pursuing WMDs</em>.</p>
+<p>Also, the predicted effect of pursuing WMDs is equal to:</p>
+<p><span class="math display">\[
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity = 2.20 - 4.20*wmd\_pursuit
+\]</span></p>
+<p>Again, the effect on dual-use exports from the US of pursuing WMDs <strong>depends</strong> on whether or not the trade partner is a friend or foe of the US.</p>
+<p>The coefficient of the interaction term (<span class="math inline">\(\beta_{pol\_dissimilarity*wmd\_pursuit}\)</span>) is the effect of the effect. On the effect on dual-use exports from the US of political dissimilarity, it is the effect of the trade partner pursuing WMDs. On the effect on dual-use exports from the US of pursuing WMDs, it is the effect of being a friend or foe of the US.</p>
+</section>
+<section id="are-these-effects-significant" class="level2">
+<h2 class="anchored" data-anchor-id="are-these-effects-significant">Are these effects significant?</h2>
+<p>Remember, the predicted effect of political dissimilarity is equal to:</p>
+<p><span class="math display">\[
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * wmd\_pursuit
+\]</span></p>
+<p>When the trade partner is not pursuing WMDs, the effect of political dissimilarity is equal to:</p>
+<p><span class="math display">\[
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * 0 = \beta_{pol\_dissimilarity}
+\]</span></p>
+<p>Here, <span class="math inline">\(\beta_{pol\_dissimilarity}\)</span> is meaningful on its own. We can, therefore, use our familiar t-test (communicated through the p-value) to tell us whether the predicted effect of political dissimilarity on US dual-use exports to friends is significantly different from no effect.</p>
+<p>Is the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs significant? To test this, we need to ask whether the joint effect is significantly different from zero:</p>
+<p><span class="math display">\[
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit}
+\]</span></p>
+<p>In other words, you need to ask whether:</p>
+<p><span class="math display">\[
+\beta_{pol\_dissimilarity} = \beta_{pol\_dissimilarity*wmd\_pursuit} = 0
+\]</span></p>
+<p>We can use an <strong>F-test</strong> to formally test whether our coefficients are significantly different from zero.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"pol_dissimilarity = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear hypothesis test
+
+Hypothesis:
+pol_dissimilarity = 0
+pol_dissimilarity:wmd_pursuit = 0
+
+Model 1: restricted model
+Model 2: log(x_dual_use) ~ defence_ally + democracy + conflict + pol_dissimilarity + 
+    wmd_pursuit + wmd_acquisition + wmd_pursuit * pol_dissimilarity + 
+    log_gdp + log_population + log_distance + log_x_all
+
+  Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)   
+1    141 634.29                                
+2    139 579.41  2    54.878 6.5826 0.001856 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>The F-statistic for the joint hypothesis is 6.5826. The likelihood that we would get an F-statistic this large if, in fact, it was equal to zero is 0.001856. Therefore, we can reject the null hypothesis that both of these coefficients are equal to zero.</p>
+<p>Therefore, we can say that the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs (<span class="math inline">\(\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} = 2.16 − 4.20\)</span>) is statistically significant.</p>
+<p>Is the predicted effect of pursuing WMDs among friends statistically significant?</p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Remember, the predicted effect of pursuing WMDs is equal to:</p>
+<p><span class="math display">\[
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity
+\]</span></p>
+<p>When the trade partner is a friend, the effect of pursuing WMDs is equal to:</p>
+<p><span class="math display">\[
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * 0 = \beta_{wmd\_pursuit}
+\]</span></p>
+<p>So we can look at the statistical significance of that single coefficient. The p-value on <span class="math inline">\(\beta_{wmd\_pursuit}\)</span> is 0.007. This is statistically significant at the 0.05-level.</p>
+</div>
+</div>
+</div>
+<p>Is the predicted effect of pursuing WMDs among foes statistically significant?</p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Answer">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Answer
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>When the trade partner is a foe, the effect of pursuing WMDs is equal to:</p>
+<p><span class="math display">\[
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit}
+\]</span></p>
+<p>So we need to ask whether:</p>
+<p><span class="math display">\[
+\beta_{wmd\_pursuit} = \beta_{pol\_dissimilarity*wmd\_pursuit} = 0
+\]</span></p>
+<p>We can use an <strong>F-test</strong> to formally test whether our coefficients are significantly different from zero:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"wmd_pursuit = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear hypothesis test
+
+Hypothesis:
+wmd_pursuit = 0
+pol_dissimilarity:wmd_pursuit = 0
+
+Model 1: restricted model
+Model 2: log(x_dual_use) ~ defence_ally + democracy + conflict + pol_dissimilarity + 
+    wmd_pursuit + wmd_acquisition + wmd_pursuit * pol_dissimilarity + 
+    log_gdp + log_population + log_distance + log_x_all
+
+  Res.Df    RSS Df Sum of Sq      F  Pr(&gt;F)  
+1    141 614.78                              
+2    139 579.41  2    35.373 4.2429 0.01627 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Again, we are very unlikely to see such a large F-statistic of 4.2429 (in fact, there is only a 1.63% chance) if it were zero. Therefore, we can state that the the effect of pursuing WMDs on dual-use exports from the US among its foes is statistically significant.</p>
+</div>
+</div>
+</div>
 
 
 

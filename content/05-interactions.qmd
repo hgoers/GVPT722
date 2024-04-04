@@ -15,12 +15,23 @@ THIS IS A DRAFT.
 
 ## Set up
 
+You will need to install a new package to follow along: 
+
+```{r}
+#| eval: false
+
+install.packages("car")
+```
+
+You then need to load all relevant packages into your R session: 
+
 ```{r}
 library(tidyverse)
 library(polisciols)
 library(modelsummary)
 library(marginaleffects)
 library(broom)
+library(car)
 ```
 
 ## Exporting mass destruction
@@ -114,7 +125,7 @@ modelsummary(m)
 ::: {.callout-tip}
 To include an interaction in your `lm()` function, multiply the two variables together. Above, I included an interaction between `pol_dissimilarity` and `wmd_pursuit` by including *in addition to the two variables on their own* `pol_dissimilarity * wmd_pursuit`.
 
-You must also include the interacted variables on their own. Above I included: 
+You must also include the **constituative variables** on their own. Above I included: 
 
 ```{r}
 #| eval: false
@@ -166,10 +177,103 @@ augment(m) |>
   summarise(pred_x_dual_use = scales::dollar(exp(mean(.fitted))))
 ```
 
-As expected, friends who pursue WMDs are predicted to receive more dual-use exports than friends who are not pursuing these weapons. Foes who pursue WMDs are predicted to receive less dual-use exports than foes who are not pursuing these weapons.
+Overall, the predicted effect of political dissimilarity is equal to: 
 
-More generally, the coefficient of political dissimilarity represents *the difference between* the predicted value of dual-use exports (logged) between the US and states that are politically similar to the US and that did not pursue acquiring WMDs. 
+$$
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * wmd\_pursuit = 2.16 - 4.20*wmd\_pursuit
+$$
 
-The coefficient of WMD pursuit represents the *difference between* the predicted value of dual-use exports (logged) between the US and states that are not pursuing acquiring WMDs and those that are. 
+In other words: the effect on dual-use exports from the US of political dissimilarity **depends** on whether or not the trade partner is pursuing WMDs. Just as we theorized!
 
-The coefficient of the interaction term compares the predicted value of dual-use exports (logged) between the US and states that did or did not pursue acquiring WMDs. 
+This also means that $\beta_{pol\_dissimilarity}$ represents the predicted effect of political dissimilarity *when the trade partner is not pursuing WMDs*. 
+
+Also, the predicted effect of pursuing WMDs is equal to: 
+
+$$
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity = 2.20 - 4.20*wmd\_pursuit
+$$
+
+Again, the effect on dual-use exports from the US of pursuing WMDs **depends** on whether or not the trade partner is a friend or foe of the US. 
+
+The coefficient of the interaction term ($\beta_{pol\_dissimilarity*wmd\_pursuit}$) is the effect of the effect. On the effect on dual-use exports from the US of political dissimilarity, it is the effect of the trade partner pursuing WMDs. On the effect on dual-use exports from the US of pursuing WMDs, it is the effect of being a friend or foe of the US.  
+
+## Are these effects significant?
+
+Remember, the predicted effect of political dissimilarity is equal to: 
+
+$$
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * wmd\_pursuit
+$$
+
+When the trade partner is not pursuing WMDs, the effect of political dissimilarity is equal to: 
+
+$$
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} * 0 = \beta_{pol\_dissimilarity}
+$$
+
+Here, $\beta_{pol\_dissimilarity}$ is meaningful on its own. We can, therefore, use our familiar t-test (communicated through the p-value) to tell us whether the predicted effect of political dissimilarity on US dual-use exports to friends is significantly different from no effect.   
+
+Is the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs significant? To test this, we need to ask whether the joint effect is significantly different from zero: 
+
+$$
+\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit}
+$$
+
+In other words, you need to ask whether: 
+
+$$
+\beta_{pol\_dissimilarity} = \beta_{pol\_dissimilarity*wmd\_pursuit} = 0
+$$
+
+We can use an **F-test** to formally test whether our coefficients are significantly different from zero. 
+
+```{r}
+linearHypothesis(m, c("pol_dissimilarity = 0", "pol_dissimilarity:wmd_pursuit = 0"))
+```
+
+The F-statistic for the joint hypothesis is 6.5826. The likelihood that we would get an F-statistic this large if, in fact, it was equal to zero is 0.001856. Therefore, we can reject the null hypothesis that both of these coefficients are equal to zero. 
+
+Therefore, we can say that the predicted effect of political dissimilarity on US dual-use exports among trade partners that pursue WMDs ($\beta_{pol\_dissimilarity} + \beta_{pol\_dissimilarity*wmd\_pursuit} = 2.16 − 4.20$) is statistically significant. 
+
+Is the predicted effect of pursuing WMDs among friends statistically significant? 
+
+::: {.callout-caution collapse="true" title="Answer"}
+Remember, the predicted effect of pursuing WMDs is equal to: 
+
+$$
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity
+$$
+
+When the trade partner is a friend, the effect of pursuing WMDs is equal to: 
+
+$$
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * 0 = \beta_{wmd\_pursuit}
+$$
+
+So we can look at the statistical significance of that single coefficient. The p-value on $\beta_{wmd\_pursuit}$ is `r tidy(m) |> filter(term == "wmd_pursuit") |> pull(p.value) |> round(3)`. This is statistically significant at the 0.05-level. 
+:::
+
+Is the predicted effect of pursuing WMDs among foes statistically significant? 
+
+::: {.callout-caution collapse="true" title="Answer"}
+When the trade partner is a foe, the effect of pursuing WMDs is equal to: 
+
+$$
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit}
+$$
+
+So we need to ask whether:
+
+$$
+\beta_{wmd\_pursuit} = \beta_{pol\_dissimilarity*wmd\_pursuit} = 0
+$$
+
+We can use an **F-test** to formally test whether our coefficients are significantly different from zero: 
+
+```{r}
+linearHypothesis(m, c("wmd_pursuit = 0", "pol_dissimilarity:wmd_pursuit = 0"))
+```
+
+Again, we are very unlikely to see such a large F-statistic of 4.2429 (in fact, there is only a `r scales::percent(0.01627, accuracy = 0.01)` chance) if it were zero. Therefore, we can state that the the effect of pursuing WMDs on dual-use exports from the US among its foes is statistically significant. 
+:::
+
