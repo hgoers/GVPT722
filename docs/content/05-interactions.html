@@ -220,7 +220,10 @@ div.csl-indent {
   <ul>
   <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
   <li><a href="#exporting-mass-destruction" id="toc-exporting-mass-destruction" class="nav-link" data-scroll-target="#exporting-mass-destruction">Exporting mass destruction</a></li>
-  <li><a href="#dual-use-trade" id="toc-dual-use-trade" class="nav-link" data-scroll-target="#dual-use-trade">Dual-use trade</a></li>
+  <li><a href="#dual-use-trade" id="toc-dual-use-trade" class="nav-link" data-scroll-target="#dual-use-trade">Dual-use trade</a>
+  <ul class="collapse">
+  <li><a href="#interpreting-interaction-coefficients" id="toc-interpreting-interaction-coefficients" class="nav-link" data-scroll-target="#interpreting-interaction-coefficients">Interpreting interaction coefficients</a></li>
+  </ul></li>
   <li><a href="#are-these-effects-significant" id="toc-are-these-effects-significant" class="nav-link" data-scroll-target="#are-these-effects-significant">Are these effects significant?</a></li>
   </ul>
 </nav>
@@ -344,10 +347,16 @@ Note
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_gdp"</span> <span class="ot">=</span> <span class="st">"Average GDP (USD logged)"</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_population"</span> <span class="ot">=</span> <span class="st">"Average population (logged)"</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_distance"</span> <span class="ot">=</span> <span class="st">"Distance between the United States and the country (logged)"</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_x_all"</span> <span class="ot">=</span> <span class="st">"Total imports from the US (USD logged)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"defence_ally"</span> <span class="ot">=</span> <span class="st">"Military alliance"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"democracy"</span> <span class="ot">=</span> <span class="st">"Democracy"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"conflict"</span> <span class="ot">=</span> <span class="st">"Conflict"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"pol_dissimilarity"</span> <span class="ot">=</span> <span class="st">"Politically dissimilar"</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>               <span class="st">"wmd_pursuit"</span> <span class="ot">=</span> <span class="st">"WMD pursuit"</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>               <span class="st">"wmd_acquisition"</span> <span class="ot">=</span> <span class="st">"WMD acquisition"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_gdp"</span> <span class="ot">=</span> <span class="st">"Average GDP (USD logged)"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_population"</span> <span class="ot">=</span> <span class="st">"Average population (logged)"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_distance"</span> <span class="ot">=</span> <span class="st">"Distance between the United States and the country (logged)"</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_x_all"</span> <span class="ot">=</span> <span class="st">"Total imports from the US (USD logged)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -366,7 +375,7 @@ Note
 <td style="text-align: center;">(3.173)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">defence_ally</td>
+<td style="text-align: left;">Military alliance</td>
 <td style="text-align: center;">0.244</td>
 </tr>
 <tr class="even">
@@ -374,7 +383,7 @@ Note
 <td style="text-align: center;">(0.545)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">democracy</td>
+<td style="text-align: left;">Democracy</td>
 <td style="text-align: center;">0.837</td>
 </tr>
 <tr class="even">
@@ -382,7 +391,7 @@ Note
 <td style="text-align: center;">(0.526)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">conflict</td>
+<td style="text-align: left;">Conflict</td>
 <td style="text-align: center;">−3.548***</td>
 </tr>
 <tr class="even">
@@ -390,7 +399,7 @@ Note
 <td style="text-align: center;">(0.928)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">pol_dissimilarity</td>
+<td style="text-align: left;">Politically dissimilar</td>
 <td style="text-align: center;">1.862**</td>
 </tr>
 <tr class="even">
@@ -398,7 +407,7 @@ Note
 <td style="text-align: center;">(0.604)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">wmd_pursuit</td>
+<td style="text-align: left;">WMD pursuit</td>
 <td style="text-align: center;">1.706*</td>
 </tr>
 <tr class="even">
@@ -406,7 +415,7 @@ Note
 <td style="text-align: center;">(0.771)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">wmd_acquisition</td>
+<td style="text-align: left;">WMD acquisition</td>
 <td style="text-align: center;">0.644</td>
 </tr>
 <tr class="even">
@@ -491,7 +500,10 @@ Note
 </div>
 <p>His argument focuses the level of political similarity between the US and its trade partner. Let’s look at the value of dual-use exports this model predicts friends and foes to receive:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"pol_dissimilarity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="st">"pol_dissimilarity"</span>) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Politically dissimilar"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Exports in dual-use goods (logged USD)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="05-interactions_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="960"></p>
 </div>
@@ -505,7 +517,19 @@ Note
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>          log_population <span class="sc">+</span> log_distance <span class="sc">+</span> log_x_all,</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">data =</span> x_mass_destruction)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>               <span class="st">"defence_ally"</span> <span class="ot">=</span> <span class="st">"Military alliance"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">"democracy"</span> <span class="ot">=</span> <span class="st">"Democracy"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">"conflict"</span> <span class="ot">=</span> <span class="st">"Conflict"</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>               <span class="st">"pol_dissimilarity"</span> <span class="ot">=</span> <span class="st">"Politically dissimilar"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>               <span class="st">"wmd_pursuit"</span> <span class="ot">=</span> <span class="st">"WMD pursuit"</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>               <span class="st">"wmd_acquisition"</span> <span class="ot">=</span> <span class="st">"WMD acquisition"</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_gdp"</span> <span class="ot">=</span> <span class="st">"Average GDP (USD logged)"</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_population"</span> <span class="ot">=</span> <span class="st">"Average population (logged)"</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_distance"</span> <span class="ot">=</span> <span class="st">"Distance between the United States and the country (logged)"</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>               <span class="st">"log_x_all"</span> <span class="ot">=</span> <span class="st">"Total imports from the US (USD logged)"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -524,7 +548,7 @@ Note
 <td style="text-align: center;">(3.149)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">defence_ally</td>
+<td style="text-align: left;">Military alliance</td>
 <td style="text-align: center;">0.276</td>
 </tr>
 <tr class="even">
@@ -532,7 +556,7 @@ Note
 <td style="text-align: center;">(0.540)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">democracy</td>
+<td style="text-align: left;">Democracy</td>
 <td style="text-align: center;">0.872+</td>
 </tr>
 <tr class="even">
@@ -540,7 +564,7 @@ Note
 <td style="text-align: center;">(0.522)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">conflict</td>
+<td style="text-align: left;">Conflict</td>
 <td style="text-align: center;">−3.560***</td>
 </tr>
 <tr class="even">
@@ -548,7 +572,7 @@ Note
 <td style="text-align: center;">(0.919)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">pol_dissimilarity</td>
+<td style="text-align: left;">Politically dissimilar</td>
 <td style="text-align: center;">2.163***</td>
 </tr>
 <tr class="even">
@@ -556,7 +580,7 @@ Note
 <td style="text-align: center;">(0.620)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">wmd_pursuit</td>
+<td style="text-align: left;">WMD pursuit</td>
 <td style="text-align: center;">2.198**</td>
 </tr>
 <tr class="even">
@@ -564,7 +588,7 @@ Note
 <td style="text-align: center;">(0.808)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">wmd_acquisition</td>
+<td style="text-align: left;">WMD acquisition</td>
 <td style="text-align: center;">0.574</td>
 </tr>
 <tr class="even">
@@ -572,7 +596,7 @@ Note
 <td style="text-align: center;">(0.698)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">log_gdp</td>
+<td style="text-align: left;">Average GDP (USD logged)</td>
 <td style="text-align: center;">0.273</td>
 </tr>
 <tr class="even">
@@ -580,7 +604,7 @@ Note
 <td style="text-align: center;">(0.208)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">log_population</td>
+<td style="text-align: left;">Average population (logged)</td>
 <td style="text-align: center;">0.055</td>
 </tr>
 <tr class="even">
@@ -588,7 +612,7 @@ Note
 <td style="text-align: center;">(0.172)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">log_distance</td>
+<td style="text-align: left;">Distance between the United States and the country (logged)</td>
 <td style="text-align: center;">−0.040</td>
 </tr>
 <tr class="even">
@@ -596,7 +620,7 @@ Note
 <td style="text-align: center;">(0.175)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">log_x_all</td>
+<td style="text-align: left;">Total imports from the US (USD logged)</td>
 <td style="text-align: center;">0.620***</td>
 </tr>
 <tr class="even">
@@ -604,7 +628,7 @@ Note
 <td style="text-align: center;">(0.145)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">pol_dissimilarity × wmd_pursuit</td>
+<td style="text-align: left;">Politically dissimilar:WMD pursuit</td>
 <td style="text-align: center;">−4.203+</td>
 </tr>
 <tr class="even">
@@ -673,6 +697,19 @@ Tip
 </div>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m, <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"pol_dissimilarity"</span>, <span class="st">"wmd_pursuit"</span>)) <span class="sc">+</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">colour =</span> <span class="st">"Pursues WMDs"</span> ,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Politically dissimilar"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Exports in dual-use goods (logged USD)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="05-interactions_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>Now we can see support for Fuhrmann’s claim that the US is much more reticent to export dual-use goods to countries pursuing antithetical foreign policy <em>that are also seeking to develop WMDs</em>. We can also see that the US is happy to export dual-use goods to its friends that are pursuing WMDs. Without the interaction, we would not be able to see this strategic dynamic at play.</p>
+<section id="interpreting-interaction-coefficients" class="level3">
+<h3 class="anchored" data-anchor-id="interpreting-interaction-coefficients">Interpreting interaction coefficients</h3>
 <p>You need to be very careful when interpreting these coefficients. Let’s go through some of the important ones together.</p>
 <p>One way to think about interactions is to look at the different regression lines for trade partners that are politically dissimilar and for those that are similar to the US.</p>
 <p>Let’s start with the general regression function:</p>
@@ -693,13 +730,13 @@ Dual\ use\ exports = −2.82 + ... + 2.16 * 1 + 2.20 * wmd\_pursuit - 4.20 * 1 *
 <p><span class="math display">\[
 Dual\ use\ exports = -0.66 - 2 * wmd\_pursuit + \epsilon
 \]</span></p>
-<p>So, among states that share the US’s political goals, pursuing WMDs actually increases their dual-use exports from the US relative to those like-minded states that do not pursue WMDs. We predict that the value of dual-use exports for these countries is -0.66 logged dollars, compared to −2.82 logged dollars among like-minded states that are not pursuing these weapons.</p>
+<p>So, among states that share the US’s political goals, pursuing WMDs actually increases their dual-use exports from the US relative to those like-minded states that do not pursue WMDs. Presumably, these states demand greater quantities of these goods (to support their WMD programs) than those who are not pursuing WMDs and; therefore, only use these goods for civilian purposes. We predict that the value of dual-use exports for these countries is -0.66 logged dollars, compared to −2.82 logged dollars among like-minded states that are not pursuing these weapons.</p>
 <p>We can contrast this with our expectations among states that do not share the US’s political goals. When these states are pursuing WMDs, they receive -2.66 logged dollars of exports in these useful commodities from the US. As expected, this is less than that received by dissimilar states that are not pursuing these weapons (who we predict will receive -0.66 logged dollars in exports).</p>
 <p>Let’s make this a little more tangible. Let’s find the average value of dual-use exports our model predicts friends and foes pursuring and not pursuing WMDs to receive:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">pred_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">exp</span>(<span class="fu">mean</span>(.fitted))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m) <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(pol_dissimilarity, wmd_pursuit) <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">pred_x_dual_use =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">exp</span>(<span class="fu">mean</span>(.fitted))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
 # Groups:   pol_dissimilarity [2]
@@ -719,10 +756,11 @@ Dual\ use\ exports = -0.66 - 2 * wmd\_pursuit + \epsilon
 <p>This also means that <span class="math inline">\(\beta_{pol\_dissimilarity}\)</span> represents the predicted effect of political dissimilarity <em>when the trade partner is not pursuing WMDs</em>.</p>
 <p>Also, the predicted effect of pursuing WMDs is equal to:</p>
 <p><span class="math display">\[
-\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity = 2.20 - 4.20*wmd\_pursuit
+\beta_{wmd\_pursuit} + \beta_{pol\_dissimilarity*wmd\_pursuit} * pol\_dissimilarity = 2.20 - 4.20*pol\_dissimilarity
 \]</span></p>
 <p>Again, the effect on dual-use exports from the US of pursuing WMDs <strong>depends</strong> on whether or not the trade partner is a friend or foe of the US.</p>
 <p>The coefficient of the interaction term (<span class="math inline">\(\beta_{pol\_dissimilarity*wmd\_pursuit}\)</span>) is the effect of the effect. On the effect on dual-use exports from the US of political dissimilarity, it is the effect of the trade partner pursuing WMDs. On the effect on dual-use exports from the US of pursuing WMDs, it is the effect of being a friend or foe of the US.</p>
+</section>
 </section>
 <section id="are-these-effects-significant" class="level2">
 <h2 class="anchored" data-anchor-id="are-these-effects-significant">Are these effects significant?</h2>
@@ -745,7 +783,7 @@ Dual\ use\ exports = -0.66 - 2 * wmd\_pursuit + \epsilon
 \]</span></p>
 <p>We can use an <strong>F-test</strong> to formally test whether our coefficients are significantly different from zero.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"pol_dissimilarity = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"pol_dissimilarity = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear hypothesis test
 
@@ -828,7 +866,7 @@ Answer
 \]</span></p>
 <p>We can use an <strong>F-test</strong> to formally test whether our coefficients are significantly different from zero:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"wmd_pursuit = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(m, <span class="fu">c</span>(<span class="st">"wmd_pursuit = 0"</span>, <span class="st">"pol_dissimilarity:wmd_pursuit = 0"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear hypothesis test
 

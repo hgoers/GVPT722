@@ -200,6 +200,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
+  <li><a href="#introducing-panel-data" id="toc-introducing-panel-data" class="nav-link" data-scroll-target="#introducing-panel-data">Introducing panel data</a></li>
   <li><a href="#relationship-between-health-and-wealth" id="toc-relationship-between-health-and-wealth" class="nav-link" data-scroll-target="#relationship-between-health-and-wealth">Relationship between health and wealth</a></li>
   <li><a href="#starting-simple" id="toc-starting-simple" class="nav-link" data-scroll-target="#starting-simple">Starting simple</a></li>
   <li><a href="#accounting-for-the-structure-of-our-data" id="toc-accounting-for-the-structure-of-our-data" class="nav-link" data-scroll-target="#accounting-for-the-structure-of-our-data">Accounting for the structure of our data</a>
@@ -270,8 +271,11 @@ Warning
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">333</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>A lot of political science research (especially in international relations and comparative politics) attempts to resolve questions that deal with many actors’ behavior over time. These data have dependencies between them: a country’s GDP this year is, in part, the product of its GDP last year.</p>
-<p>Time-series cross sectional (TSCS) data are really common! You can get a much richer picture of the patterns that exist within your population of interest by looking at how those patterns form and change over time. However, there is no such thing as a free lunch. Adding time to your analysis involves adding complexity. This week, I will introduce you to this complexity in (what I hope is) a digestible way.</p>
+</section>
+<section id="introducing-panel-data" class="level2">
+<h2 class="anchored" data-anchor-id="introducing-panel-data">Introducing panel data</h2>
+<p>A lot of political science research (especially in international relations and comparative politics) attempts to resolve questions that deal with many actors’ behavior over time. These data have dependencies between them: a country’s GDP this year is, in part, the product of its GDP last year. These types of data go by many names, but are often referred to as panel data or time-series cross sectional (TSCS) data.</p>
+<p>You can get a much richer picture of the patterns that exist within your population of interest by looking at how those patterns form and change over time. However, there is no such thing as a free lunch. Adding time and hierarchy to your analysis involves adding complexity. This week, I will introduce you to this complexity in (what I hope is) a digestible way.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -282,7 +286,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>We will focus on country-panel data (i.e.&nbsp;Australia in 2020, Australia in 2021, Australia in 2022) but this logic and these methods can be applied to almost any panel data.</p>
+<p>We will focus on country-panel data (i.e.&nbsp;Australia in 2022, Australia in 2023, Australia in 2024) but this logic and these methods can be applied to almost any panel data.</p>
 </div>
 </div>
 </section>

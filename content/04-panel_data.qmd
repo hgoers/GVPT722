@@ -38,12 +38,14 @@ library(ggdist)
 set.seed(333)
 ```
 
-A lot of political science research (especially in international relations and comparative politics) attempts to resolve questions that deal with many actors' behavior over time. These data have dependencies between them: a country's GDP this year is, in part, the product of its GDP last year.
+## Introducing panel data
 
-Time-series cross sectional (TSCS) data are really common! You can get a much richer picture of the patterns that exist within your population of interest by looking at how those patterns form and change over time. However, there is no such thing as a free lunch. Adding time to your analysis involves adding complexity. This week, I will introduce you to this complexity in (what I hope is) a digestible way.
+A lot of political science research (especially in international relations and comparative politics) attempts to resolve questions that deal with many actors' behavior over time. These data have dependencies between them: a country's GDP this year is, in part, the product of its GDP last year. These types of data go by many names, but are often referred to as panel data or time-series cross sectional (TSCS) data.
+
+You can get a much richer picture of the patterns that exist within your population of interest by looking at how those patterns form and change over time. However, there is no such thing as a free lunch. Adding time and hierarchy to your analysis involves adding complexity. This week, I will introduce you to this complexity in (what I hope is) a digestible way.
 
 ::: callout-note
-We will focus on country-panel data (i.e. Australia in 2020, Australia in 2021, Australia in 2022) but this logic and these methods can be applied to almost any panel data.
+We will focus on country-panel data (i.e. Australia in 2022, Australia in 2023, Australia in 2024) but this logic and these methods can be applied to almost any panel data.
 :::
 
 ## Relationship between health and wealth
