@@ -9,10 +9,6 @@ execute:
 bibliography: references.bib
 ---
 
-::: callout-warning
-THIS IS A DRAFT.
-:::
-
 ## Set up
 
 You will need to install a new package to follow along:

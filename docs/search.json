@@ -172,14 +172,14 @@
     "href": "content/05-interactions.html",
     "title": "Interactions",
     "section": "",
-    "text": "Warning\n\n\n\nTHIS IS A DRAFT."
+    "text": "You will need to install a new package to follow along:\n\ninstall.packages(\"car\")\n\nYou then need to load all relevant packages into your R session:\n\nlibrary(tidyverse)\nlibrary(polisciols)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(broom)\nlibrary(car)"
   },
   {
     "objectID": "content/05-interactions.html#set-up",
     "href": "content/05-interactions.html#set-up",
     "title": "Interactions",
-    "section": "Set up",
-    "text": "Set up\nYou will need to install a new package to follow along:\n\ninstall.packages(\"car\")\n\nYou then need to load all relevant packages into your R session:\n\nlibrary(tidyverse)\nlibrary(polisciols)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(broom)\nlibrary(car)"
+    "section": "",
+    "text": "You will need to install a new package to follow along:\n\ninstall.packages(\"car\")\n\nYou then need to load all relevant packages into your R session:\n\nlibrary(tidyverse)\nlibrary(polisciols)\nlibrary(modelsummary)\nlibrary(marginaleffects)\nlibrary(broom)\nlibrary(car)"
   },
   {
     "objectID": "content/05-interactions.html#exporting-mass-destruction",
