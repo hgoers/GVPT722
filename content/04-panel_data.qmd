@@ -229,15 +229,35 @@ $$
 Average\ life\ expectancy = \beta_0 + \beta_1 Year + \epsilon
 $$
 
-You'll remember that we assume that the error term ($\epsilon$) is normally distributed, centered at zero, and has some standard deviation ($\sigma$).
-
-Formally, we can write this as:
+You'll remember that we assume that the error term ($\epsilon$) is normally distributed, centered at zero, and has some standard deviation ($\sigma$). Formally, we can write this as:
 
 $$
 \epsilon \sim \mathcal{N}(0,\sigma)
 $$
 
-But, as we saw, there is a lot of variation in that $\beta_0$. It's the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let's see what we lost:
+The standard deviation for our error term in our model above is:
+
+```{r}
+glance(m) |> 
+  pull(sigma)
+```
+
+So, we are assuming that the difference between our observed values and predicted values for each country-year's average life expectancy is a random value pulled from this distribution: 
+
+```{r}
+error_m <- tibble(residual = rnorm(1e6, mean = 0, sd = glance(m)$sigma))
+
+ggplot(error_m, aes(x = residual)) + 
+  stat_halfeye()
+```
+
+Whilst the average of this error is zero, it has a very wide range. Some of those residuals can be as large as 25 years! This captures all of the variance in countries' average life expectancy not picked up by annual growth rates (our independent variable: years). 
+
+What if we could open up all of that unexplained variance and take a good look at it? 
+
+### Country-specific randomness
+
+As we saw above, there is a lot of variation in that $\beta_0$. It's the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let's see what we lost:
 
 ```{r}
 full_df |> 
