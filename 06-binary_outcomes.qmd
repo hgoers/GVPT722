@@ -1,0 +1,10 @@
+---
+title: "Binary outcomes"
+format: 
+  html:
+    fig-width: 10
+execute:
+  message: false
+  warning: false
+---
+

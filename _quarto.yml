@@ -4,6 +4,8 @@ project:
 
 website:
   title: "GVPT722"
+  repo-url: https://github.com/hgoers/GVPT722
+  repo-actions: [issue]
 
   favicon: "/files/img/hex-testudo.png"
 
