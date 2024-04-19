@@ -210,12 +210,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#random-effects-a-brief-introduction" id="toc-random-effects-a-brief-introduction" class="nav-link" data-scroll-target="#random-effects-a-brief-introduction">Random effects: a brief introduction</a>
   <ul class="collapse">
-  <li><a href="#country-specific-randomness" id="toc-country-specific-randomness" class="nav-link" data-scroll-target="#country-specific-randomness">Country-specific randomness</a></li>
+  <li><a href="#country-specific-starting-points" id="toc-country-specific-starting-points" class="nav-link" data-scroll-target="#country-specific-starting-points">Country-specific starting points</a></li>
   <li><a href="#your-error-is-too-full" id="toc-your-error-is-too-full" class="nav-link" data-scroll-target="#your-error-is-too-full">Your error is too full</a></li>
   <li><a href="#why-not-just-include-a-country-variable-as-we-did-above" id="toc-why-not-just-include-a-country-variable-as-we-did-above" class="nav-link" data-scroll-target="#why-not-just-include-a-country-variable-as-we-did-above">Why not just include a country variable as we did above?</a></li>
   </ul></li>
   <li><a href="#multi-level-modelling" id="toc-multi-level-modelling" class="nav-link" data-scroll-target="#multi-level-modelling">Multi-level modelling</a></li>
   <li><a href="#relationship-between-health-and-wealth-1" id="toc-relationship-between-health-and-wealth-1" class="nav-link" data-scroll-target="#relationship-between-health-and-wealth-1">Relationship between health and wealth</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
 </nav>
     </div>
@@ -665,7 +666,7 @@ Average\ life\ expectancy = \beta_0 + \beta_1 Year + \epsilon
 <pre><code>[1] 8.701056</code></pre>
 </div>
 </div>
-<p>So, we are assuming that the difference between our observed values and predicted values for each country-year’s average life expectancy is a random value pulled from this distribution:</p>
+<p>So, we are assuming that the difference between each country’s actual average life expectancy and the average life expectancy our model predicts for that country is a random number of years pulled from this distribution:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>error_m <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">residual =</span> <span class="fu">rnorm</span>(<span class="fl">1e6</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">glance</span>(m)<span class="sc">$</span>sigma))</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -675,11 +676,11 @@ Average\ life\ expectancy = \beta_0 + \beta_1 Year + \epsilon
 <p><img src="04-panel_data_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>Whilst the average of this error is zero, it has a very wide range. Some of those residuals can be as large as 25 years! This captures all of the variance in countries’ average life expectancy not picked up by annual growth rates (our independent variable: years).</p>
+<p>Although the average of this error is zero, it has a very wide range. Some of those residuals can be as large as 25 years! This captures all of the variance in countries’ average life expectancy not picked up by annual growth rates (our single independent variable: <code>year</code>).</p>
 <p>What if we could open up all of that unexplained variance and take a good look at it?</p>
-<section id="country-specific-randomness" class="level3">
-<h3 class="anchored" data-anchor-id="country-specific-randomness">Country-specific randomness</h3>
-<p>As we saw above, there is a lot of variation in that <span class="math inline">\(\beta_0\)</span>. It’s the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let’s see what we lost:</p>
+<section id="country-specific-starting-points" class="level3">
+<h3 class="anchored" data-anchor-id="country-specific-starting-points">Country-specific starting points</h3>
+<p>Let’s focus on the error around the intercept, <span class="math inline">\(\beta_0\)</span>. As we saw above, there is a lot of variation in that <span class="math inline">\(\beta_0\)</span>. It’s the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let’s see what we lost:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>full_df <span class="sc">|&gt;</span> </span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">|&gt;</span> </span>
@@ -693,7 +694,7 @@ Average\ life\ expectancy = \beta_0 + \beta_1 Year + \epsilon
 </div>
 </div>
 <p>We reduced all of these values to just one summary value: the average (represented by that lonely dot). This is often very useful! Remember, the goal of statistical analysis is to learn general patterns in our data. But when your data are nested (i.e.&nbsp;within countries within regions), we need to be careful not to miss important factors that influence the relationship we are interested in learning about.</p>
-<p>To illustrate, let’s assume that there are country-specific difference in the relationship between life expectancy and time. That’s why we see such a large difference between, say, Canada and Myanmar. Both countries’ populations had average life expectancies that grew between 2015 and 2016, and between 2016 and 2017. But they started at different, country-specific spots.</p>
+<p>To illustrate, let’s assume that there are country-specific difference in the relationship between life expectancy and time. That’s why we see such a large difference between, say, Canada’s and Myanmar’s average life expectancies at any given point in time. Both countries’ populations had average life expectancies that grew each year. But they started at different, country-specific spots.</p>
 <p>When we do not account for the nested structure of our data, we miss these differences. But that doesn’t mean they don’t exist. It just means that they are hidden from us, sitting in the error term.</p>
 </section>
 <section id="your-error-is-too-full" class="level3">
@@ -1175,6 +1176,13 @@ Tip
 </div>
 </div>
 <p>It looks much better across all countries and years!</p>
+</section>
+<section id="further-reading" class="level2">
+<h2 class="anchored" data-anchor-id="further-reading">Further reading</h2>
+<ul>
+<li><p>This lab session draws heavily on Andrew Heiss’s brilliant blog post <a href="https://www.andrewheiss.com/blog/2021/12/01/multilevel-models-panel-data-guide/"><em>A guide to working with country-year panel data and Bayesian multilevel models</em> (2021)</a>.</p></li>
+<li><p>I also highly recommend Michael Clark’s <a href="https://m-clark.github.io/mixed-models-with-R/"><em>Mixed Models with R</em></a>.</p></li>
+</ul>
 
 
 </section>

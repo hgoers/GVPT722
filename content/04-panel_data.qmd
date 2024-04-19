@@ -242,7 +242,7 @@ glance(m) |>
   pull(sigma)
 ```
 
-So, we are assuming that the difference between our observed values and predicted values for each country-year's average life expectancy is a random value pulled from this distribution: 
+So, we are assuming that the difference between each country's actual average life expectancy and the average life expectancy our model predicts for that country is a random number of years pulled from this distribution: 
 
 ```{r}
 error_m <- tibble(residual = rnorm(1e6, mean = 0, sd = glance(m)$sigma))
@@ -251,13 +251,13 @@ ggplot(error_m, aes(x = residual)) +
   stat_halfeye()
 ```
 
-Whilst the average of this error is zero, it has a very wide range. Some of those residuals can be as large as 25 years! This captures all of the variance in countries' average life expectancy not picked up by annual growth rates (our independent variable: years). 
+Although the average of this error is zero, it has a very wide range. Some of those residuals can be as large as 25 years! This captures all of the variance in countries' average life expectancy not picked up by annual growth rates (our single independent variable: `year`). 
 
 What if we could open up all of that unexplained variance and take a good look at it? 
 
-### Country-specific randomness
+### Country-specific starting points
 
-As we saw above, there is a lot of variation in that $\beta_0$. It's the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let's see what we lost:
+Let's focus on the error around the intercept, $\beta_0$. As we saw above, there is a lot of variation in that $\beta_0$. It's the average life expectancy across all countries in 2000 (our baseline year). Averages are very useful summaries, but they come at a cost of information. Let's see what we lost:
 
 ```{r}
 full_df |> 
@@ -271,7 +271,7 @@ full_df |>
 
 We reduced all of these values to just one summary value: the average (represented by that lonely dot). This is often very useful! Remember, the goal of statistical analysis is to learn general patterns in our data. But when your data are nested (i.e. within countries within regions), we need to be careful not to miss important factors that influence the relationship we are interested in learning about.
 
-To illustrate, let's assume that there are country-specific difference in the relationship between life expectancy and time. That's why we see such a large difference between, say, Canada and Myanmar. Both countries' populations had average life expectancies that grew between 2015 and 2016, and between 2016 and 2017. But they started at different, country-specific spots.
+To illustrate, let's assume that there are country-specific difference in the relationship between life expectancy and time. That's why we see such a large difference between, say, Canada's and Myanmar's average life expectancies at any given point in time. Both countries' populations had average life expectancies that grew each year. But they started at different, country-specific spots.
 
 When we do not account for the nested structure of our data, we miss these differences. But that doesn't mean they don't exist. It just means that they are hidden from us, sitting in the error term.
 
@@ -567,3 +567,9 @@ augment(m_linear) |>
 ```
 
 It looks much better across all countries and years!
+
+## Further reading
+
+-   This lab session draws heavily on Andrew Heiss's brilliant blog post [*A guide to working with country-year panel data and Bayesian multilevel models* (2021)](https://www.andrewheiss.com/blog/2021/12/01/multilevel-models-panel-data-guide/).  
+
+-   I also highly recommend Michael Clark's [*Mixed Models with R*](https://m-clark.github.io/mixed-models-with-R/).
