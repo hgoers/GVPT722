@@ -27,6 +27,7 @@ website:
         - content/03-statistical_inference.qmd
         - content/04-model_specification.qmd
         - content/05-interactions.qmd
+        - content/06-binary_outcomes.qmd
         - content/04-panel_data.qmd
   page-footer:
     left: |
