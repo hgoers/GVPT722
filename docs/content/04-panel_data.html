@@ -208,6 +208,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#set-up" id="toc-set-up" class="nav-link active" data-scroll-target="#set-up">Set up</a></li>
   <li><a href="#introducing-panel-data" id="toc-introducing-panel-data" class="nav-link" data-scroll-target="#introducing-panel-data">Introducing panel data</a></li>
   <li><a href="#relationship-between-health-and-wealth" id="toc-relationship-between-health-and-wealth" class="nav-link" data-scroll-target="#relationship-between-health-and-wealth">Relationship between health and wealth</a></li>
+  <li><a href="#why-are-we-doing-this" id="toc-why-are-we-doing-this" class="nav-link" data-scroll-target="#why-are-we-doing-this">Why are we doing this?</a></li>
   <li><a href="#starting-simple" id="toc-starting-simple" class="nav-link" data-scroll-target="#starting-simple">Starting simple</a></li>
   <li><a href="#accounting-for-the-structure-of-our-data" id="toc-accounting-for-the-structure-of-our-data" class="nav-link" data-scroll-target="#accounting-for-the-structure-of-our-data">Accounting for the structure of our data</a>
   <ul class="collapse">
@@ -246,19 +247,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Warning
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>THIS IS A DRAFT.</p>
-</div>
-</div>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">Set up</h2>
 <p>You will need to install the following new packages:</p>
@@ -351,6 +339,12 @@ Note
 </div>
 </div>
 <p>Now we have data on all 217 countries’ GDP per capita and life expectancy across 20 years. Therefore, our observations are clustered by country (we have 20 observations per country). These countries are, themselves, clustered within 7 regions.</p>
+</section>
+<section id="why-are-we-doing-this" class="level2">
+<h2 class="anchored" data-anchor-id="why-are-we-doing-this">Why are we doing this?</h2>
+<p>Before we dive into some of the additional work you will need to do when working with time-series data, I should answer a very valid question: “why on earth are we doing this?”. In other words, what problem are we solving?</p>
+<p>There are two answers to this question. First, the goal of your analysis is to undercover a general relationship between your outcome of interest and all of the things you theorize to be important drivers of that outcome of interest. You use this empirical analysis to provide evidence of that theorized relationship occurring out in the wild. When your theory applies to actors’ behavior over time, you should aim to demonstrate this to be the case. You should use time-series data.</p>
+<p>Second, once you have decided to provide this evidence of your theory over time, your statistical tools need to also adapt. Your observations are no longer independent of each other. You are observing behavior by the same actor over time (i.e.&nbsp;Australia’s trade with the US in 2020, in 2021, in 2022, etc.). The actor’s behavior in the year prior influences their behavior in the current year. For example, US consumers that have established links with Australian manufacturers have to decide to change to a new manufacturer from another country (expending some amount of effort), or continue to buy products from that Australian manufacturer this year. Either way, the fact that they traded with Australia in the year prior impacts their behavior this year. Contrast this with our previous set ups. For example, we have use the National Election Survey to looked at the US public’s opinions on various things. These individuals are selected at random. They are strangers to one another. It is appropriate to assume that they do not influence each other’s opinions or responses to the survey. We discussed this assumption of independence of errors at length in the model specification week. If we violate this assumption (which we most certainly do when dealing with the same observation over time), we need to adjust our statistical model or tool accordingly. So, let’s get to it.</p>
 </section>
 <section id="starting-simple" class="level2">
 <h2 class="anchored" data-anchor-id="starting-simple">Starting simple</h2>
@@ -931,7 +925,28 @@ Tip
 </div>
 </div>
 <p>Great! We can detect a linear and positive relationship lurking in that cloud.</p>
-<p>Each point in this cloud represents one country’s GDP per capita and average life expectancy in one year. This visualization does not tell us much about that fact. Let’s adjust it:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Suggested reading
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to learn more about log transformations, please read:</p>
+<ul>
+<li>Bailey, Michael A. 2020. <em>Real Stats: Using Econometrics for Political Science and Public Policy</em>. Chapter 7.</li>
+</ul>
+<p>If you want to learn more about interpreting linear regression models that use log transformed DVs and/or IVs, please read:</p>
+<ul>
+<li><p>This <a href="https://stats.oarc.ucla.edu/sas/faq/how-can-i-interpret-log-transformed-variables-in-terms-of-percent-change-in-linear-regression/">UCLA Statistical Methods and Data Analytics FAQ</a>.</p></li>
+<li><p>This <a href="https://stats.stackexchange.com/questions/18480/interpretation-of-log-transformed-predictor-and-or-response/18639#18639">StackExchange thread</a>.</p></li>
+</ul>
+</div>
+</div>
+<p>Each point in this cloud represents one country’s logged GDP per capita and average life expectancy in one year. This visualization does not tell us much about that fact. Let’s adjust it:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(full_df, <span class="fu">aes</span>(<span class="at">x =</span> log_gdp, <span class="at">y =</span> life_exp, <span class="at">group =</span> country)) <span class="sc">+</span> </span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>) <span class="sc">+</span> </span>
@@ -1033,15 +1048,41 @@ Tip
 
 </div>
 </div>
-<p>Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country’s average life expectancy of a $1,000 increase in its GDP per capita is 31.6 years. Holding a country’s GDP per capita constant, this average life expectancy increases by an average of 0.04 years annually.</p>
+<p>Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country’s average life expectancy of a $1,000 increase in its GDP per capita is 31.6 years.</p>
+<p>How did I get this? First, I get the coefficient for a country’s logged GDP per capita:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>coef_gdp_linear <span class="ot">&lt;-</span> <span class="fu">tidy</span>(m_linear) <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"log_gdp"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>coef_gdp_linear</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4.567743</code></pre>
+</div>
+</div>
+<p>I then translate a GDP per capita increase of $1,000 into a logged GDP Per capita increase:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6.907755</code></pre>
+</div>
+</div>
+<p>I then find the predicted increase in a country’s life expectancy resulting from a $1,000 (or a 6.908 logged dollar) increase in a country’s GDP per capita, holding the yearly effects constant:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>coef_gdp_linear <span class="sc">*</span> <span class="fu">log</span>(<span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 31.55285</code></pre>
+</div>
+</div>
+<p>Holding a country’s GDP per capita constant, this average life expectancy increases by an average of 0.04 years annually.</p>
 <p>Our model estimates these effects across all countries. But we know each country has a slightly different relationship between health and wealth. So, we should model this difference using multilevel modelling. As above, we are going to fit different intercepts for each country.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>m_multi <span class="ot">&lt;-</span> <span class="fu">lmer</span>(life_exp <span class="sc">~</span> log_gdp <span class="sc">+</span> year <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> country), </span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> full_df)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_multi, </span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="at">log_gdp =</span> <span class="st">"GDP per capita (US$, logged)"</span>, </span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>                             <span class="at">year =</span> <span class="st">"Year"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>m_multi <span class="ot">&lt;-</span> <span class="fu">lmer</span>(life_exp <span class="sc">~</span> log_gdp <span class="sc">+</span> year <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> country), </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">data =</span> full_df)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_multi, </span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="at">log_gdp =</span> <span class="st">"GDP per capita (US$, logged)"</span>, </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>                             <span class="at">year =</span> <span class="st">"Year"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -1118,67 +1159,70 @@ Tip
 </div>
 </div>
 <p>What did we find? The model has isolated the global (population) effects. Holding annual growth constant, a country’s average life expectancy increases by an average of 9.5 years for every $1,000 increase in its GDP per capita. Holding that growth in GDP per capita constant, a country’s average life expectancy increases by an average of 0.22 years annually.</p>
-<p>We also have the country-specific effects. We find that life expectancy varies by 6.9 years between countries. This country-level variance accounts for 83% of the total residual variation of the model.</p>
-<p>Before we do that, let’s look at how our model performs against our sample of countries for their GDP per capita:</p>
+<p>We also have the country-specific effects. We find that life expectancy varies by 6.945 years between countries. This country-level variance accounts for 83% of the total residual variation of the model. How did I get that?</p>
+<p><span class="math display">\[
+\frac{SD\ (Intercept\ country)}{Total\ SD} = \frac{SD\ (Intercept\ country)}{SD\ (Intercept\ country) + SD\ (Observations)} = \frac{6.945\ years}{6.945\ years + 1.459\ years}
+\]</span></p>
+<p>Let’s look at how our model performs against our sample of countries for their GDP per capita:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span> </span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(full_df, country, region)</span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> log_gdp)) <span class="sc">+</span> </span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span> </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(full_df, country, region)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> log_gdp)) <span class="sc">+</span> </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-panel_data_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-panel_data_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>And over time:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span> </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(full_df, country, region)</span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year)) <span class="sc">+</span> </span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
-<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">distinct</span>(full_df, country, region)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year)) <span class="sc">+</span> </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-panel_data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-panel_data_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>Let’s look at what we gained by accounting for these country-level differences:</p>
+<p>Pretty good! Let’s look at what we gained by accounting for these country-level differences:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_linear) <span class="sc">|&gt;</span> </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(.rownames, life_exp, log_gdp, year, <span class="at">.fitted_linear =</span> .fitted) <span class="sc">|&gt;</span> </span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(.rownames, life_exp, log_gdp, year, <span class="at">.fitted_multi =</span> .fitted)</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    full_df <span class="sc">|&gt;</span> </span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(country, region, year) <span class="sc">|&gt;</span> </span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">".rownames"</span>)</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year)) <span class="sc">+</span> </span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted_linear), <span class="at">colour =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted_multi), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_linear) <span class="sc">|&gt;</span> </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(.rownames, life_exp, log_gdp, year, <span class="at">.fitted_linear =</span> .fitted) <span class="sc">|&gt;</span> </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">augment</span>(m_multi) <span class="sc">|&gt;</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(.rownames, life_exp, log_gdp, year, <span class="at">.fitted_multi =</span> .fitted)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    full_df <span class="sc">|&gt;</span> </span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(country, region, year) <span class="sc">|&gt;</span> </span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rownames_to_column</span>(<span class="at">var =</span> <span class="st">".rownames"</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country <span class="sc">%in%</span> countries) <span class="sc">|&gt;</span> </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year)) <span class="sc">+</span> </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> life_exp)) <span class="sc">+</span> </span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted_linear), <span class="at">colour =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> .fitted_multi), <span class="at">colour =</span> <span class="st">"red"</span>) <span class="sc">+</span> </span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  ggh4x<span class="sc">::</span><span class="fu">facet_nested_wrap</span>(<span class="sc">~</span> region <span class="sc">+</span> country) <span class="sc">+</span> </span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, </span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Average life expectancy (years, logged)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-panel_data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="960"></p>
+<p><img src="04-panel_data_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <p>It looks much better across all countries and years!</p>

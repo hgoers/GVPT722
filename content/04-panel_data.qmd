@@ -8,10 +8,6 @@ execute:
   warning: false
 ---
 
-::: callout-warning
-THIS IS A DRAFT.
-:::
-
 ## Set up
 
 You will need to install the following new packages:
@@ -83,6 +79,14 @@ I am baselining the years (0 represents 2000, 1 represents 2001, etc.). This wil
 :::
 
 Now we have data on all `r full_df |> distinct(country) |> nrow()` countries' GDP per capita and life expectancy across 20 years. Therefore, our observations are clustered by country (we have 20 observations per country). These countries are, themselves, clustered within `r full_df |> distinct(region) |> nrow()` regions.
+
+## Why are we doing this? 
+
+Before we dive into some of the additional work you will need to do when working with time-series data, I should answer a very valid question: "why on earth are we doing this?". In other words, what problem are we solving?
+
+There are two answers to this question. First, the goal of your analysis is to undercover a general relationship between your outcome of interest and all of the things you theorize to be important drivers of that outcome of interest. You use this empirical analysis to provide evidence of that theorized relationship occurring out in the wild. When your theory applies to actors' behavior over time, you should aim to demonstrate this to be the case. You should use time-series data.
+
+Second, once you have decided to provide this evidence of your theory over time, your statistical tools need to also adapt. Your observations are no longer independent of each other. You are observing behavior by the same actor over time (i.e. Australia's trade with the US in 2020, in 2021, in 2022, etc.). The actor's behavior in the year prior influences their behavior in the current year. For example, US consumers that have established links with Australian manufacturers have to decide to change to a new manufacturer from another country (expending some amount of effort), or continue to buy products from that Australian manufacturer this year. Either way, the fact that they traded with Australia in the year prior impacts their behavior this year. Contrast this with our previous set ups. For example, we have use the National Election Survey to looked at the US public's opinions on various things. These individuals are selected at random. They are strangers to one another. It is appropriate to assume that they do not influence each other's opinions or responses to the survey. We discussed this assumption of independence of errors at length in the model specification week. If we violate this assumption (which we most certainly do when dealing with the same observation over time), we need to adjust our statistical model or tool accordingly. So, let's get to it.
 
 ## Starting simple
 
@@ -445,7 +449,21 @@ ggplot(full_df, aes(x = log_gdp, y = life_exp)) +
 
 Great! We can detect a linear and positive relationship lurking in that cloud.
 
-Each point in this cloud represents one country's GDP per capita and average life expectancy in one year. This visualization does not tell us much about that fact. Let's adjust it:
+::: callout-note
+## Suggested reading
+
+If you want to learn more about log transformations, please read:
+
+-   Bailey, Michael A. 2020. *Real Stats: Using Econometrics for Political Science and Public Policy*. Chapter 7. 
+
+If you want to learn more about interpreting linear regression models that use log transformed DVs and/or IVs, please read:  
+
+-   This [UCLA Statistical Methods and Data Analytics FAQ](https://stats.oarc.ucla.edu/sas/faq/how-can-i-interpret-log-transformed-variables-in-terms-of-percent-change-in-linear-regression/).
+
+-   This [StackExchange thread](https://stats.stackexchange.com/questions/18480/interpretation-of-log-transformed-predictor-and-or-response/18639#18639).
+:::
+
+Each point in this cloud represents one country's logged GDP per capita and average life expectancy in one year. This visualization does not tell us much about that fact. Let's adjust it:
 
 ```{r}
 ggplot(full_df, aes(x = log_gdp, y = life_exp, group = country)) + 
@@ -484,7 +502,31 @@ modelsummary(m_linear,
                              year = "Year"))
 ```
 
-Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country's average life expectancy of a \$1,000 increase in its GDP per capita is `r round((tidy(m_linear) |> filter(term == "log_gdp") |> pull(estimate)) * log(1000), 1)` years. Holding a country's GDP per capita constant, this average life expectancy increases by an average of `r round(tidy(m_linear) |> filter(term == "year") |> pull(estimate), 2)` years annually.
+Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country's average life expectancy of a \$1,000 increase in its GDP per capita is `r round((tidy(m_linear) |> filter(term == "log_gdp") |> pull(estimate)) * log(1000), 1)` years. 
+
+How did I get this? First, I get the coefficient for a country's logged GDP per capita:
+
+```{r}
+coef_gdp_linear <- tidy(m_linear) |> 
+  filter(term == "log_gdp") |> 
+  pull(estimate)
+
+coef_gdp_linear
+```
+
+I then translate a GDP per capita increase of $1,000 into a logged GDP Per capita increase: 
+
+```{r}
+log(1000)
+```
+
+I then find the predicted increase in a country's life expectancy resulting from a \$1,000 (or a `r round(log(1000), 3)` logged dollar) increase in a country's GDP per capita, holding the yearly effects constant:
+
+```{r}
+coef_gdp_linear * log(1000)
+```
+
+Holding a country's GDP per capita constant, this average life expectancy increases by an average of `r round(tidy(m_linear) |> filter(term == "year") |> pull(estimate), 2)` years annually.
 
 Our model estimates these effects across all countries. But we know each country has a slightly different relationship between health and wealth. So, we should model this difference using multilevel modelling. As above, we are going to fit different intercepts for each country.
 
@@ -499,9 +541,13 @@ modelsummary(m_multi,
 
 What did we find? The model has isolated the global (population) effects. Holding annual growth constant, a country's average life expectancy increases by an average of `r round((tidy(m_multi) |> filter(term == "log_gdp") |> pull(estimate)) * log(1000), 1)` years for every \$1,000 increase in its GDP per capita. Holding that growth in GDP per capita constant, a country's average life expectancy increases by an average of `r round((tidy(m_multi) |> filter(term == "year") |> pull(estimate)), 2)` years annually.
 
-We also have the country-specific effects. We find that life expectancy varies by `r tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate) |> round(1)` years between countries. This country-level variance accounts for `r scales::percent((tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate)) / ((tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate)) +  (tidy(m_multi) |> filter(term == "sd__Observation") |> pull(estimate))))` of the total residual variation of the model.
+We also have the country-specific effects. We find that life expectancy varies by `r tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate) |> round(3)` years between countries. This country-level variance accounts for `r scales::percent((tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate)) / ((tidy(m_multi) |> filter(term == "sd__(Intercept)") |> pull(estimate)) +  (tidy(m_multi) |> filter(term == "sd__Observation") |> pull(estimate))))` of the total residual variation of the model. How did I get that?
 
-Before we do that, let's look at how our model performs against our sample of countries for their GDP per capita:
+$$
+\frac{SD\ (Intercept\ country)}{Total\ SD} = \frac{SD\ (Intercept\ country)}{SD\ (Intercept\ country) + SD\ (Observations)} = \frac{6.945\ years}{6.945\ years + 1.459\ years}
+$$
+
+Let's look at how our model performs against our sample of countries for their GDP per capita:
 
 ```{r}
 #| fig-height: 10
@@ -539,7 +585,7 @@ augment(m_multi) |>
        y = "Average life expectancy (years, logged)")
 ```
 
-Let's look at what we gained by accounting for these country-level differences:
+Pretty good! Let's look at what we gained by accounting for these country-level differences:
 
 ```{r}
 #| fig-height: 10
