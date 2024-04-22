@@ -8,6 +8,12 @@ execute:
   warning: false
 ---
 
+## Slides
+
+```{=html}
+<iframe class="slide-deck" src="../content/slides/04-panel_data.html" width = "100%" height = 600px></iframe>
+```
+
 ## Set up
 
 You will need to install the following new packages:
@@ -80,7 +86,7 @@ I am baselining the years (0 represents 2000, 1 represents 2001, etc.). This wil
 
 Now we have data on all `r full_df |> distinct(country) |> nrow()` countries' GDP per capita and life expectancy across 20 years. Therefore, our observations are clustered by country (we have 20 observations per country). These countries are, themselves, clustered within `r full_df |> distinct(region) |> nrow()` regions.
 
-## Why are we doing this? 
+## Why are we doing this?
 
 Before we dive into some of the additional work you will need to do when working with time-series data, I should answer a very valid question: "why on earth are we doing this?". In other words, what problem are we solving?
 
@@ -454,9 +460,9 @@ Great! We can detect a linear and positive relationship lurking in that cloud.
 
 If you want to learn more about log transformations, please read:
 
--   Bailey, Michael A. 2020. *Real Stats: Using Econometrics for Political Science and Public Policy*. Chapter 7. 
+-   Bailey, Michael A. 2020. *Real Stats: Using Econometrics for Political Science and Public Policy*. Chapter 7.
 
-If you want to learn more about interpreting linear regression models that use log transformed DVs and/or IVs, please read:  
+If you want to learn more about interpreting linear regression models that use log transformed DVs and/or IVs, please read:
 
 -   This [UCLA Statistical Methods and Data Analytics FAQ](https://stats.oarc.ucla.edu/sas/faq/how-can-i-interpret-log-transformed-variables-in-terms-of-percent-change-in-linear-regression/).
 
@@ -502,7 +508,7 @@ modelsummary(m_linear,
                              year = "Year"))
 ```
 
-Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country's average life expectancy of a \$1,000 increase in its GDP per capita is `r round((tidy(m_linear) |> filter(term == "log_gdp") |> pull(estimate)) * log(1000), 1)` years. 
+Because we logged our variable of GDP per capita, we need to take one additional step before we can interpret the coefficient on GDP per capita in a way that is meaningful to humans. The predicted effect on a country's average life expectancy of a \$1,000 increase in its GDP per capita is `r round((tidy(m_linear) |> filter(term == "log_gdp") |> pull(estimate)) * log(1000), 1)` years.
 
 How did I get this? First, I get the coefficient for a country's logged GDP per capita:
 
@@ -514,7 +520,7 @@ coef_gdp_linear <- tidy(m_linear) |>
 coef_gdp_linear
 ```
 
-I then translate a GDP per capita increase of $1,000 into a logged GDP Per capita increase: 
+I then translate a GDP per capita increase of \$1,000 into a logged GDP Per capita increase:
 
 ```{r}
 log(1000)
@@ -609,7 +615,7 @@ augment(m_linear) |>
   ggh4x::facet_nested_wrap(~ region + country) + 
   theme_minimal() + 
   labs(x = "Year", 
-       y = "Average life expectancy (years, logged)")
+       y = "Average life expectancy (years)")
 ```
 
 It looks much better across all countries and years!
