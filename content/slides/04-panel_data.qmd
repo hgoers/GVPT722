@@ -81,6 +81,16 @@ countries <- full_df |>
 
 -   An individual's turnout behavior over all elections in which they are eligible to vote.
 
+## Looking at the same observations over time
+
+More generally...
+
+-   Actor 1's behaviour in time $t$, $t+1$, ..., $t + n$;
+
+-   Actor 2's behaviour in time $t$, $t+1$, ..., $t + n$;
+
+-   Actor N's behaviour in time $t$, $t+1$, ..., $t + n$.
+
 ## Relationship between health and wealth
 
 What is the relationship between people's health and wealth? 

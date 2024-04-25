@@ -1,5 +1,5 @@
 ---
-title: "Binary outcomes"
+title: "Binary Outcomes"
 format: 
   html:
     fig-width: 10
@@ -24,7 +24,7 @@ set.seed(1234)
 
 ## Introduction to binary outcomes
 
-We often want to better understand binary outcomes: voted, or not; at war, or not; signed a treaty, or not.
+We often want to better understand binary outcomes: voted, or not; at war, or not; signed a treaty, or not. We need to adapt our models linking the predictors of interest to these binary outcomes. This lab session, we will step through some common approaches to doing this.
 
 Imagine that if you are over six feet tall, there is a 80% chance that you will score a three-point field goal on any given attempt. In other words, people over six feet tall score a three-pointer 95% of the time they attempt one. Imagine also that if you are under six feet tall, your luck is reversed. There is only a 5% chance that you score a three-pointer when you attempt one.
 
@@ -278,7 +278,7 @@ When a player is 180 cm tall, our model predicts that she will score a three-poi
 
 When a player is 190 cm tall, our model predicts that she will score a three-pointer 88.6 percent of the time.
 
-Notice that we are increasing the player's height by the same amount each time, but the increase in her probability of success from this constant increase is different. Here is the predicted probability of success across our range of players' heights: 
+Notice that we are increasing the player's height by the same amount each time, but the increase in her probability of success from this constant increase is different. Here is the predicted probability of success across our range of players' heights:
 
 ```{r}
 plot_predictions(m_lr, condition = "height") + 

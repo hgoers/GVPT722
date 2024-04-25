@@ -56,6 +56,13 @@
     "text": "Looking at the same observations over time\n\nCountries’ voting behavior in the UN in the post-Cold War period;\nCountries’ propensity to go to war with one another;\nDemocratic backsliding across regions or countries;\nA politician’s voting behavior;\nAn individual’s turnout behavior over all elections in which they are eligible to vote."
   },
   {
+    "objectID": "content/slides/04-panel_data.html#looking-at-the-same-observations-over-time-1",
+    "href": "content/slides/04-panel_data.html#looking-at-the-same-observations-over-time-1",
+    "title": "Working with Panel Data",
+    "section": "Looking at the same observations over time",
+    "text": "Looking at the same observations over time\nMore generally…\n\nActor 1’s behaviour in time \\(t\\), \\(t+1\\), …, \\(t + n\\);\nActor 2’s behaviour in time \\(t\\), \\(t+1\\), …, \\(t + n\\);\nActor N’s behaviour in time \\(t\\), \\(t+1\\), …, \\(t + n\\)."
+  },
+  {
     "objectID": "content/slides/04-panel_data.html#relationship-between-health-and-wealth",
     "href": "content/slides/04-panel_data.html#relationship-between-health-and-wealth",
     "title": "Working with Panel Data",
