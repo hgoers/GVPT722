@@ -14,132 +14,134 @@ THIS IS A DRAFT.
 
 ```{r}
 library(tidyverse)
+library(poliscidata)
+library(janitor)
 library(modelsummary)
+library(marginaleffects)
 library(scales)
 library(broom)
-library(marginaleffects)
-
-set.seed(1234)
 ```
 
 ## Introduction to binary outcomes
 
 We often want to better understand binary outcomes: voted, or not; at war, or not; signed a treaty, or not. We need to adapt our models linking the predictors of interest to these binary outcomes. This lab session, we will step through some common approaches to doing this.
 
-Imagine that if you are over six feet tall, there is a 80% chance that you will score a three-point field goal on any given attempt. In other words, people over six feet tall score a three-pointer 95% of the time they attempt one. Imagine also that if you are under six feet tall, your luck is reversed. There is only a 5% chance that you score a three-pointer when you attempt one.
+## Predicting whether or not someone voted for Obama in 2012
 
-Let's make some data to reflect this world. In 2021 (the latest data I get from a very cursory Google search)[^1], the tallest player in the WNBA is Brittney Griner who is 6.9 feet (206 cm) tall. The shortest player, Leilani Mitchell, is 5.5 feet (165 cm) tall. We will use these women as our plausible range of players.
-
-[^1]: I'm sorry... it's just not as good as AFL...
-
-Let's take 1,000 hypothetical randomly-selected players ranging from 165 cms to 206 cms tall and ask them to take a shot from the three-point score line. We will record whether or not they score.
+We are going to use information about individuals' political preferences to predict whether or not they voted for Obama in 2012. To do this, we will use the National Election Survey from that year:
 
 ```{r}
-players_height <- sample(165:206, size = 1000, replace = T)
+nes <- nes |> 
+  drop_na(obama_vote, obama_therm)
 ```
 
-Remember, if they are taller than 6 feet (or 183 cms), they will score 95% of the time. If they are less than 6 feet, they will only score 5% of the time.
+Let's start by looking how people who voted or did not vote for Obama felt about him. I suspect that individuals with warmer feelings towards Obama tended to vote for him more than those who had less warm feelings towards him.
 
 ```{r}
-three_pointers <- tibble(
-  height = players_height,
-  scored = if_else(height < 183,
-                   sample(0:1, 1000, replace = T, prob = c(0.95, 0.05)),
-                   sample(0:1, 1000, replace = T, prob = c(0.05, 0.95)))
-)
-```
-
-Let's look at how they went:
-
-```{r}
-ggplot(three_pointers, aes(x = height, y = scored)) + 
-  geom_vline(xintercept = 182, colour = "grey") + 
-  geom_jitter(alpha = 0.5,
-              height = 0.1) + 
+ggplot(nes, aes(x = obama_therm, y = obama_vote)) + 
+  geom_jitter(alpha = 0.25, height = 0.1) + 
   theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Scored three-pointer") + 
+  labs(x = "Feelings towards Obama (0 - 100)",
+       y = "Voted for Obama") + 
   scale_y_continuous(n.breaks = 2)
 ```
 
-So, it looks like some of our taller plays (those above the grey line) were unlucky and missed. Happily some of our shorter players beat the odds!
+::: callout-tip
+I have used `geom_jitter()` to better visualize these points.
+:::
 
-If I asked you to predict whether or not a player would score a three-pointer and you knew this fact that taller players scored 95% of the time whilst shorter players only scored 5% of the time, you might follow up and ask how tall the player in question is. It seems to be an important predictor of her ability to score!
+So, it looks like people behaved as we expected them to: those who felt warmly of Obama tended to vote for him, and those who felt cooler towards him tended not to. However, this rule is not absolute: some people who felt very warmly for Obama did not vote for him and some who did not like him voted for him.
 
-In other words, if I wanted to build a model predicting the likelihood any given player would score a three-pointer, I would include in that model the player's height as a variable.
+To illustrate, let's look at all of the people who gave Obama a rating of 75 or greater. What proportion of them also voted for him in 2012?
+
+```{r}
+nes |> 
+  filter(obama_therm >= 75) |> 
+  tabyl(obama_vote)
+```
+
+Okay, so `r nes |> filter(obama_therm >= 75) |> tabyl(obama_vote) |> filter(obama_vote == 1) |> pull(percent) |> scales::percent()` of these individuals voted for Obama. That leaves `r nes |> filter(obama_therm >= 75) |> tabyl(obama_vote) |> filter(obama_vote == 0) |> pull(percent) |> scales::percent()` of those with strongly warm feelings of Obama who did not vote for him.
+
+If I asked you to predict whether an individual voted for Obama and I told you that `r nes |> filter(obama_therm >= 75) |> tabyl(obama_vote) |> filter(obama_vote == 1) |> pull(percent) |> scales::percent()` of people who gave him a rating of 75 or greater voted for him, you would probably ask what rating the individual in question gave him. It seems to be an important predictor of their vote!
+
+In other words, if I wanted to build a model predicting the likelihood any given individual would vote for Obama, I would include in that model the individual's feeling thermometer rating for Obama as a variable.
 
 Let's do that!
 
-## Linear probability model (LMP)
+## Linear probability model (LPM)
 
-Let's start simply by drawing a straight line between these two clusters of points. As with all linear regression models, we want to draw the line that minimizes the distance between itself and all of the observed points.
+Let’s start simply by drawing a straight line between these two clusters of points. As with all linear regression models, we want to draw the line that minimizes the distance between itself and all of the observed points.
 
 ```{r}
-ggplot(three_pointers, aes(x = height, y = scored)) + 
-  geom_jitter(alpha = 0.5,
-              height = 0.1) + 
-  geom_smooth(method = "lm", se = F) +
+ggplot(nes, aes(x = obama_therm, y = obama_vote)) + 
+  geom_jitter(alpha = 0.25, height = 0.1) + 
+  geom_smooth(method = "lm", se = F) + 
   theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Probability of scoring") + 
-  scale_y_continuous(label = percent, limits = c(0, 1))
+  labs(x = "Feelings towards Obama (0 - 100)",
+       y = "Voted for Obama") + 
+  scale_y_continuous(n.breaks = 2)
 ```
 
 ```{r}
-m_lpm <- lm(scored ~ height, data = three_pointers)
+m_lpm <- lm(obama_vote ~ obama_therm, data = nes)
 
-modelsummary(m_lpm, coef_rename = c("height" = "Height (cm)"), stars = T)
+modelsummary(m_lpm, 
+             coef_rename = c("obama_therm" = "Thermometer rating of Obama (0 to 100)"),
+             stars = T, 
+             gof_map = "nobs")
 ```
 
-Although this looks a lot like our familiar linear regression model, we interpret its estimates differently. Here, instead of estimating the value of the outcome variable, we are estimating the probability that the outcome variable will be equal to one (or that our player scores).
+### Interpreting an LPM
 
-So, we have found that players that are one centimeter taller than their teammates are, on average, `r tidy(m_lpm) |> filter(term == "height") |> pull(estimate) |> percent()` more like to score a three-pointer than those shorter team mates.
+Although this looks a lot like our familiar linear regression model, we interpret its estimates differently. Instead of estimating the value of the outcome variable, we are estimating the probability that the outcome variable will be equal to one (or that an individual voted for Obama).
 
-Our model predicts that a player who is 170 cms tall will score `r augment(m_lpm, newdata = tibble(height = 170)) |> pull(.fitted) |> percent()` of the time. It predicts that a player who is 10 cms taller will score `r augment(m_lpm, newdata = tibble(height = 180)) |> pull(.fitted) |> percent()` of the time. Finally, it predicts that a player who is another 10 cms taller will score `r augment(m_lpm, newdata = tibble(height = 190)) |> pull(.fitted) |> percent()` of the time. More succintly:
+As expected, the model suggests that individuals with higher ratings of Obama were more likely to vote for him. Each increase in individuals' rating of Obama is associated with a `r tidy(m_lpm) |> filter(term == "obama_therm") |> pull(estimate) |> scales::percent(accuracy = 0.1)` increase in the probability that they voted for Obama.
+
+### Predicted probabilities
+
+Let's look at what the model predicts the probability of voting for Obama to be for every value of the feeling thermometer:
 
 ```{r}
-plot_predictions(m_lpm, condition = "height") +
+plot_predictions(m_lpm, condition = "obama_therm") + 
   theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Probability of scoring") + 
-  scale_y_continuous(label = percent, limits = c(0, 1))
+  labs(x = "Feeling thermometer rating",
+       y = "Probability of voting for Obama") + 
+  scale_y_continuous(label = percent, limits = c(-0.25, 1.25))
 ```
 
-Hmm, this doesn't really reflect the hypothetical world we set up very well...
+So, there are a couple of issues with this approach. First, our model predict probabilities that are greater than 100% and less than 0%. Those who gave Obama a rating of 0 are predicted to vote for him with a probability of `r augment(m_lpm, newdata = tibble(obama_therm = 0)) |> pull(.fitted) |> scales::percent()`. Those who gave him a rating of 100 are predicted to vote for him with a probability of `r augment(m_lpm, newdata = tibble(obama_therm = 100)) |> pull(.fitted) |> scales::percent()`.
 
-We said that if you were above a cut off point (6 feet) then you had an 95% chance of scoring. If you were below this height threshold, you only had a 5% chance of scoring. But this LPM assumes a linear (constant) increase across all heights.
+Second, and more importantly, this constant effect does not really reflect our understanding of individuals' political behavior. Individuals who really do not like Obama are very unlikely to vote for him.
 
-Also, this model predicts probabilities of scoring that are more than 100% of the time and less than 0% if you are less than 170cm tall. That's very dire odds for some current players...
+```{r}
+nes |> 
+  filter(obama_therm <= 25) |> 
+  tabyl(obama_vote)
+```
 
-Happily, we can do better (...than economists).
+Individuals who really like Obama are very likely to vote for him.
 
-## Latent variable approach
+```{r}
+nes |> 
+  filter(obama_therm >= 75) |> 
+  tabyl(obama_vote)
+```
 
-When we are dealing with binary outcomes, we can only observe `1` or `0`, success or failure. This makes this whole prediction thing tricky!
+A shift from a rating of 0 to 1, or from 99 to 100, is probably not going to change the likelihood that these individuals with strong opinions of Obama will vote for him.
 
-For example, lots of political pundits will attempt to predict the outcome of this year's US Presidential Election. They will say that they predict that either President Biden or Mr Trump will win.
+On the other hand, individuals in the middle are more likely to swing towards or away from him if their view of him warms or cools.
 
-Those who build complex models to help them in this will likely put some percentage against their prediction. For example, someone might say that they predict that President Biden will hold office with an 85% chance. What they are saying is that, if you were able to run 100 different versions of the 2024 US Presidential Election, their model suggests that President Biden wins 85 of those 100 elections. That means that their model also predicts that Mr Trump will win 15 of those 100 elections.
+```{r}
+nes |> 
+  filter(obama_therm >= 37.5 & obama_therm <= 62.5) |> 
+  tabyl(obama_vote)
+```
 
-We can only observe the outcome: Biden or Trump. We cannot observe this underlying probability: 85% Biden and 15% Trump. But we assume that underlying continuous relationship exists! This is logic behind the latent variable approach.
+A linear probability model does not reflect these differences. Happily, we can do better (…than economists).
 
-Going back to our basketball players: the latent variable approach assumes that some continuous *linear* relationship exists between our observed outcome, scored or did not score, and our independent variable: height. This continuous relationship is driven by an unobserved variable: $Z$. Formally:
+## Logistic regression
 
-$$
-z_i = X_i\beta + \epsilon_i
-$$
-
-This is a linear model! In fact, it's the linear model you have been working with for two semesters. Great!
-
-*But* as usual, the interesting (and tricky) part of this model is that error term: $\epsilon$. What shape does it take? In a linear regression, we assume that it is normally distributed and centered at zero. When we have a binary outcome, we assume that it takes on a different shape. Which shape? Well, you get to pick your poison: logit or probit?
-
-### Logistic regression
-
-Logistic regression is a favourite among international relations scholars. It has lots of very useful features.
-
-First, it is bounded by 0 and 1 (just like our outcome). Second, it allows for a varying impact of a change in $X$ on the probability that our outcome is a success.
-
-Formally, the inverse logistic function is:
+A logistic regression model solves these problems. Formally, the inverse logistic function is:
 
 $$
 Pr(Y = 1 | X) = logit^{-1}(X) = \frac{e^X}{1 + e^X}
@@ -148,45 +150,42 @@ $$
 But don't worry too much about that. Let's instead look at its shape:
 
 ```{r}
-tibble(x = seq(-10, 10, by = 0.5),
-       y = plogis(x)) |> 
+tibble(x = seq(-10, 10, by = 0.5), y = plogis(x)) |> 
   ggplot(aes(x = x, y = y)) + 
   geom_line() + 
   theme_minimal()
 ```
 
-This is great! The outcome (probability of success) is bounded between 0 and 1 as all probabilities are. Further, our cut-off point (in this general demonstration, 0) is clearly defined.
+This is great! The outcome (probability of success) is bounded between 0 and 1 as all probabilities are. Also, changes to our DV do not produce uniform changes in that outcome.
 
-Let's fit a logistic regression model against our basketball players' scoring efforts:
+Lets fit this model to our data:
 
 ```{r}
-ggplot(three_pointers, aes(x = height, y = scored)) + 
-  geom_jitter(alpha = 0.5,
-              height = 0.1) + 
+ggplot(nes, aes(x = obama_therm, y = obama_vote)) + 
+  geom_jitter(alpha = 0.25, height = 0.1) + 
   geom_smooth(method = "glm", se = F, method.args = list(family = binomial(link = "logit"))) + 
   theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Probability of scoring") + 
-  scale_y_continuous(label = percent, limits = c(0, 1))
+  labs(x = "Feelings towards Obama (0 - 100)",
+       y = "Voted for Obama") + 
+  scale_y_continuous(n.breaks = 2)
 ```
-
-We can fit this model using the following:
 
 ```{r}
-m_lr <- glm(scored ~ height, data = three_pointers, family = binomial(link = "logit"))
+m_logistic <- glm(obama_vote ~ obama_therm, data = nes, family = binomial(link = "logit"))
 
-modelsummary(m_lr,
-             coef_rename = c("height" = "Height (cm)"),
-             stars = T)
+modelsummary(m_logistic, 
+             coef_rename = c("obama_therm" = "Thermometer rating of Obama (0 to 100)"),
+             stars = T,
+             gof_map = "nobs")
 ```
 
-#### Interpreting logistic regression coefficients
+### Interpreting a logistic regression
 
-The coefficients presented above are log odds ratios. We can easily interpret their statistical significance and their sign. For example, we learn that as a player's height increases, so too does her probability of scoring a three-pointer. We also know that the probability that we would pull a random sample from a population in which a player's height has no bearing on her ability to score a three pointer is very small. Sadly, that's about all that we can easily get from the regression table provided above.
+The coefficients presented above are **log odds ratios**. We can easily interpret their statistical significance and their sign. For example, we learn that as an individual’s feelings towards Obama increase, so too does the probability that they will vote for him. We also know that this relationship is statistically significant. Sadly, we can't get much more from the regression table provided above.
 
-Remember that logit (and probit) models are simply transformed linear models. We take our linear model of the relationship between scoring a three pointer and a player's height and reshape it to better predict probabilities (bound between 0 and 1, with varying effects of changes of height on probability of success). Similarly, we can reshape these coefficients to make them easier to interpret.
+Remember that logit (and probit) models are simply transformed linear models. We take our linear model of the relationship between an individual's feelings towards Obama and the likelihood that they will vote for him and reshape it to better predict probabilities (bound between 0 and 1, with varying effects of changes of height on probability of success). Similarly, we can reshape these coefficients to make them easier to interpret.
 
-##### Odds ratios
+#### Odds ratios
 
 The regression coefficient provided above is a log odds ratio. Log-transformed variables are really hard to interpret. So, let’s get rid of that log. The opposite operation to taking the logarithm of a number is to take the exponential of it. To demonstrate:
 
@@ -196,34 +195,43 @@ tibble(x = 1:5,
        exp_log_x = exp(log_x))
 ```
 
-So, exponentiating the log odd ratio will get us the odds ratio. The odds ratio is much easier to interpret. If the probability of success of an outcome is $p$ and, therefore, the probability of failure is $1-p$, then , the the odds of success is $\frac{p}{1-p}$. Now, dividing two odds by each other gives you their odds ratio.
+So, exponentiating the log odd ratio will get us the **odds ratio**. The odds ratio is much easier to interpret. If the probability of success of an outcome is $p$ and, therefore, the probability of failure is $1-p$, then , the the odds of success are $\frac{p}{1-p}$. Now, dividing two odds by each other gives you their odds ratio.
 
 For example, when the odds ratio is 1, the odds of success are the same as the odds of failure ($\frac{0.5}{0.5} = 1$). When the odds ratio is greater than 1, the odds of success are greater than the odds of failure (for example, $\frac{0.8}{0.2} = 4$). Where the odds ratio of success is four, the odds of success are four times higher than the odds of failure.
 
-Getting back to our model, the odds ratio that a player will score is:
+Getting back to our model, the odds ratio of the thermometer rating coefficient is:
 
 $$
-e^{0.302} = 1.35
+e^{0.130} = 1.14
 $$
 
-Therefore, if we increase a player's height by one centimeter, the odds that she will score increases by 0.35 (or $1 - 1.35$).
-
-Happily, `modelsummary::modelsummary(exponentiate = T)` will help us out here:
+Or using R:
 
 ```{r}
-modelsummary(m_lr,
-             exponentiate = T, 
-             coef_rename = c("height" = "Height (cm)"),
-             stars = T)
+tidy(m_logistic) |> 
+  filter(term == "obama_therm") |> 
+  pull(estimate) |> 
+  exp()
+```
+
+Therefore, our model predicts that by increasing an individual's rating of Obama, the odds that they will vote for Obama increase by 0.14 (or $1 - 1.14$).
+
+We can report the odds ratio in our regression table using `modelsummary::modelsummary(exponentiate = T)`:
+
+```{r}
+modelsummary(m_logistic, 
+             coef_rename = c("obama_therm" = "Thermometer rating of Obama (0 to 100)"),
+             stars = T,
+             gof_map = "nobs")
 ```
 
 And we can also get these results programmatically using `broom::tidy()`:
 
 ```{r}
-tidy(m_lr, exponentiate = T)
+tidy(m_logistic, exponentiate = T)
 ```
 
-##### Predicted probabilities
+#### Predicted probabilities
 
 Odds ratios are certainly easier to interpret than log odds ratios, but they are still a little awkward. It is easier again to discuss the effects of changing our independent variables of interest in terms of probabilities, rather than odds.
 
@@ -248,56 +256,37 @@ $$
 Or, more specifically:
 
 $$
-Pr(scored = 1 | height) = \frac{e^{−50.744 + 0.279height + \epsilon}}{1 + e^{−50.744 + 0.279height + \epsilon}}
+Pr(obama\_vote = 1 | obama\_therm) = \frac{e^{−7.466 + 0.130obama\_therm + \epsilon}}{1 + e^{−7.466 + 0.130obama\_therm + \epsilon}}
 $$
 
-Importantly, we need to know our player's height to predict her probability of success. This makes sense! The slope of our model is not constant:
+Importantly, we need to know our individual's rating of Obama to predict the probability that they will vote for him. This makes sense! The slope of our model is not constant.
 
-```{r}
-#| echo: false
-
-ggplot(three_pointers, aes(x = height, y = scored)) + 
-  geom_jitter(alpha = 0.5,
-              height = 0.1) + 
-  geom_smooth(method = "glm", se = F, method.args = list(family = binomial(link = "logit"))) + 
-  theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Probability of scoring") + 
-  scale_y_continuous(label = percent, limits = c(0, 1))
-```
-
-When a player is 170 cm tall, our model predicts that she will score a three-pointer 3.5 percent of the time.
+When an individual gives Obama a rating of zero, our model predicts that there is a `r augment(m_logistic, newdata = tibble(obama_therm = 0)) |> pull(.fitted) |> exp() |> scales::percent(accuracy = 0.01)` chance they will vote for Obama.
 
 How did I get that?
 
 $$
-Pr(scored = 1 | height) = \frac{e^{−50.744 + 0.279height + \epsilon}}{1 + e^{−50.744 + 0.279height + \epsilon}} = \frac{e^{−50.744 + 0.279*170}}{1 + e^{−50.744 + 0.279*170}} = \frac{.036}{1.036} = 0.035
+Pr(obama\_vote = 1 | obama\_therm = 0) = \frac{e^{−7.466 + 0.130 * 0}}{1 + e^{−7.466 + 0.130 * 0}} =  \frac{e^{−7.466}}{1 + e^{−7.466}} =  0.0006
 $$
 
-When a player is 180 cm tall, our model predicts that she will score a three-pointer 27.5 percent of the time.
-
-When a player is 190 cm tall, our model predicts that she will score a three-pointer 88.6 percent of the time.
-
-Notice that we are increasing the player's height by the same amount each time, but the increase in her probability of success from this constant increase is different. Here is the predicted probability of success across our range of players' heights:
+Or in R:
 
 ```{r}
-plot_predictions(m_lr, condition = "height") + 
-  theme_minimal() + 
-  labs(x = "Player's height (cm)",
-       y = "Probability of scoring") + 
-  scale_y_continuous(label = percent, limits = c(0, 1))
+augment(m_logistic, newdata = tibble(obama_therm = 0)) |> 
+  pull(.fitted) |> 
+  exp()
 ```
 
-#### Interpreting the intercept
+When an individual gives Obama a rating of 50, our model predicts that there is a `r augment(m_logistic, newdata = tibble(obama_therm = 50)) |> pull(.fitted) |> exp() |> scales::percent(accuracy = 0.01)` chance they will vote for Obama.
 
-As usual, the intercept should be interpreted as the expected value when all independent variables are set to 0. This is simple to interpret in terms of the probability of success. Remember:
+When an individual gives Obama a rating of 100, our model predicts that there is a `r augment(m_logistic, newdata = tibble(obama_therm = 100)) |> pull(.fitted) |> exp() |> scales::percent(accuracy = 0.01)` chance they will vote for Obama.
 
-$$
-Pr(Y = 1 | X) = \frac{e^X}{1 + e^X}
-$$
+We can plot these predicted probabilities for each value of the thermometer rating:
 
-When `height = 0`:
-
-$$
-Pr(Y = 1 | X) = \frac{e^{\beta_0}}{1 + e^{\beta_0}} = \frac{e^{−50.744}}{1 + e^{−50.744}} = A\ very\ small\ number!
-$$
+```{r}
+plot_predictions(m_logistic, condition = "obama_therm") + 
+  theme_minimal() + 
+  labs(x = "Feeling thermometer rating",
+       y = "Probability of voting for Obama") + 
+  scale_y_continuous(label = percent, limits = c(0, 1))
+```

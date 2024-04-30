@@ -1,0 +1,199 @@
+---
+title: "Marginal Effects"
+format: 
+  html:
+    fig-width: 10
+execute:
+  message: false
+  warning: false
+---
+
+::: callout-warning
+THIS IS A DRAFT.
+:::
+
+```{r}
+library(tidyverse)
+library(polisciols)
+library(modelsummary)
+library(marginaleffects)
+library(broom)
+```
+
+```{r}
+m <- lm(net_fdi_inflows ~ pcj + gdp_per_capita, data = ebj)
+
+modelsummary(m, 
+             coef_rename = c("pcjPCJ institutions" = "PCJ institutions established",
+                             "gdp_per_capita" = "GDP per capita (current USD)"),
+             stars = T)
+```
+
+Our model is as follows: 
+
+$$
+Net\ FDI\ inflows_i = −319.173 + 1673.288 PCJ_i + 0.318 GDP\ per\ capita_i + \epsilon_i
+$$
+
+So, what is the estimated effect of a state establishing post-conflict justice (PCJ) institutions on its net FDI inflows? 
+
+### Average values approach
+
+We will use our model to predict a country's net FDI inflows when `pcj = 0` and when `pcj = 1` and then find the difference between these predictions. But, we need to make decision about how we will handle our other independent variable: GDP per capita. 
+
+The average values approach uses the average of all countries' observed GDP per capita. So, when the country has not established a PCJ institution, we are simply finding: 
+
+$$
+\hat{Net\ FDI\ inflows} = −319.173 + 1673.288*0 + 0.318*\bar{GDP\ per\ capita}
+$$
+
+In R, first find the average GDP per capita across our countries:
+
+```{r}
+avg_gdp_per_cap <- mean(ebj$gdp_per_capita)
+
+scales::dollar(avg_gdp_per_cap)
+```
+
+Second, build out the hypothetical countries we will compare:
+
+```{r}
+pred_df <- tibble(
+  pcj = factor(c(0, 1), labels = c("No institutions", "PCJ institutions")),
+  gdp_per_capita = avg_gdp_per_cap
+)
+
+pred_df
+```
+
+Third, use our model to predict the net FDI for these hypothetical countries: 
+
+```{r}
+beta_0 <- tidy(m) |> 
+  filter(term == "(Intercept)") |> 
+  pull(estimate)
+
+beta_pcj <- tidy(m) |> 
+  filter(term == "pcjPCJ institutions") |> 
+  pull(estimate)
+
+beta_gdppc <- tidy(m) |> 
+  filter(term == "gdp_per_capita") |> 
+  pull(estimate)
+
+comparison <- pred_df |> 
+  mutate(.fitted = beta_0 + beta_pcj*(as.numeric(pcj) - 1) + beta_gdppc * gdp_per_capita)
+
+comparison
+```
+
+Finally, calculate the difference: 
+
+```{r}
+comparison |> 
+  mutate(diff = .fitted - lag(.fitted))
+```
+
+::: {.callout-tip}
+Alternatively, you can use base R's predict: 
+
+```{r}
+comparison_pred <- predict(m, pred_df)
+comparison_pred
+
+comparison_pred[2] - comparison_pred[1]
+```
+
+Or (my favorite) `broom::augment()`: 
+
+```{r}
+augment(m, newdata = pred_df) |> 
+  mutate(diff = .fitted - lag(.fitted))
+```
+:::
+
+More succinctly, you can use `marginaleffect::avg_comparisons()`:
+
+```{r}
+avg_comparisons(m, variables = "pcj")
+```
+
+More details on the mechanics of this function can be [found here](https://marginaleffects.com/vignettes/comparisons.html#aggregation). 
+
+### Observed values approach
+
+First, adjust your data so that all observations are set to each value of interest. 
+
+```{r}
+ebj_no_pcj <- ebj |> 
+  transmute(country_name, 
+            pcj = factor(0, levels = 0:1, labels = c("No institutions", "PCJ institutions")),
+            gdp_per_capita)
+
+head(ebj_no_pcj)
+```
+
+```{r}
+ebj_pcj <- ebj |> 
+  transmute(country_name, 
+            pcj = factor(1, levels = 0:1, labels = c("No institutions", "PCJ institutions")),
+            gdp_per_capita)
+
+head(ebj_pcj)
+```
+
+Next, use the model to predict your outcome for every observation: 
+
+```{r}
+pred_no_pcj <- ebj_no_pcj |> 
+  mutate(.fitted = beta_0 + beta_pcj*(as.numeric(pcj) - 1) + beta_gdppc * gdp_per_capita)
+
+head(pred_no_pcj)
+```
+
+```{r}
+pred_pcj <- ebj_pcj |> 
+  mutate(.fitted = beta_0 + beta_pcj*(as.numeric(pcj) - 1) + beta_gdppc * gdp_per_capita)
+
+head(pred_pcj)
+```
+
+::: {.callout-note}
+For example, we now know our model's predicted net FDI inflow for every country when it has and has not established a PCJ institution.
+
+For example: 
+
+```{r}
+pred_tt <- pred_no_pcj |> 
+  bind_rows(pred_pcj) |> 
+  filter(country_name == "Trinidad & Tobago")
+
+pred_tt
+```
+
+What is the estimated effect for this country of having a PCJ institution?
+
+```{r}
+pred_tt |> 
+  mutate(diff = .fitted - lag(.fitted))
+```
+:::
+
+Next, find the average effect: 
+
+```{r}
+avg_effect <- pred_no_pcj |> 
+  bind_rows(pred_pcj) |> 
+  group_by(pcj) |> 
+  summarise(avg_fitted = mean(.fitted))
+
+avg_effect
+```
+
+Finally, find the difference between these average effects: 
+
+```{r}
+avg_effect |> 
+  mutate(diff = avg_fitted - lag(avg_fitted))
+```
+

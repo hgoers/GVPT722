@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>GVPT722 - Binary outcomes</title>
+<title>GVPT722 - Binary Outcomes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -141,7 +141,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/06-binary_outcomes.html">Binary outcomes</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/06-binary_outcomes.html">Binary Outcomes</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
     </div>
@@ -186,7 +186,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../content/06-binary_outcomes.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Binary outcomes</span></a>
+ <span class="menu-text">Binary Outcomes</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/07-marginal_effects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Marginal Effects</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -206,10 +212,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#introduction-to-binary-outcomes" id="toc-introduction-to-binary-outcomes" class="nav-link active" data-scroll-target="#introduction-to-binary-outcomes">Introduction to binary outcomes</a></li>
-  <li><a href="#linear-probability-model-lmp" id="toc-linear-probability-model-lmp" class="nav-link" data-scroll-target="#linear-probability-model-lmp">Linear probability model (LMP)</a></li>
-  <li><a href="#latent-variable-approach" id="toc-latent-variable-approach" class="nav-link" data-scroll-target="#latent-variable-approach">Latent variable approach</a>
+  <li><a href="#predicting-whether-or-not-someone-voted-for-obama-in-2012" id="toc-predicting-whether-or-not-someone-voted-for-obama-in-2012" class="nav-link" data-scroll-target="#predicting-whether-or-not-someone-voted-for-obama-in-2012">Predicting whether or not someone voted for Obama in 2012</a></li>
+  <li><a href="#linear-probability-model-lpm" id="toc-linear-probability-model-lpm" class="nav-link" data-scroll-target="#linear-probability-model-lpm">Linear probability model (LPM)</a>
   <ul class="collapse">
-  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic regression</a></li>
+  <li><a href="#interpreting-an-lpm" id="toc-interpreting-an-lpm" class="nav-link" data-scroll-target="#interpreting-an-lpm">Interpreting an LPM</a></li>
+  <li><a href="#predicted-probabilities" id="toc-predicted-probabilities" class="nav-link" data-scroll-target="#predicted-probabilities">Predicted probabilities</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression">Logistic regression</a>
+  <ul class="collapse">
+  <li><a href="#interpreting-a-logistic-regression" id="toc-interpreting-a-logistic-regression" class="nav-link" data-scroll-target="#interpreting-a-logistic-regression">Interpreting a logistic regression</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/hgoers/GVPT722/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
@@ -219,7 +230,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Binary outcomes</h1>
+<h1 class="title">Binary Outcomes</h1>
 </div>
 
 
@@ -249,70 +260,88 @@ Warning
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(poliscidata)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(marginaleffects)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="introduction-to-binary-outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="introduction-to-binary-outcomes">Introduction to binary outcomes</h2>
-<p>We often want to better understand binary outcomes: voted, or not; at war, or not; signed a treaty, or not.</p>
-<p>Imagine that if you are over six feet tall, there is a 80% chance that you will score a three-point field goal on any given attempt. In other words, people over six feet tall score a three-pointer 95% of the time they attempt one. Imagine also that if you are under six feet tall, your luck is reversed. There is only a 5% chance that you score a three-pointer when you attempt one.</p>
-<p>Let’s make some data to reflect this world. In 2021 (the latest data I get from a very cursory Google search)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>, the tallest player in the WNBA is Brittney Griner who is 6.9 feet (206 cm) tall. The shortest player, Leilani Mitchell, is 5.5 feet (165 cm) tall. We will use these women as our plausible range of players.</p>
-<p>Let’s take 1,000 hypothetical randomly-selected players ranging from 165 cms to 206 cms tall and ask them to take a shot from the three-point score line. We will record whether or not they score.</p>
+<p>We often want to better understand binary outcomes: voted, or not; at war, or not; signed a treaty, or not. We need to adapt our models linking the predictors of interest to these binary outcomes. This lab session, we will step through some common approaches to doing this.</p>
+</section>
+<section id="predicting-whether-or-not-someone-voted-for-obama-in-2012" class="level2">
+<h2 class="anchored" data-anchor-id="predicting-whether-or-not-someone-voted-for-obama-in-2012">Predicting whether or not someone voted for Obama in 2012</h2>
+<p>We are going to use information about individuals’ political preferences to predict whether or not they voted for Obama in 2012. To do this, we will use the National Election Survey from that year:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>players_height <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">165</span><span class="sc">:</span><span class="dv">206</span>, <span class="at">size =</span> <span class="dv">1000</span>, <span class="at">replace =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>nes <span class="ot">&lt;-</span> nes <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(obama_vote, obama_therm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Remember, if they are taller than 6 feet (or 183 cms), they will score 95% of the time. If they are less than 6 feet, they will only score 5% of the time.</p>
+<p>Let’s start by looking how people who voted or did not vote for Obama felt about him. I suspect that individuals with warmer feelings towards Obama tended to vote for him more than those who had less warm feelings towards him.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>three_pointers <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> players_height,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">scored =</span> <span class="fu">if_else</span>(height <span class="sc">&lt;</span> <span class="dv">183</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">1000</span>, <span class="at">replace =</span> T, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.95</span>, <span class="fl">0.05</span>)),</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">sample</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="dv">1000</span>, <span class="at">replace =</span> T, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>)))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Let’s look at how they went:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(three_pointers, <span class="fu">aes</span>(<span class="at">x =</span> height, <span class="at">y =</span> scored)) <span class="sc">+</span> </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">182</span>, <span class="at">colour =</span> <span class="st">"grey"</span>) <span class="sc">+</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Player's height (cm)"</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Scored three-pointer"</span>) <span class="sc">+</span> </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nes, <span class="fu">aes</span>(<span class="at">x =</span> obama_therm, <span class="at">y =</span> obama_vote)) <span class="sc">+</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Feelings towards Obama (0 - 100)"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Voted for Obama"</span>) <span class="sc">+</span> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="960"></p>
+<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>So, it looks like some of our taller plays (those above the grey line) were unlucky and missed. Happily some of our shorter players beat the odds!</p>
-<p>If I asked you to predict whether or not a player would score a three-pointer and you knew this fact that taller players scored 95% of the time whilst shorter players only scored 5% of the time, you might follow up and ask how tall the player in question is. It seems to be an important predictor of her ability to score!</p>
-<p>In other words, if I wanted to build a model predicting the likelihood any given player would score a three-pointer, I would include in that model the player’s height as a variable.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I have used <code>geom_jitter()</code> to better visualize these points.</p>
+</div>
+</div>
+<p>So, it looks like people behaved as we expected them to: those who felt warmly of Obama tended to vote for him, and those who felt cooler towards him tended not to. However, this rule is not absolute: some people who felt very warmly for Obama did not vote for him and some who did not like him voted for him.</p>
+<p>To illustrate, let’s look at all of the people who gave Obama a rating of 75 or greater. What proportion of them also voted for him in 2012?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(obama_therm <span class="sc">&gt;=</span> <span class="dv">75</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(obama_vote)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> obama_vote    n    percent
+          0   32 0.01601602
+          1 1966 0.98398398</code></pre>
+</div>
+</div>
+<p>Okay, so 98% of these individuals voted for Obama. That leaves 2% of those with strongly warm feelings of Obama who did not vote for him.</p>
+<p>If I asked you to predict whether an individual voted for Obama and I told you that 98% of people who gave him a rating of 75 or greater voted for him, you would probably ask what rating the individual in question gave him. It seems to be an important predictor of their vote!</p>
+<p>In other words, if I wanted to build a model predicting the likelihood any given individual would vote for Obama, I would include in that model the individual’s feeling thermometer rating for Obama as a variable.</p>
 <p>Let’s do that!</p>
 </section>
-<section id="linear-probability-model-lmp" class="level2">
-<h2 class="anchored" data-anchor-id="linear-probability-model-lmp">Linear probability model (LMP)</h2>
+<section id="linear-probability-model-lpm" class="level2">
+<h2 class="anchored" data-anchor-id="linear-probability-model-lpm">Linear probability model (LPM)</h2>
 <p>Let’s start simply by drawing a straight line between these two clusters of points. As with all linear regression models, we want to draw the line that minimizes the distance between itself and all of the observed points.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(three_pointers, <span class="fu">aes</span>(<span class="at">x =</span> height, <span class="at">y =</span> scored)) <span class="sc">+</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F) <span class="sc">+</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Player's height (cm)"</span>,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of scoring"</span>) <span class="sc">+</span> </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nes, <span class="fu">aes</span>(<span class="at">x =</span> obama_therm, <span class="at">y =</span> obama_vote)) <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> F) <span class="sc">+</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Feelings towards Obama (0 - 100)"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Voted for Obama"</span>) <span class="sc">+</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>m_lpm <span class="ot">&lt;-</span> <span class="fu">lm</span>(scored <span class="sc">~</span> height, <span class="at">data =</span> three_pointers)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_lpm, <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"height"</span> <span class="ot">=</span> <span class="st">"Height (cm)"</span>), <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m_lpm <span class="ot">&lt;-</span> <span class="fu">lm</span>(obama_vote <span class="sc">~</span> obama_therm, <span class="at">data =</span> nes)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_lpm, </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"obama_therm"</span> <span class="ot">=</span> <span class="st">"Thermometer rating of Obama (0 to 100)"</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T, </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="st">"nobs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -324,54 +353,26 @@ Warning
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: center;">−5.269***</td>
+<td style="text-align: center;">−0.121***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: center;">(0.153)</td>
+<td style="text-align: center;">(0.008)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Height (cm)</td>
-<td style="text-align: center;">0.032***</td>
+<td style="text-align: left;">Thermometer rating of Obama (0 to 100)</td>
+<td style="text-align: center;">0.012***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; box-shadow: 0px 1.5px;"></td>
-<td style="text-align: center; box-shadow: 0px 1.5px;">(0.001)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.000)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Num.Obs.</td>
-<td style="text-align: center;">1000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">R2</td>
-<td style="text-align: center;">0.596</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">R2 Adj.</td>
-<td style="text-align: center;">0.595</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">AIC</td>
-<td style="text-align: center;">507.4</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">BIC</td>
-<td style="text-align: center;">522.1</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Log.Lik.</td>
-<td style="text-align: center;">−250.693</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: center;">1471.377</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">RMSE</td>
-<td style="text-align: center;">0.31</td>
+<td style="text-align: center;">4167</td>
 </tr>
 </tbody><tfoot>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -382,77 +383,99 @@ Warning
 
 </div>
 </div>
-<p>Although this looks a lot like our familiar linear regression model, we interpret its estimates differently. Here, instead of estimating the value of the outcome variable, we are estimating the probability that the outcome variable will be equal to one (or that our player scores).</p>
-<p>So, we have found that players that are one centimeter taller than their teammates are, on average, 3% more like to score a three-pointer than those shorter team mates.</p>
-<p>Our model predicts that a player who is 170 cms tall will score 9% of the time. It predicts that a player who is 10 cms taller will score 41% of the time. Finally, it predicts that a player who is another 10 cms taller will score 72% of the time. More succintly:</p>
+<section id="interpreting-an-lpm" class="level3">
+<h3 class="anchored" data-anchor-id="interpreting-an-lpm">Interpreting an LPM</h3>
+<p>Although this looks a lot like our familiar linear regression model, we interpret its estimates differently. Instead of estimating the value of the outcome variable, we are estimating the probability that the outcome variable will be equal to one (or that an individual voted for Obama).</p>
+<p>As expected, the model suggests that individuals with higher ratings of Obama were more likely to vote for him. Each increase in individuals’ rating of Obama is associated with a 1.2% increase in the probability that they voted for Obama.</p>
+</section>
+<section id="predicted-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="predicted-probabilities">Predicted probabilities</h3>
+<p>Let’s look at what the model predicts the probability of voting for Obama to be for every value of the feeling thermometer:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m_lpm, <span class="at">condition =</span> <span class="st">"height"</span>) <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Player's height (cm)"</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of scoring"</span>) <span class="sc">+</span> </span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m_lpm, <span class="at">condition =</span> <span class="st">"obama_therm"</span>) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Feeling thermometer rating"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of voting for Obama"</span>) <span class="sc">+</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.25</span>, <span class="fl">1.25</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>Hmm, this doesn’t really reflect the hypothetical world we set up very well…</p>
-<p>We said that if you were above a cut off point (6 feet) then you had an 95% chance of scoring. If you were below this height threshold, you only had a 5% chance of scoring. But this LPM assumes a linear (constant) increase across all heights.</p>
-<p>Also, this model predicts probabilities of scoring that are more than 100% of the time and less than 0% if you are less than 170cm tall. That’s very dire odds for some current players…</p>
-<p>Happily, we can do better (…than economists).</p>
+<p>So, there are a couple of issues with this approach. First, our model predict probabilities that are greater than 100% and less than 0%. Those who gave Obama a rating of 0 are predicted to vote for him with a probability of -12%. Those who gave him a rating of 100 are predicted to vote for him with a probability of 105%.</p>
+<p>Second, and more importantly, this constant effect does not really reflect our understanding of individuals’ political behavior. Individuals who really do not like Obama are very unlikely to vote for him.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(obama_therm <span class="sc">&lt;=</span> <span class="dv">25</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(obama_vote)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> obama_vote   n     percent
+          0 908 0.990185387
+          1   9 0.009814613</code></pre>
+</div>
+</div>
+<p>Individuals who really like Obama are very likely to vote for him.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(obama_therm <span class="sc">&gt;=</span> <span class="dv">75</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(obama_vote)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> obama_vote    n    percent
+          0   32 0.01601602
+          1 1966 0.98398398</code></pre>
+</div>
+</div>
+<p>A shift from a rating of 0 to 1, or from 99 to 100, is probably not going to change the likelihood that these individuals with strong opinions of Obama will vote for him.</p>
+<p>On the other hand, individuals in the middle are more likely to swing towards or away from him if their view of him warms or cools.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(obama_therm <span class="sc">&gt;=</span> <span class="fl">37.5</span> <span class="sc">&amp;</span> obama_therm <span class="sc">&lt;=</span> <span class="fl">62.5</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tabyl</span>(obama_vote)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> obama_vote   n   percent
+          0 426 0.6915584
+          1 190 0.3084416</code></pre>
+</div>
+</div>
+<p>A linear probability model does not reflect these differences. Happily, we can do better (…than economists).</p>
 </section>
-<section id="latent-variable-approach" class="level2">
-<h2 class="anchored" data-anchor-id="latent-variable-approach">Latent variable approach</h2>
-<p>When we are dealing with binary outcomes, we can only observe <code>1</code> or <code>0</code>, success or failure. This makes this whole prediction thing tricky!</p>
-<p>For example, lots of political pundits will attempt to predict the outcome of this year’s US Presidential Election. They will say that they predict that either President Biden or Mr Trump will win.</p>
-<p>Those who build complex models to help them in this will likely put some percentage against their prediction. For example, someone might say that they predict that President Biden will hold office with an 85% chance. What they are saying is that, if you were able to run 100 different versions of the 2024 US Presidential Election, their model suggests that President Biden wins 85 of those 100 elections. That means that their model also predicts that Mr Trump will win 15 of those 100 elections.</p>
-<p>We can only observe the outcome: Biden or Trump. We cannot observe this underlying probability: 85% Biden and 15% Trump. But we assume that underlying continuous relationship exists! This is logic behind the latent variable approach.</p>
-<p>Going back to our basketball players: the latent variable approach assumes that some continuous <em>linear</em> relationship exists between our observed outcome, scored or did not score, and our independent variable: height. This continuous relationship is driven by an unobserved variable: <span class="math inline">\(Z\)</span>. Formally:</p>
-<p><span class="math display">\[
-z_i = X_i\beta + \epsilon_i
-\]</span></p>
-<p>This is a linear model! In fact, it’s the linear model you have been working with for two semesters. Great!</p>
-<p><em>But</em> as usual, the interesting (and tricky) part of this model is that error term: <span class="math inline">\(\epsilon\)</span>. What shape does it take? In a linear regression, we assume that it is normally distributed and centered at zero. When we have a binary outcome, we assume that it takes on a different shape. Which shape? Well, you get to pick your poison: logit or probit?</p>
-<section id="logistic-regression" class="level3">
-<h3 class="anchored" data-anchor-id="logistic-regression">Logistic regression</h3>
-<p>Logistic regression is a favourite among international relations scholars. It has lots of very useful features.</p>
-<p>First, it is bounded by 0 and 1 (just like our outcome). Second, it allows for a varying impact of a change in <span class="math inline">\(X\)</span> on the probability that our outcome is a success.</p>
-<p>Formally, the inverse logistic function is:</p>
+</section>
+<section id="logistic-regression" class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression">Logistic regression</h2>
+<p>A logistic regression model solves these problems. Formally, the inverse logistic function is:</p>
 <p><span class="math display">\[
 Pr(Y = 1 | X) = logit^{-1}(X) = \frac{e^X}{1 + e^X}
 \]</span></p>
 <p>But don’t worry too much about that. Let’s instead look at its shape:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>, <span class="at">by =</span> <span class="fl">0.5</span>),</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="fu">plogis</span>(x)) <span class="sc">|&gt;</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span> </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">10</span>, <span class="dv">10</span>, <span class="at">by =</span> <span class="fl">0.5</span>), <span class="at">y =</span> <span class="fu">plogis</span>(x)) <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="960"></p>
+<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>This is great! The outcome (probability of success) is bounded between 0 and 1 as all probabilities are. Further, our cut-off point (in this general demonstration, 0) is clearly defined.</p>
-<p>Let’s fit a logistic regression model against our basketball players’ scoring efforts:</p>
+<p>This is great! The outcome (probability of success) is bounded between 0 and 1 as all probabilities are. Also, changes to our DV do not produce uniform changes in that outcome.</p>
+<p>Lets fit this model to our data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(three_pointers, <span class="fu">aes</span>(<span class="at">x =</span> height, <span class="at">y =</span> scored)) <span class="sc">+</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">se =</span> F, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))) <span class="sc">+</span> </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Player's height (cm)"</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of scoring"</span>) <span class="sc">+</span> </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nes, <span class="fu">aes</span>(<span class="at">x =</span> obama_therm, <span class="at">y =</span> obama_vote)) <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">alpha =</span> <span class="fl">0.25</span>, <span class="at">height =</span> <span class="fl">0.1</span>) <span class="sc">+</span> </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"glm"</span>, <span class="at">se =</span> F, <span class="at">method.args =</span> <span class="fu">list</span>(<span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))) <span class="sc">+</span> </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Feelings towards Obama (0 - 100)"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Voted for Obama"</span>) <span class="sc">+</span> </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">n.breaks =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="960"></p>
+<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-<p>We can fit this model using the following:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>m_lr <span class="ot">&lt;-</span> <span class="fu">glm</span>(scored <span class="sc">~</span> height, <span class="at">data =</span> three_pointers, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_lr,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"height"</span> <span class="ot">=</span> <span class="st">"Height (cm)"</span>),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>m_logistic <span class="ot">&lt;-</span> <span class="fu">glm</span>(obama_vote <span class="sc">~</span> obama_therm, <span class="at">data =</span> nes, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_logistic, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"obama_therm"</span> <span class="ot">=</span> <span class="st">"Thermometer rating of Obama (0 to 100)"</span>),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="st">"nobs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -464,46 +487,26 @@ Pr(Y = 1 | X) = logit^{-1}(X) = \frac{e^X}{1 + e^X}
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: center;">−50.744***</td>
+<td style="text-align: center;">−7.466***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: center;">(3.203)</td>
+<td style="text-align: center;">(0.290)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Height (cm)</td>
-<td style="text-align: center;">0.279***</td>
+<td style="text-align: left;">Thermometer rating of Obama (0 to 100)</td>
+<td style="text-align: center;">0.130***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; box-shadow: 0px 1.5px;"></td>
-<td style="text-align: center; box-shadow: 0px 1.5px;">(0.018)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.005)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Num.Obs.</td>
-<td style="text-align: center;">1000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">AIC</td>
-<td style="text-align: center;">549.1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">BIC</td>
-<td style="text-align: center;">558.9</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Log.Lik.</td>
-<td style="text-align: center;">−272.543</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: center;">252.357</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">RMSE</td>
-<td style="text-align: center;">0.26</td>
+<td style="text-align: center;">4167</td>
 </tr>
 </tbody><tfoot>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -514,17 +517,17 @@ Pr(Y = 1 | X) = logit^{-1}(X) = \frac{e^X}{1 + e^X}
 
 </div>
 </div>
-<section id="interpreting-logistic-regression-coefficients" class="level4">
-<h4 class="anchored" data-anchor-id="interpreting-logistic-regression-coefficients">Interpreting logistic regression coefficients</h4>
-<p>The coefficients presented above are log odds ratios. We can easily interpret their statistical significance and their sign. For example, we learn that as a player’s height increases, so too does her probability of scoring a three-pointer. We also know that the probability that we would pull a random sample from a population in which a player’s height has no bearing on her ability to score a three pointer is very small. Sadly, that’s about all that we can easily get from the regression table provided above.</p>
-<p>Remember that logit (and probit) models are simply transformed linear models. We take our linear model of the relationship between scoring a three pointer and a player’s height and reshape it to better predict probabilities (bound between 0 and 1, with varying effects of changes of height on probability of success). Similarly, we can reshape these coefficients to make them easier to interpret.</p>
-<section id="odds-ratios" class="level5">
-<h5 class="anchored" data-anchor-id="odds-ratios">Odds ratios</h5>
+<section id="interpreting-a-logistic-regression" class="level3">
+<h3 class="anchored" data-anchor-id="interpreting-a-logistic-regression">Interpreting a logistic regression</h3>
+<p>The coefficients presented above are <strong>log odds ratios</strong>. We can easily interpret their statistical significance and their sign. For example, we learn that as an individual’s feelings towards Obama increase, so too does the probability that they will vote for him. We also know that this relationship is statistically significant. Sadly, we can’t get much more from the regression table provided above.</p>
+<p>Remember that logit (and probit) models are simply transformed linear models. We take our linear model of the relationship between an individual’s feelings towards Obama and the likelihood that they will vote for him and reshape it to better predict probabilities (bound between 0 and 1, with varying effects of changes of height on probability of success). Similarly, we can reshape these coefficients to make them easier to interpret.</p>
+<section id="odds-ratios" class="level4">
+<h4 class="anchored" data-anchor-id="odds-ratios">Odds ratios</h4>
 <p>The regression coefficient provided above is a log odds ratio. Log-transformed variables are really hard to interpret. So, let’s get rid of that log. The opposite operation to taking the logarithm of a number is to take the exponential of it. To demonstrate:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">log_x =</span> <span class="fu">log</span>(x),</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">exp_log_x =</span> <span class="fu">exp</span>(log_x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">log_x =</span> <span class="fu">log</span>(x),</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">exp_log_x =</span> <span class="fu">exp</span>(log_x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 3
       x log_x exp_log_x
@@ -536,19 +539,29 @@ Pr(Y = 1 | X) = logit^{-1}(X) = \frac{e^X}{1 + e^X}
 5     5 1.61          5</code></pre>
 </div>
 </div>
-<p>So, exponentiating the log odd ratio will get us the odds ratio. The odds ratio is much easier to interpret. If the probability of success of an outcome is <span class="math inline">\(p\)</span> and, therefore, the probability of failure is <span class="math inline">\(1-p\)</span>, then , the the odds of success is <span class="math inline">\(\frac{p}{1-p}\)</span>. Now, dividing two odds by each other gives you their odds ratio.</p>
+<p>So, exponentiating the log odd ratio will get us the <strong>odds ratio</strong>. The odds ratio is much easier to interpret. If the probability of success of an outcome is <span class="math inline">\(p\)</span> and, therefore, the probability of failure is <span class="math inline">\(1-p\)</span>, then , the the odds of success are <span class="math inline">\(\frac{p}{1-p}\)</span>. Now, dividing two odds by each other gives you their odds ratio.</p>
 <p>For example, when the odds ratio is 1, the odds of success are the same as the odds of failure (<span class="math inline">\(\frac{0.5}{0.5} = 1\)</span>). When the odds ratio is greater than 1, the odds of success are greater than the odds of failure (for example, <span class="math inline">\(\frac{0.8}{0.2} = 4\)</span>). Where the odds ratio of success is four, the odds of success are four times higher than the odds of failure.</p>
-<p>Getting back to our model, the odds ratio that a player will score is:</p>
+<p>Getting back to our model, the odds ratio of the thermometer rating coefficient is:</p>
 <p><span class="math display">\[
-e^{0.302} = 1.35
+e^{0.130} = 1.14
 \]</span></p>
-<p>Therefore, if we increase a player’s height by one centimeter, the odds that she will score increases by 0.35 (or <span class="math inline">\(1 - 1.35\)</span>).</p>
-<p>Happily, <code>modelsummary::modelsummary(exponentiate = T)</code> will help us out here:</p>
+<p>Or using R:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_lr,</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">exponentiate =</span> T, </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"height"</span> <span class="ot">=</span> <span class="st">"Height (cm)"</span>),</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m_logistic) <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"obama_therm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(estimate) <span class="sc">|&gt;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.138654</code></pre>
+</div>
+</div>
+<p>Therefore, our model predicts that by increasing an individual’s rating of Obama, the odds that they will vote for Obama increase by 0.14 (or <span class="math inline">\(1 - 1.14\)</span>).</p>
+<p>We can report the odds ratio in our regression table using <code>modelsummary::modelsummary(exponentiate = T)</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">modelsummary</span>(m_logistic, </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">coef_rename =</span> <span class="fu">c</span>(<span class="st">"obama_therm"</span> <span class="ot">=</span> <span class="st">"Thermometer rating of Obama (0 to 100)"</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">stars =</span> T,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">gof_map =</span> <span class="st">"nobs"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -560,46 +573,26 @@ e^{0.302} = 1.35
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">(Intercept)</td>
-<td style="text-align: center;">0.000***</td>
+<td style="text-align: center;">−7.466***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: center;">(0.000)</td>
+<td style="text-align: center;">(0.290)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Height (cm)</td>
-<td style="text-align: center;">1.321***</td>
+<td style="text-align: left;">Thermometer rating of Obama (0 to 100)</td>
+<td style="text-align: center;">0.130***</td>
 </tr>
 <tr class="even">
 <td style="text-align: left; box-shadow: 0px 1.5px;"></td>
-<td style="text-align: center; box-shadow: 0px 1.5px;">(0.023)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.005)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Num.Obs.</td>
-<td style="text-align: center;">1000</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">AIC</td>
-<td style="text-align: center;">549.1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">BIC</td>
-<td style="text-align: center;">558.9</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Log.Lik.</td>
-<td style="text-align: center;">−272.543</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">F</td>
-<td style="text-align: center;">252.357</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">RMSE</td>
-<td style="text-align: center;">0.26</td>
+<td style="text-align: center;">4167</td>
 </tr>
 </tbody><tfoot>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left; padding: 0;"><sup></sup> + p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td>
 <td style="text-align: center;"></td>
 </tr>
@@ -612,18 +605,18 @@ e^{0.302} = 1.35
 </div>
 <p>And we can also get these results programmatically using <code>broom::tidy()</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m_lr, <span class="at">exponentiate =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(m_logistic, <span class="at">exponentiate =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
-  term        estimate std.error statistic  p.value
-  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
-1 (Intercept) 9.16e-23    3.20       -15.8 1.62e-56
-2 height      1.32e+ 0    0.0175      15.9 7.95e-57</code></pre>
+  term        estimate std.error statistic   p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept) 0.000572   0.290       -25.7 5.40e-146
+2 obama_therm 1.14       0.00457      28.4 6.74e-178</code></pre>
 </div>
 </div>
 </section>
-<section id="predicted-probabilities" class="level5">
-<h5 class="anchored" data-anchor-id="predicted-probabilities">Predicted probabilities</h5>
+<section id="predicted-probabilities-1" class="level4">
+<h4 class="anchored" data-anchor-id="predicted-probabilities-1">Predicted probabilities</h4>
 <p>Odds ratios are certainly easier to interpret than log odds ratios, but they are still a little awkward. It is easier again to discuss the effects of changing our independent variables of interest in terms of probabilities, rather than odds.</p>
 <p>Remember, the odds ratio is simply the odds of success divided by the odds of failure:</p>
 <p><span class="math display">\[
@@ -639,57 +632,43 @@ Pr(Y = 1 | X) = \frac{e^{X\beta}}{1 + e^{X\beta}}
 \]</span></p>
 <p>Or, more specifically:</p>
 <p><span class="math display">\[
-Pr(scored = 1 | height) = \frac{e^{−50.744 + 0.279height + \epsilon}}{1 + e^{−50.744 + 0.279height + \epsilon}}
+Pr(obama\_vote = 1 | obama\_therm) = \frac{e^{−7.466 + 0.130obama\_therm + \epsilon}}{1 + e^{−7.466 + 0.130obama\_therm + \epsilon}}
 \]</span></p>
-<p>Importantly, we need to know our player’s height to predict her probability of success. This makes sense! The slope of our model is not constant:</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="960"></p>
-</div>
-</div>
-<p>When a player is 170 cm tall, our model predicts that she will score a three-pointer 3.5 percent of the time.</p>
+<p>Importantly, we need to know our individual’s rating of Obama to predict the probability that they will vote for him. This makes sense! The slope of our model is not constant.</p>
+<p>When an individual gives Obama a rating of zero, our model predicts that there is a 0.06% chance they will vote for Obama.</p>
 <p>How did I get that?</p>
 <p><span class="math display">\[
-Pr(scored = 1 | height) = \frac{e^{−50.744 + 0.279height + \epsilon}}{1 + e^{−50.744 + 0.279height + \epsilon}} = \frac{e^{−50.744 + 0.279*170}}{1 + e^{−50.744 + 0.279*170}} = \frac{.036}{1.036} = 0.035
+Pr(obama\_vote = 1 | obama\_therm = 0) = \frac{e^{−7.466 + 0.130 * 0}}{1 + e^{−7.466 + 0.130 * 0}} =  \frac{e^{−7.466}}{1 + e^{−7.466}} =  0.0006
 \]</span></p>
-<p>When a player is 180 cm tall, our model predicts that she will score a three-pointer 27.5 percent of the time.</p>
-<p>When a player is 190 cm tall, our model predicts that she will score a three-pointer 88.6 percent of the time.</p>
-<p>Notice that we are increasing the player’s height by the same amount each time, but the increase in her probability of success from this constant increase is different. Here is the predicted probability of success across our range of players’ heights:</p>
+<p>Or in R:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m_lr, <span class="at">condition =</span> <span class="st">"height"</span>) <span class="sc">+</span> </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Player's height (cm)"</span>,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of scoring"</span>) <span class="sc">+</span> </span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">augment</span>(m_logistic, <span class="at">newdata =</span> <span class="fu">tibble</span>(<span class="at">obama_therm =</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(.fitted) <span class="sc">|&gt;</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">exp</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0005723801</code></pre>
+</div>
+</div>
+<p>When an individual gives Obama a rating of 50, our model predicts that there is a 37.78% chance they will vote for Obama.</p>
+<p>When an individual gives Obama a rating of 100, our model predicts that there is a 24 937.68% chance they will vote for Obama.</p>
+<p>We can plot these predicted probabilities for each value of the thermometer rating:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_predictions</span>(m_logistic, <span class="at">condition =</span> <span class="st">"obama_therm"</span>) <span class="sc">+</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Feeling thermometer rating"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Probability of voting for Obama"</span>) <span class="sc">+</span> </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">label =</span> percent, <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="960"></p>
+<p><img src="06-binary_outcomes_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="960"></p>
 </div>
 </div>
-</section>
-</section>
-<section id="interpreting-the-intercept" class="level4">
-<h4 class="anchored" data-anchor-id="interpreting-the-intercept">Interpreting the intercept</h4>
-<p>As usual, the intercept should be interpreted as the expected value when all independent variables are set to 0. This is simple to interpret in terms of the probability of success. Remember:</p>
-<p><span class="math display">\[
-Pr(Y = 1 | X) = \frac{e^X}{1 + e^X}
-\]</span></p>
-<p>When <code>height = 0</code>:</p>
-<p><span class="math display">\[
-Pr(Y = 1 | X) = \frac{e^{\beta_0}}{1 + e^{\beta_0}} = \frac{e^{−50.744}}{1 + e^{−50.744}} = A\ very\ small\ number!
-\]</span></p>
 
 
 </section>
 </section>
 </section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>I’m sorry… it’s just not as good as AFL…<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
